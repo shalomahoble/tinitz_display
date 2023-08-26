@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>570463753229-61vvlpgak429f03qgojb38oquibvpp0d.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.570463753229-61vvlpgak429f03qgojb38oquibvpp0d</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBctug91ATIy8-5EqNj1cBKREXayXC8MbE</string>
+	<key>GCM_SENDER_ID</key>
+	<string>570463753229</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.borneFlutter</string>
+	<key>PROJECT_ID</key>
+	<string>tinitzapp</string>
+	<key>STORAGE_BUCKET</key>
+	<string>tinitzapp.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:570463753229:ios:1ad05d63f9d40d4433f144</string>
+</dict>
+</plist>

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "570463753229",
+    "project_id": "tinitzapp",
+    "storage_bucket": "tinitzapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:570463753229:android:3c65aafbf0d812da33f144",
+        "android_client_info": {
+          "package_name": "com.tinitz.dysplay.borne"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "570463753229-i73p9rrq2496njep4p15gm0iv1fhfk7e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCUOO89wQz7vUzkVaEm7vOfwXo5hERlk6k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "570463753229-i73p9rrq2496njep4p15gm0iv1fhfk7e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
