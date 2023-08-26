@@ -1,4 +1,4 @@
-# borne_flutter
+# Tinitz Display
 
 A new Flutter project.
 
