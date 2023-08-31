@@ -2,6 +2,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first, must_be_immutable, unused_local_variable
 import 'package:borne_flutter/config/app_style.dart';
 import 'package:borne_flutter/services/ShortUrlService.dart';
+import 'package:borne_flutter/utils/utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -31,9 +32,7 @@ class QRcode extends StatelessWidget {
 
     String codeQrUrl() {
       final token = box.read('token');
-      "https://devmarket.egaz.shop/reading?q=$codeBorne&tk=$token";
-      print("Shortened  tritrologie ${loginController.shortUrl.value}");
-      return loginController.shortUrl.value;
+      return "https://devmarket.egaz.shop/reading?q=$codeBorne&tk=$token";
     }
 
     Widget displayCodeQr() {
@@ -43,7 +42,7 @@ class QRcode extends StatelessWidget {
             backgroundColor: Colors.white,
             padding: const EdgeInsets.all(8.0),
             version: QrVersions.auto,
-            data: loginController.shortUrl.value,
+            data: codeQrUrl(),
           );
         case 'wifi':
           return Container(
@@ -65,6 +64,13 @@ class QRcode extends StatelessWidget {
             ),
           );
         case 'evenements':
+          return QrImageView(
+            backgroundColor: Colors.white,
+            padding: const EdgeInsets.all(8.0),
+            version: QrVersions.auto,
+            data: codeQr("slide=${slide.id}", slide.pivot!.borneId!),
+          );
+/*         case 'evenements':
           return Container(
             decoration: BoxDecoration(
                 color: Colors.white,
@@ -82,7 +88,7 @@ class QRcode extends StatelessWidget {
                 size: 20,
               ),
             ),
-          );
+          ); */
         case 'autres':
           if (slide.qrcode != null) {
             return Container(

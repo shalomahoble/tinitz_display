@@ -51,6 +51,8 @@ class Borne {
     this.alerts,
   });
 
+  
+
   factory Borne.fromJson(Map<String, dynamic> json) => Borne(
         id: json["id"],
         code: json["code"],

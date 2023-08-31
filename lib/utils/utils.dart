@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+const String urlScanneCodeQr = "https://devmarket.egaz.shop/api/redirect?";
 //Convert url to Uri
 Uri getUrl(String url) {
   return Uri.parse('$baseUrl$url');
@@ -25,9 +26,16 @@ Future<String> getToken() async {
 
 //Sauvegader le token
 
-Future<void> saveToken(String? token) async {
+Future<void> saveToken(String token) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
+  // ignore: unnecessary_null_comparison
   if (token != null && token.isNotEmpty) {
     await prefs.setString('token', token);
   }
+}
+
+// Return url to slide or article
+
+String codeQr(String params, int borneId) {
+  return "$urlScanneCodeQr$params&borne=$borneId";
 }

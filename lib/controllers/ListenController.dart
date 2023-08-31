@@ -1,149 +1,160 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:borne_flutter/controllers/BorneController.dart';
 import 'package:borne_flutter/controllers/LoginController.dart';
-import 'package:borne_flutter/models/Alerte.dart';
 import 'package:borne_flutter/models/Borne.dart';
 import 'package:borne_flutter/services/LoginService.dart';
+import 'package:borne_flutter/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-import '../models/Slide.dart';
 
 class ListenController extends GetxController {
   final LoginController loginController = Get.put(LoginController());
+  BorneController? _borneController; // Utilisez le type BorneController?
 
   final LoginService loginService = Get.put(LoginService());
 
   final box = GetStorage();
   Borne borne = Borne();
-  RxList<Alert> alertes = RxList<Alert>.empty(growable: true);
-  RxList<Slide> slides = RxList<Slide>.empty(growable: true);
+
+  // Méthode pour obtenir le BorneController seulement lorsque vous en avez besoin
+  BorneController get borneController {
+    _borneController ??= Get.find<BorneController>();
+    return _borneController!;
+  }
 
   void addNewAlerte() async {
     final response = await loginService.generateNewToken();
     print(response.body);
   }
 
-//###### Alert mise a jour
+//###### Alert mise a jour ################################################
 //Change statut
   void changeStatutAlerte() async {
     getBorne().then((borne) {
-      loginController.updateAlerte(borne.alerts!);
-      /* if (borne.alerts != null && borne.alerts!.isNotEmpty) {
-        /* print(borne.toString());
-        loginController.borne.value.alerts!.clear();
-        loginController.borne.value.alerts!.addAll(borne.alerts!); */
-        loginController.updateBorneInfo(borne);
-        loginController.changeAlerte.value++;
-        loginController.verfieAlerteIsEmpty();
-        update();
-      } */
+      if (borne != null) {
+        borneController.addOrUpdateAlert(borne.alerts!);
+      }
     });
   }
 
 //Update alerte
   void updateAlerte() {
     getBorne().then((borne) {
-      loginController.updateBorneInfo(borne);
-      update();
+      if (borne != null) {
+        borneController.addOrUpdateAlert(borne.alerts!);
+      }
     });
   }
 
-  //Delete borne
+  //Delete alerte
   void deleteAlerte() {
     getBorne().then((borne) {
-      loginController.updateBorneInfo(borne);
-      update();
-      /* if (borne.alerts != null) {
-        /* loginController.borne.value.alerts!.clear();
-        loginController.borne.value.alerts!.addAll(borne.alerts!); */
-        loginController.updateBorneInfo(borne);
-        loginController.changeAlerte.value++;
-        loginController.verfieAlerteIsEmpty();
-        update();
-      } */
+      if (borne != null) {
+        borneController.addOrUpdateAlert(borne.alerts!);
+      }
+      /*  loginController.updateBorneInfo(borne); */
     });
   }
 
   //Add new alert
   void storeAlerte() {
     getBorne().then((borne) {
-      loginController.updateBorneInfo(borne);
-      update();
-      /*   if (borne.alerts != null) {
-        // loginController.borne.value.alerts!.clear();
-        // loginController.borne.value.alerts!.addAll(borne.alerts!);
-        loginController.updateBorneInfo(borne);
-        loginController.changeAlerte++;
-        loginController.verfieAlerteIsEmpty();
-        update();
-      } */
+      if (borne != null) {
+        borneController.addOrUpdateAlert(borne.alerts!);
+      }
+      /*   loginController.updateBorneInfo(borne);
+      update(); */
     });
   }
 
-  //###### Article  mise a jour
+  //###### Article  mise a jour ##########################################
 
   void updateArticle() {
     getBorne().then((borne) {
-      if (borne.articles != null) {
-        loginController.updateBorneInfo(borne);
-        update();
+      if (borne != null) {
+        borneController.addOrUpdateArticle(borne.articles!);
       }
     });
   }
 
   void addNewArticle() {
     getBorne().then((borne) {
-      loginController.updateBorneInfo(borne);
-      update();
-      /*   if (borne.articles != null) {
-        loginController.addNewArticle(borne.articles!);
-        update();
-      } */
+      if (borne != null) {
+        borneController.addOrUpdateArticle(borne.articles!);
+      }
+      /* loginController.updateBorneInfo(borne); */
     });
   }
 
+  void deleteArticle() {
+    getBorne().then((borne) {
+      if (borne != null) {
+        borneController.addOrUpdateArticle(borne.articles!);
+      }
+    });
+  }
+
+// ####################### SLIDES #######################################
 //Ajout d'un nouveau slide
   void updateSlide() {
     getBorne().then((borne) {
-      print("nouvelle borne ${borne.slides}");
-      loginController.updateBorneInfo(borne);
-      update();
+      print("EVENTBD update slide ${borne.toString()}");
+      if (borne != null) {
+        borneController.addOrUpdateSlide(borne.slides!);
+      }
     });
   }
 
   //###### Slide  mise a jour
   void addSlide() {
     getBorne().then((borne) {
-      print("nouvelle borne ${borne.slides}");
-      loginController.updateBorneInfo(borne);
+      if (borne != null) {
+        borneController.addOrUpdateArticle(borne.articles!);
+      }
     });
   }
 
   void deleteSlide() {
     getBorne().then((borne) {
-      print("nouvelle 1 ${borne.slides}");
-      loginController.updateBorneInfo(borne);
+      print("EVENTBD delete slide ${borne.toString()}");
+      if (borne != null) {
+        borneController.addOrUpdateArticle(borne.articles!);
+      }
     });
   }
 
-  Future<Borne> getBorne() async {
+  Future<Borne?> getBorne() async {
     final response = await loginService.generateNewToken();
-    final body = jsonDecode(response.body);
-    /* print("EVENTBD ${body['borne']['articles'].toString()}"); */
-    final token = body['access_token'];
-    saveToken(token);
-    await box.write('token', token);
-    return Borne.fromJson(body['borne']);
+
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body);
+      final token = body['access_token'];
+      saveToken(token);
+      await box.write('token', token);
+      return Borne.fromJson(body['borne']);
+    } else {
+      print("EVENTBD ${response.body.toString()}");
+      return null;
+    }
   }
 
-  Future<void> saveToken(String? token) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (token != null && token.isNotEmpty) {
-      await prefs.setString('token', token);
-    }
+  Future<void> changeTokenApiPeriodic() async {
+    Timer.periodic(const Duration(minutes: 1), (timer) async {
+      final response = await loginService.generateNewToken();
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+        final token = body['access_token'];
+        saveToken(token);
+        await box.write('token', token);
+        print("EVENTBD listen 1 $token");
+        if (body['borne'] != null) {
+          borneController.updateBorneInfo(Borne.fromJson(body['borne']));
+          /*  loginController.updateBorneInfo(Borne.fromJson(body['borne'])); */
+        }
+      }
+    });
   }
 
   @override
@@ -151,23 +162,7 @@ class ListenController extends GetxController {
     // TODO: implement onInit
     super.onInit();
 
-//Mise a jour du token chaque 1 min;
-
-    Timer.periodic(const Duration(seconds: 45), (timer) async {
-      final response = await loginService.generateNewToken();
-      if (response.statusCode == 200) {
-        final body = jsonDecode(response.body);
-        final token = body['access_token'];
-        saveToken(token);
-        await box.write('token', token);
-        if (body['borne'] != null) {
-          loginController.updateBorneInfo(Borne.fromJson(body['borne']));
-          /* loginController.delayedTask.cancel(); */
-          /*  loginController.getUrl(); */
-          /* loginController.startTimerForNextArticle(); */
-          update();
-        }
-      }
-    });
+    //Mise a jour du token chaque 1 min;
+    //changeTokenApiPeriodic();
   }
 }

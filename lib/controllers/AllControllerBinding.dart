@@ -7,9 +7,9 @@ class AllControllerBinding extends Bindings {
   @override
   void dependencies() {
     // TODO: implement dependencies
+    Get.lazyPut<BorneController>(() => BorneController());
     Get.lazyPut<LoginController>(() => LoginController());
     Get.lazyPut<ListenController>(() => ListenController());
-    Get.lazyPut<BorneController>(() => BorneController());
     /* Get.lazyPut<TimerController>(() => TimerController(timeZone: '')); */
   }
 }

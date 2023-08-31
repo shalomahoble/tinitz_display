@@ -1,7 +1,7 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+// ignore_for_file: public_member_api_docs, sort_constructors_first, unrelated_type_equality_checks
 import 'package:borne_flutter/components/v_1_components/caroussel_widget.dart';
+import 'package:borne_flutter/controllers/AnimationControllerArticle.dart';
 import 'package:borne_flutter/controllers/BorneController.dart';
-import 'package:borne_flutter/controllers/LoginController.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -13,18 +13,26 @@ import 'package:borne_flutter/config/size_config.dart';
 import 'package:borne_flutter/models/Artcile.dart';
 
 class FlashPushArticle extends StatelessWidget {
-  const FlashPushArticle({
+  FlashPushArticle({
     Key? key,
   }) : super(key: key);
 
+  final animationController = Get.put(AnimationControllerArticle());
   @override
   Widget build(BuildContext context) {
-    final loginController = Get.find<LoginController>();
     final borneController = Get.find<BorneController>();
+    final animation = Tween<Offset>(
+      begin: const Offset(0, 1),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: animationController.animation,
+      curve: Curves.easeInOut,
+    ));
 
-    if (borneController.articles.isEmpty) {
+    if (borneController.articleEstVide.value == true ||
+        borneController.articles.isEmpty) {
       return const SizedBox.shrink();
-    } else if (borneController.articles.isNotEmpty) {
+    } else {
       return Obx(
         () => AnimatedSwitcher(
             duration: const Duration(milliseconds: 500),
@@ -41,20 +49,13 @@ class FlashPushArticle extends StatelessWidget {
               article: borneController
                   .articles[borneController.currentArticleIndex.value],
               key: ValueKey<int>(borneController.articleChangeAnimation.value),
-            )
-
-            /*  PushArticleInfo(
-            article: loginController.borne.value
-                    .articles![loginController.currentIndex.value] ??
-                article,
-            key: ValueKey<int>(loginController.changeArticle.value),
-          ), */
-            ),
+            )),
       );
       /*  CardAnimatedArticle(); */
-    } else {
-      return const SizedBox.shrink();
     }
+    /*   else {
+      return const SizedBox.shrink();
+    } */
   }
 }
 

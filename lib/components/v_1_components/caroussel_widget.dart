@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:borne_flutter/utils/utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +54,7 @@ class CarousselWidget extends StatelessWidget {
               ),
 
               /*  const FlashArticle(), */
-              const FlashPushArticle()
+              FlashPushArticle()
             ],
           ),
         );
@@ -98,11 +99,22 @@ class FlashArticle extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Image.network(
-            article.image,
+          CachedNetworkImage(
+            imageUrl: article.image,
             fit: BoxFit.cover,
             height: SizeConfig.blockHorizontal! * 20,
             width: SizeConfig.blockHorizontal! * 20,
+            placeholder: (context, url) =>
+                LoadingAnimationWidget.fourRotatingDots(
+              color: KOrange,
+              size: 45,
+            ),
+            errorWidget: (context, url, error) => Image.asset(
+              "assets/images/error.png",
+              fit: BoxFit.cover,
+              height: SizeConfig.blockHorizontal! * 20,
+              width: SizeConfig.blockHorizontal! * 20,
+            ),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -140,7 +152,7 @@ class FlashArticle extends StatelessWidget {
                   size: SizeConfig.blockHorizontal! * 10,
                   padding: EdgeInsets.zero,
                   backgroundColor: Colors.white,
-                  data: article.url,
+                  data: codeQr("article=${article.id}", article.pivot.borneId!),
                 ),
                 SizedBox(height: SizeConfig.blockHorizontal! * 2),
                 SizedBox(

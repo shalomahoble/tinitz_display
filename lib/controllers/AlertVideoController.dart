@@ -1,163 +1,202 @@
 import 'dart:async';
 
-import 'package:borne_flutter/controllers/LoginController.dart';
+import 'package:borne_flutter/controllers/BorneController.dart';
 import 'package:borne_flutter/models/Alerte.dart';
+import 'package:borne_flutter/utils/utils.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:observe_internet_connectivity/observe_internet_connectivity.dart';
 import 'package:video_player/video_player.dart';
 
 class AlertVideoController extends GetxController {
-  final LoginController loginController = Get.find<LoginController>();
+  /* final LoginController loginController = Get.find<LoginController>(); */
+  BorneController? _borneController; // Utilisez le type BorneController?
+
+  // Méthode pour obtenir le BorneController seulement lorsque vous en avez besoin
+  BorneController get borneController {
+    _borneController ??= Get.find<BorneController>();
+    return _borneController!;
+  }
 
   final videoUrl = ''.obs;
   RxString videoTitle = ''.obs;
   final shouldShowModal = false.obs;
   RxInt currentVideoIndex = 0.obs;
   RxInt alertVideochanger = 0.obs;
+  RxString currentVideoUrl = ''.obs;
+  RxInt dureeAvantAffichage = 10.obs;
+
   Duration showModalDuration = const Duration(seconds: 45);
   late ChewieController chewieController;
   late VideoPlayerController videoPlayerController;
   List<Alert> alertepermanent = [];
   Timer videoTimer = Timer(Duration.zero, () {});
-
-  final List<String> videoUrls = [
-    'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
-    'https://www.shutterstock.com/shutterstock/videos/1105801847/preview/stock-footage-swiping-the-screen-that-says-lorem-ipsum-macro-view.webm',
-    'https://www.shutterstock.com/shutterstock/videos/34123237/preview/stock-footage-coworkers-discussing-in-the-future-of-their-company-over-several-charts-and-graphs-business.webm',
-    'https://www.shutterstock.com/shutterstock/videos/1083251290/preview/stock-footage-man-and-woman-signing-business-contract-with-lorem-ipsum-text-shaking-hands.webm'
-    // Ajoutez d'autres URLs de vidéos ici
-  ];
+  Set<int> permanentVideoIdsDisplayed = {};
 
   void loadVideo() {
-    final videoAlerts = loginController.getVideoAlerts();
-
-    print("video des alerts ici $videoAlerts");
+    final videoAlerts = borneController.getAlerteVideo();
 
     if (videoAlerts.isNotEmpty &&
         currentVideoIndex.value < videoAlerts.length) {
-      final String currentVideoUrl =
-          videoAlerts[currentVideoIndex.value].fileUrl;
+      currentVideoUrl.value = videoAlerts[currentVideoIndex.value].fileUrl;
       videoTitle.value = videoAlerts[currentVideoIndex.value].libelle;
-
+      dureeAvantAffichage.value =
+          videoAlerts[currentVideoIndex.value].randomVideo;
+      print("BDVIDEO l'index de la video ${currentVideoIndex.value}");
       update();
 
-      _playVideo(currentVideoUrl);
+      final subscription =
+          InternetConnectivity() //verifiier si on a la connexion
+              .observeInternetConnection
+              .listen((bool hasInternetAccess) {
+        if (!hasInternetAccess) {
+          Future.delayed(const Duration(seconds: 20), () {
+            showMessageError(message: "Pas de connexion internet");
+          });
+        } else {
+          _playVideo(currentVideoUrl.value);
+        }
+      });
+      Future.delayed(const Duration(seconds: 15), () async {
+        await subscription.cancel();
+      });
+
+      /*   subscription.cancel(); */
+
+      //Si la video est deja passe on recommence un autre video
+      /*  if (shouldSkipPermanentArticle(videoAlerts[currentVideoIndex.value])) {
+        loadVideo();
+      } else {
+        _playVideo(currentVideoUrl.value);
+      } */
     }
   }
 
   void _playVideo(String videoUrl) async {
-    // Remplacez cette logique par celle pour charger et lire la vidéo à partir de l'URL donnée.
-    // Vous pouvez utiliser des packages comme `chewie` et `video_player` pour la lecture de vidéos.
-
     try {
-      videoPlayerController =
-          VideoPlayerController.networkUrl(Uri.parse(videoUrl));
-      await videoPlayerController.initialize();
+      Future.delayed(Duration(seconds: dureeAvantAffichage.value), () async {
+        videoPlayerController =
+            VideoPlayerController.networkUrl(Uri.parse(videoUrl));
+        await videoPlayerController.initialize();
+
+        if (videoPlayerController.value.isInitialized) {
+          chewieController = ChewieController(
+            videoPlayerController: videoPlayerController,
+            autoPlay: true,
+            looping: false,
+            allowFullScreen: true,
+            allowMuting: false,
+            showControlsOnInitialize: false,
+            showControls: false,
+          );
+
+          print("BDVIDEO lance ");
+
+          //Temps d'affichage de la video
+          Get.defaultDialog(
+            title: videoTitle.value,
+            titlePadding:
+                const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            contentPadding: EdgeInsets.zero,
+            content: AspectRatio(
+              aspectRatio: videoPlayerController.value.aspectRatio,
+              child: Chewie(
+                controller: chewieController,
+              ),
+            ),
+          );
+
+          videoPlayerController.addListener(() {
+            if (videoPlayerController.value.position >=
+                videoPlayerController.value.duration) {
+              Get.back();
+              print("BDVIDEO fermer ${videoPlayerController.value.duration}");
+              /*  isPermanenteVideo(
+                  borneController.getAlerteVideo()[currentVideoIndex.value]); */
+              _onVideoFinished();
+            }
+          });
+
+          /*Timer(videoPlayerController.value.duration, () {
+          chewieController.pause(); // Arrêter la lecture
+          Get.back();
+          _onVideoFinished();
+        }); */
+        }
+      });
     } catch (e) {
-      print("current je suis venu voir l'erreur");
-      print(
-          '${videoPlayerController.dataSource} Une erreur cest produite ERROR');
-      currentVideoIndex.value = 0;
-      videoTimer.cancel();
-      /*  loadVideo(); */
-      rethrow;
+      print('Erreur lors de la lecture de la vidéo : $e');
+      skipToNextArticle(); // Passez a la video suivante
+      loadVideo();
     }
+  }
 
-    chewieController = ChewieController(
-      videoPlayerController: videoPlayerController,
-      autoPlay: true,
-      looping: false,
-      allowFullScreen: true,
-      allowMuting: false,
-      showControlsOnInitialize: false,
-      showControls: false,
-    );
+  //Cette fonction vérifie si l'article permanent a déjà été affiché.
+  bool shouldSkipPermanentArticle(Alert alert) {
+    return permanentVideoIdsDisplayed.contains(alert.id!);
+  }
 
-    Get.defaultDialog(
-      title: videoTitle.value,
-      titlePadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      contentPadding: EdgeInsets.zero,
-      content: SizedBox(
-        child: AspectRatio(
-          aspectRatio: chewieController.videoPlayerController.value.aspectRatio,
-          child: Chewie(
-            controller: chewieController,
-          ),
-        ),
-      ),
-    );
+  //Cette fonction passe à la video suivante si la video actuel doit être sauté.
+  void skipToNextArticle() {
+    currentVideoIndex.value =
+        (currentVideoIndex.value + 1) % borneController.getAlerteVideo().length;
+    update();
+  }
 
-    Timer(videoPlayerController.value.duration, () {
-      Get.back();
-      _onVideoFinished();
-    });
+  // Si la vidéo actuelle est non permanente, supprimer des alertes videos
+  void isPermanenteVideo(Alert alert) {
+    if (alert.permanent == 0) {
+      permanentVideoIdsDisplayed.add(alert.id!);
+      borneController.getAlerteVideo().removeWhere((el) => el.id == alert.id);
+      update();
+    }
   }
 
   void _onVideoFinished() {
-    final videoAlert = loginController.getVideoAlerts();
+    final videoAlert = borneController.getAlerteVideo();
+    if (videoAlert.isNotEmpty) {
+      currentVideoIndex.value =
+          (currentVideoIndex.value + 1) % videoAlert.length;
 
-    if (currentVideoIndex.value < videoAlert.length) {
-      final currentVideoAlert = videoAlert[currentVideoIndex.value];
-      if (currentVideoAlert.permanent == 0) {
-        print("current permanant");
-        //Si la video est permanent
-        alertepermanent.add(currentVideoAlert);
-        loginController.borne.value.alerts!.removeAt(currentVideoIndex.value);
-        update();
-        /* videoAlert.removeAt(currentVideoIndex.value); */
-      }
-
-      //---- si nous avons de nouvelle alertes -----------
-
-      currentVideoIndex.value = (currentVideoIndex.value + 1) %
-          loginController.getVideoAlerts().length;
-      update();
-      final nextAlert =
-          loginController.getVideoAlerts()[currentVideoIndex.value];
-      print("current nouvelle valeur ${currentVideoIndex.value} ");
-
-      // est ce que cette alerte video est permanent si oui on lui fait passé
-      if (alertepermanent.contains(
-          loginController.getVideoAlerts()[currentVideoIndex.value])) {
-        loginController.borne.value.alerts!.removeAt(currentVideoIndex.value);
-        currentVideoIndex.value = (currentVideoIndex.value + 1) %
-            loginController.getVideoAlerts().length;
-      }
-      if (currentVideoIndex.value >= 0 &&
-          currentVideoIndex.value < loginController.getVideoAlerts().length) {
-        videoTimer = Timer(nextAlert.alertDuration(), () {
-          loadVideo();
-        });
-      }
+      loadVideo();
     }
   }
 
 //Ecouter les changements les mises a jours de la video
   void listenChangeArticle() {
-    ever(loginController.changeAlerte, (callback) {
-      print("Une alerte a changeee");
+    ever(borneController.alertes, (callback) {
       videoTimer.cancel();
+      currentVideoIndex.value = 0;
       loadVideo();
     });
+  }
+
+  void cancelVideo() {
+    if (videoPlayerController.value.isInitialized == true) {
+      videoPlayerController.dispose();
+    }
   }
 
   @override
   void onInit() {
     //TODO: implement onInit
     super.onInit();
-    Future.delayed(const Duration(seconds: 15), () {
+    /*  Future.delayed(const Duration(seconds: 25), () {
+      currentVideoIndex.value = 0;
       loadVideo();
-      print("jai demarrer la video");
-    });
+      print("je demarrer la video");
+    }); */
 
-    ever(loginController.borne, (callback) {
+    ever(borneController.alertes, (callback) {
       videoTimer.cancel();
+      currentVideoIndex.value = 0;
+      update();
       loadVideo();
-      print("jai ecouter les changement de la borne pour video");
+      print("j'ecouter les changement de la borne pour video");
     });
 
-    listenChangeArticle();
+    /*  listenChangeArticle(); */
   }
 
   @override
@@ -166,5 +205,7 @@ class AlertVideoController extends GetxController {
     super.onClose();
     chewieController.dispose();
     videoPlayerController.dispose();
+
+    videoTimer.cancel();
   }
 }

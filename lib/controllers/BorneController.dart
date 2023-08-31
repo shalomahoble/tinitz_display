@@ -9,6 +9,7 @@ import 'package:borne_flutter/services/BorneService.dart';
 import 'package:borne_flutter/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
@@ -27,6 +28,7 @@ class BorneController extends GetxController {
   RxInt articleChangeAnimation = 0.obs;
   Set<int> permanentArticleIdsDisplayed =
       {}; // Initialisez en dehors de la fonction
+  RxBool articleEstVide = false.obs;
   Timer delayedTask = Timer(Duration.zero, () {});
   Rx<Site> site = Site(
     image: "",
@@ -53,11 +55,11 @@ class BorneController extends GetxController {
   void getBorne() async {
     _borneService.getBorne().then((response) {
       if (response.statusCode == 200) {
-       
         final body = jsonDecode(response.body);
         final token = body['access_token'];
-        box.write('token', token);
-        saveToken(token);
+        box.write('token', body['access_token']);
+        saveToken(body['access_token']);
+        print("EVENTBD borne token $token");
         borne.value = Borne.fromJson(body['borne']);
         articles.value = borne.value.articles!;
         slides.value = borne.value.slides!;
@@ -65,14 +67,19 @@ class BorneController extends GetxController {
         site.value = borne.value.site!;
         borneLoading.value = true;
         update();
-        print("ma valeur rest ${borneLoading.value} ");
         currentTimeForTimeZone(); // Get timeZone to dsiplay current date and time
         slideChange(0); //Get first slide duration to init slide
         startTimerForNextArticle(); //Start animating articles
+      } else if (response.statusCode == 400) {
+        showMessageError(
+          message: "Token invalide...",
+        );
+        Get.offAllNamed('login');
       } else {
         showMessageError(
-          message: "Une erreur c'est produite ...",
+          message: "Une erreur c'est produite  ... Ou token invalide",
         );
+        Get.toNamed('login');
       }
     }).timeout(const Duration(minutes: 1), onTimeout: () {
       showMessageError(
@@ -92,6 +99,17 @@ class BorneController extends GetxController {
           .join("  |  ");
     } else {
       return '';
+    }
+  }
+
+  //######## Alert video
+  List<Alert> getAlerteVideo() {
+    if (alertes.isNotEmpty) {
+      return alertes
+          .where((el) => el.typealert.libelle.toLowerCase() == 'video')
+          .toList();
+    } else {
+      return List.empty();
     }
   }
 
@@ -164,8 +182,9 @@ class BorneController extends GetxController {
     update(); */
   }
 
-  //Time function
+  
 
+  //Time function
   currentTimeForTimeZone() {
     // ignore: unnecessary_null_comparison
     if (borne.value != null && site != null && site.value.timezone != null) {
@@ -195,6 +214,50 @@ class BorneController extends GetxController {
     }
   }
 
+  //#################################### Listen to add, update, delete borne info ####################################
+
+  //Add new or update or delete slide
+  void addOrUpdateSlide(List<Slide> newListeSlide) {
+    slides.value = newListeSlide;
+    update();
+  }
+
+  //Add new or update or delete alerte (text or video)
+  void addOrUpdateAlert(List<Alert> newListeAlerte) {
+    alertes.value = newListeAlerte;
+    update();
+  }
+
+  //Add new or update or delete article
+  void addOrUpdateArticle(List<Article> newListeArticle) {
+    if (newListeArticle.isEmpty) {
+      articleEstVide.value = true;
+      playDefaultRingtone();
+      update();
+      Future.delayed(const Duration(minutes: 1), () {
+        articles.clear();
+      });
+    } else {
+      articles.value = newListeArticle;
+      articleEstVide.value = false;
+      print("EVENTBD nouvelle article $articles");
+      playDefaultRingtone();
+      update();
+    }
+  }
+
+  //Add new or update or borne info
+  void updateBorneInfo(Borne newBorne) {
+    borne.value = newBorne;
+    site.value = newBorne.site!;
+    update();
+  }
+
+//Emmettre un son
+  void playDefaultRingtone() {
+    FlutterRingtonePlayer.playNotification();
+  }
+
 //Iniatialisation du controlleur
   @override
   void onInit() {
@@ -202,7 +265,7 @@ class BorneController extends GetxController {
     super.onInit();
     initializeDateFormatting('en_US');
     tz.initializeTimeZones();
-    print("initialisation de la borneconteoller ");
+    print("initialisation de la bornecontroller ");
     getBorne();
   }
 }

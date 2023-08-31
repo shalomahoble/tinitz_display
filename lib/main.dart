@@ -67,7 +67,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final box = GetStorage();
   final listenController = Get.put(ListenController());
-  String _token = "";
+  String token = "";
 
   @override
   void initState() {
@@ -79,11 +79,8 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _checkToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = prefs.getString('token') ??
-        ''; // If token doesn't exist, set to empty string
-
     setState(() {
-      _token = token;
+      token = prefs.getString('token') ?? '';
     });
   }
 
@@ -114,9 +111,9 @@ class _MyAppState extends State<MyApp> {
         case 'UPDATE_ARTICLE':
           listenController.updateArticle();
           break;
-        /*  case 'DELETE_ARTICLE':
+         case 'DELETE_ARTICLE':
           listenController.deleteArticle();
-          break; */
+          break;
         case 'CHANGE_STATUT_ARTICLE':
           listenController.updateArticle();
           break;
@@ -149,7 +146,7 @@ class _MyAppState extends State<MyApp> {
       title: 'Borne App TINITZ',
       home: Login(),
       // ignore: unnecessary_null_comparison
-      // home: _token.isNotEmpty ? const Home() : Login(),
+      //home: token.isNotEmpty ? const HomePage() : Login(),
       getPages: [
         GetPage(
           name: '/login',

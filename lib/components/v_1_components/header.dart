@@ -33,13 +33,13 @@ class Header extends StatelessWidget {
               imageUrl: imagePath!,
               fit: BoxFit.cover,
               height: SizeConfig.blockHorizontal! * 10,
-              errorWidget: (context, url, error) =>
+              errorWidget: (context, url, error) => const Text(
+                "Logo insdisponible...",
+              ),
+              placeholder: (context, url) =>
                   LoadingAnimationWidget.fourRotatingDots(
                 color: KOrange,
                 size: 20,
-              ),
-              placeholder: (context, url) => const Text(
-                "Logo insdisponible...",
               ),
             ),
             Text(

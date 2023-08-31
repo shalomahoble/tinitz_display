@@ -36,17 +36,6 @@ class TitrologieSlider extends StatelessWidget {
     } else {
       return Stack(
         children: [
-          /*  Container(
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              image: DecorationImage(
-                fit: BoxFit.cover,
-                image: NetworkImage(
-                  'https://images.pexels.com/photos/18032304/pexels-photo-18032304/free-photo-of-au-milieu-des-arbres-du-jardin-botanique-hamma.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-                ),
-              ),
-            ),
-          ), */
           CachedNetworkImage(
             height: double.infinity,
             width: double.infinity,
@@ -57,7 +46,11 @@ class TitrologieSlider extends StatelessWidget {
               color: KOrange,
               size: 200,
             ),
-            placeholder: (context, url) => const Text("Slide Insdiponible"),
+            placeholder: (context, url) => Center(
+                child: LoadingAnimationWidget.fourRotatingDots(
+              color: KOrange,
+              size: 60,
+            )),
           ),
           BodyCard(
             slide: slide,

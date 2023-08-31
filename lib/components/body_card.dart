@@ -2,7 +2,6 @@
 import 'package:borne_flutter/components/components.dart';
 import 'package:borne_flutter/config/size_config.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import 'package:borne_flutter/models/Slide.dart';
@@ -26,24 +25,6 @@ class BodyCard extends StatelessWidget {
 
     final VideoController videoController = Get.put(VideoController(
         'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4')); */
-
-    String formateDate(DateTime date) {
-      return DateFormat('dd/MM/yyyy').format(date);
-    }
-
-    String scanneText() {
-      if (slide.bgType.toLowerCase() == 'titrologie') {
-        return 'Scanner pour lire les journaux';
-      } else if (slide.bgType.toLowerCase() == 'wifi') {
-        return 'Scanner pour accéder au wifi';
-      } else if (slide.bgType.toLowerCase() == 'evenements') {
-        return "Scanner pour accéder au détails de l'évènement";
-      } else if (slide.bgType.toLowerCase() == 'image') {
-        return 'Scanner pour lire les journaux';
-      } else {
-        return 'SCANNER';
-      }
-    }
 
 /* slide.typeslide!.libelle!.toLowerCase() */
 

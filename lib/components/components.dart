@@ -16,3 +16,4 @@ export 'section_wifi.dart';
 export 'section_event.dart';
 export 'video_player_widget.dart';
 export 'push_article_info.dart';
+export 'v_1_components/slide_animation.dart';

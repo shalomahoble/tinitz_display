@@ -16,10 +16,13 @@ class WebViewControllerBody extends GetxController {
       ..setNavigationDelegate(
         NavigationDelegate(
           onProgress: (progress) => print('On Progress'),
-          onWebResourceError: (error) => print(error.toString()),
+          onWebResourceError: (error) {
+            print("Erreur lie au webview ${error.description.toString()}");
+            print("Erreur lie au webview type ${error.errorType.toString()}");
+            print("Erreur lie au webview code ${error.errorCode.toString()}");
+          },
         ),
       )
-      
       ..loadRequest(Uri.parse(url));
   }
 

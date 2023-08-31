@@ -1,10 +1,11 @@
+// ignore_for_file: file_names
+
 import 'dart:convert';
 
 import 'package:borne_flutter/config/app_config.dart';
 import 'package:borne_flutter/utils/utils.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginService {
   final box = GetStorage();
@@ -22,7 +23,7 @@ class LoginService {
           .timeout(
         const Duration(seconds: 40),
         onTimeout: () {
-          return http.Response("Une erreur c'est produite", 400);
+          return http.Response("", 400);
         },
       );
       return response;
@@ -33,24 +34,30 @@ class LoginService {
 
   //Genrer un nouveau token
   Future<http.Response> generateNewToken() async {
+    http.Response response = http.Response("", 200);
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String token = prefs.getString('token') ?? box.read('token');
-      final response = await http
+      String token = await getToken();
+      // ignore: unnecessary_null_comparison
+      if (token == null) {
+        showMessageError(message: "Le token est nul !");
+        return http.Response("Le token est nul", 400);
+      }
+      response = await http
           .post(
         getUrl('auth/refresh'),
         headers: headersToken(token),
       )
           .timeout(
-        const Duration(seconds: 1),
+        const Duration(minutes: 2),
         onTimeout: () {
           showMessageError(
               message:
                   "Une erreur c'est produite vérifié votre connexion internet ");
-          return http.Response("Une erreur c'est produite", 400);
+          return http.Response(
+              "Une erreur c'est produite ${response.body.toString()}", 400);
         },
       );
-
+      print("EVENTBD ${response.body.toString()}");
       return response;
     } catch (e) {
       // Gérer l'erreur ici si nécessaire

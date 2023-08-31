@@ -52,6 +52,7 @@ class LoginController extends GetxController {
         final response = jsonDecode(value.body);
         if (value.statusCode == 200) {
           token = response['access_token'];
+          print("EVENTBD logincontroller $token");
           saveToken(token);
           box.write('token', token);
 

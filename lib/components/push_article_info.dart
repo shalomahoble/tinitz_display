@@ -1,13 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:borne_flutter/config/app_style.dart';
-import 'package:borne_flutter/controllers/LoginController.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import 'package:borne_flutter/config/size_config.dart';
 import 'package:borne_flutter/models/Artcile.dart';
-import 'package:get/get.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class PushArticleInfo extends StatelessWidget {
@@ -19,7 +17,6 @@ class PushArticleInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final loginController = Get.find<LoginController>();
     // ignore: unnecessary_null_comparison
     if (article == null) {
       return const SizedBox.shrink();

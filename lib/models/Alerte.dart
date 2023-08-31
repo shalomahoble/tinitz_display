@@ -8,7 +8,6 @@ class Alert {
   int? statut;
   int? permanent;
   int randomVideo;
-  int nbreRandomVideo;
   DateTime? fin;
   DateTime? debut;
   DateTime? createdAt;
@@ -25,7 +24,6 @@ class Alert {
     this.statut,
     this.permanent,
     required this.randomVideo,
-    required this.nbreRandomVideo,
     this.debut,
     this.fin,
     this.createdAt,
@@ -43,7 +41,6 @@ class Alert {
         statut: json["statut"],
         permanent: json["permanent"],
         randomVideo: json["randomvideo"],
-        nbreRandomVideo: json["nbrerandomvideo"],
         fin: json["fin"] == null ? null : DateTime.parse(json["fin"]),
         debut: json["debut"] == null ? null : DateTime.parse(json["debut"]),
         createdAt: json["created_at"] == null
