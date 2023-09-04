@@ -1,6 +1,7 @@
 import 'package:borne_flutter/controllers/AllControllerBinding.dart';
 import 'package:borne_flutter/controllers/ListenController.dart';
 import 'package:borne_flutter/firebase_options.dart';
+import 'package:borne_flutter/views/home_page_loading.dart';
 import 'package:borne_flutter/views/login.dart';
 import 'package:borne_flutter/views/view.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -111,7 +112,7 @@ class _MyAppState extends State<MyApp> {
         case 'UPDATE_ARTICLE':
           listenController.updateArticle();
           break;
-         case 'DELETE_ARTICLE':
+        case 'DELETE_ARTICLE':
           listenController.deleteArticle();
           break;
         case 'CHANGE_STATUT_ARTICLE':
@@ -144,9 +145,10 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       initialBinding: AllControllerBinding(),
       title: 'Borne App TINITZ',
-      home: Login(),
+      // home: Login(),
+      //home: const HomePageLoading(),
       // ignore: unnecessary_null_comparison
-      //home: token.isNotEmpty ? const HomePage() : Login(),
+      home: token.isNotEmpty ? const HomePage() : Login(),
       getPages: [
         GetPage(
           name: '/login',

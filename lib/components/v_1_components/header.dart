@@ -11,10 +11,12 @@ class Header extends StatelessWidget {
     Key? key,
     required this.time,
     this.imagePath,
+    this.onPress,
   }) : super(key: key);
 
   final String time;
   final String? imagePath;
+  final VoidCallbackAction? onPress;
 
   @override
   Widget build(BuildContext context) {

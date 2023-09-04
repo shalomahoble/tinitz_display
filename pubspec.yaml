@@ -59,6 +59,7 @@ dependencies:
   marquee: ^2.2.3
   flutter_ringtone_player: ^3.2.0
   observe_internet_connectivity: ^1.0.2
+  shimmer_animation: ^2.1.0
 
 flutter_launcher_icons:
   android: "launcher_icon"

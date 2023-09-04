@@ -52,7 +52,7 @@ final timeStyle = GoogleFonts.poppins(
 );
 
 final flashInfoTitleStyle = GoogleFonts.poppins(
-  fontSize: 17,
+  fontSize: 20,
   color: Colors.white,
   fontWeight: FontWeight.w600,
 );

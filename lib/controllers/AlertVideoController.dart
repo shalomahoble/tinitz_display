@@ -21,7 +21,7 @@ class AlertVideoController extends GetxController {
 
   final videoUrl = ''.obs;
   RxString videoTitle = ''.obs;
-  final shouldShowModal = false.obs;
+  final isVideoPlaying = false.obs;
   RxInt currentVideoIndex = 0.obs;
   RxInt alertVideochanger = 0.obs;
   RxString currentVideoUrl = ''.obs;
@@ -34,11 +34,14 @@ class AlertVideoController extends GetxController {
   Timer videoTimer = Timer(Duration.zero, () {});
   Set<int> permanentVideoIdsDisplayed = {};
 
+/*http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4
+ https://media.w3.org/2010/05/sintel/trailer.mp4
+ https://media.w3.org/2010/05/sintel/trailer.mp4 */
+
   void loadVideo() {
     final videoAlerts = borneController.getAlerteVideo();
 
-    if (videoAlerts.isNotEmpty &&
-        currentVideoIndex.value < videoAlerts.length) {
+    if (videoAlerts.isNotEmpty) {
       currentVideoUrl.value = videoAlerts[currentVideoIndex.value].fileUrl;
       videoTitle.value = videoAlerts[currentVideoIndex.value].libelle;
       dureeAvantAffichage.value =
@@ -55,10 +58,13 @@ class AlertVideoController extends GetxController {
             showMessageError(message: "Pas de connexion internet");
           });
         } else {
-          _playVideo(currentVideoUrl.value);
+          if (!isVideoPlaying.value) {
+            _playVideo(currentVideoUrl.value);
+            isVideoPlaying.value = true;
+          }
         }
       });
-      Future.delayed(const Duration(seconds: 15), () async {
+      Future.delayed(const Duration(minutes: 10), () async {
         await subscription.cancel();
       });
 
@@ -76,11 +82,17 @@ class AlertVideoController extends GetxController {
   void _playVideo(String videoUrl) async {
     try {
       Future.delayed(Duration(seconds: dureeAvantAffichage.value), () async {
+        print("BDVIDEO lance ${dureeAvantAffichage.value}");
         videoPlayerController =
             VideoPlayerController.networkUrl(Uri.parse(videoUrl));
         await videoPlayerController.initialize();
 
         if (videoPlayerController.value.isInitialized) {
+          showMessageError(
+            title: "Initialisation de la video",
+            message: "VIdeo Initialiser",
+            color: Colors.greenAccent,
+          );
           chewieController = ChewieController(
             videoPlayerController: videoPlayerController,
             autoPlay: true,
@@ -90,6 +102,11 @@ class AlertVideoController extends GetxController {
             showControlsOnInitialize: false,
             showControls: false,
           );
+
+          if (videoPlayerController.value.hasError) {
+            print(
+                " BDVIDEO Erreur lors de l'initialisation de la vidéo: ${videoPlayerController.value.errorDescription}");
+          }
 
           print("BDVIDEO lance ");
 
@@ -106,10 +123,19 @@ class AlertVideoController extends GetxController {
               ),
             ),
           );
-
           videoPlayerController.addListener(() {
-            if (videoPlayerController.value.position >=
+            print("BDVIDEO duree ${videoPlayerController.value.duration}");
+            print("BDVIDEO position ${videoPlayerController.value.position}");
+            if (videoPlayerController.value.position ==
                 videoPlayerController.value.duration) {
+              // La vidéo est terminée
+              isVideoPlaying.value = false;
+            }
+            if (videoPlayerController.value.isInitialized &&
+                !videoPlayerController.value.isPlaying &&
+                (videoPlayerController.value.position.inMilliseconds /
+                        videoPlayerController.value.duration.inMilliseconds) >=
+                    0.9) {
               Get.back();
               print("BDVIDEO fermer ${videoPlayerController.value.duration}");
               /*  isPermanenteVideo(
@@ -118,11 +144,12 @@ class AlertVideoController extends GetxController {
             }
           });
 
-          /*Timer(videoPlayerController.value.duration, () {
-          chewieController.pause(); // Arrêter la lecture
-          Get.back();
-          _onVideoFinished();
-        }); */
+          /*  Timer(videoPlayerController.value.duration, () {
+            chewieController.pause(); // Arrêter la lecture
+            print("BDVIDEO fermer ${videoPlayerController.value.duration}");
+            Get.back();
+            _onVideoFinished();
+          }); */
         }
       });
     } catch (e) {
@@ -158,7 +185,8 @@ class AlertVideoController extends GetxController {
     if (videoAlert.isNotEmpty) {
       currentVideoIndex.value =
           (currentVideoIndex.value + 1) % videoAlert.length;
-
+      update();
+      print("BDVIDEO nouvelle ${currentVideoIndex.value}");
       loadVideo();
     }
   }
@@ -172,21 +200,10 @@ class AlertVideoController extends GetxController {
     });
   }
 
-  void cancelVideo() {
-    if (videoPlayerController.value.isInitialized == true) {
-      videoPlayerController.dispose();
-    }
-  }
-
   @override
   void onInit() {
     //TODO: implement onInit
     super.onInit();
-    /*  Future.delayed(const Duration(seconds: 25), () {
-      currentVideoIndex.value = 0;
-      loadVideo();
-      print("je demarrer la video");
-    }); */
 
     ever(borneController.alertes, (callback) {
       videoTimer.cancel();
@@ -195,8 +212,6 @@ class AlertVideoController extends GetxController {
       loadVideo();
       print("j'ecouter les changement de la borne pour video");
     });
-
-    /*  listenChangeArticle(); */
   }
 
   @override

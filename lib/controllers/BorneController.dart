@@ -85,6 +85,7 @@ class BorneController extends GetxController {
       showMessageError(
         message: 'Vérifier votre connexion internet ou rééssayer plus tard',
       );
+      Get.toNamed('login');
     });
   }
 
@@ -182,8 +183,6 @@ class BorneController extends GetxController {
     update(); */
   }
 
-  
-
   //Time function
   currentTimeForTimeZone() {
     // ignore: unnecessary_null_comparison
@@ -234,14 +233,17 @@ class BorneController extends GetxController {
       articleEstVide.value = true;
       playDefaultRingtone();
       update();
-      Future.delayed(const Duration(minutes: 1), () {
+      Future.delayed(const Duration(seconds: 3), () {
         articles.clear();
+        update();
       });
     } else {
       articles.value = newListeArticle;
       articleEstVide.value = false;
       print("EVENTBD nouvelle article $articles");
       playDefaultRingtone();
+      delayedTask.cancel();
+      startTimerForNextArticle();
       update();
     }
   }
@@ -258,6 +260,15 @@ class BorneController extends GetxController {
     FlutterRingtonePlayer.playNotification();
   }
 
+  //Mettre a jour tout la borne apres un delais de 12H
+  Future<void> updateAllInfoForBorne() async {
+    Future.delayed(const Duration(hours: 12), () => getBorne());
+  }
+
+  toDeconnecte() {
+    removeToken().then((value) => Get.offAllNamed('login'));
+  }
+
 //Iniatialisation du controlleur
   @override
   void onInit() {
@@ -267,5 +278,8 @@ class BorneController extends GetxController {
     tz.initializeTimeZones();
     print("initialisation de la bornecontroller ");
     getBorne();
+
+    //Function to update all information of borne after 12h hours
+    /* updateAllInfoForBorne(); */
   }
 }

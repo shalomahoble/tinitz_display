@@ -9,12 +9,15 @@ Uri getUrl(String url) {
   return Uri.parse('$baseUrl$url');
 }
 
-void showMessageError(
-    {String title = 'Error Message', required String message}) {
+void showMessageError({
+  String title = 'Error Message',
+  required String message,
+  Color color = Colors.red,
+}) {
   Get.snackbar(
     title,
     message,
-    backgroundColor: Colors.red.shade600,
+    backgroundColor: color,
   );
 }
 
@@ -32,6 +35,12 @@ Future<void> saveToken(String token) async {
   if (token != null && token.isNotEmpty) {
     await prefs.setString('token', token);
   }
+}
+
+//remove token
+Future<void> removeToken() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.remove('token');
 }
 
 // Return url to slide or article

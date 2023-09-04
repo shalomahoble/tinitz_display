@@ -23,7 +23,7 @@ class FlashInfoWidget extends StatelessWidget {
       return Expanded(
         flex: 0,
         child: Container(
-          height: SizeConfig.blockHorizontal! * 15,
+          height: SizeConfig.blockHorizontal! * 10,
           color: Colors.white,
           child: Row(
             children: [
@@ -51,7 +51,7 @@ class FlashInfoWidget extends StatelessWidget {
                     style: flashInfoTextStyle.copyWith(
                       color: Colors.black,
                       fontWeight: FontWeight.w800,
-                      fontSize: 20,
+                      fontSize: 25,
                     ),
                   ),
                 ),

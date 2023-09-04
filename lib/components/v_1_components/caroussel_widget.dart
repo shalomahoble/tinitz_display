@@ -43,18 +43,20 @@ class CarousselWidget extends StatelessWidget {
                   enlargeCenterPage: true,
                   scrollDirection: Axis.horizontal,
                   viewportFraction: 1.0,
-                  autoPlay: true,
+                  // si on a 1 seul element on ne srolle pas
+                  autoPlay: (items.length == 1) ? false : true,
                   scrollPhysics: const NeverScrollableScrollPhysics(),
                   autoPlayInterval:
                       Duration(seconds: borneController.dureeDuSlide.value),
                   onPageChanged: (index, reason) {
                     borneController.slideChange(index);
+                    print(borneController.dureeDuSlide.value.toString());
                   },
                 ),
               ),
 
               /*  const FlashArticle(), */
-              FlashPushArticle()
+              FlashPushArticle(articles: borneController.articles)
             ],
           ),
         );
@@ -91,7 +93,7 @@ class FlashArticle extends StatelessWidget {
         vertical: SizeConfig.blockHorizontal! * 1,
         horizontal: SizeConfig.blockHorizontal! * 1,
       ),
-      height: SizeConfig.blockHorizontal! * 30,
+      height: SizeConfig.blockHorizontal! * 20,
       decoration: const BoxDecoration(
         color: Colors.white,
       ),
@@ -99,21 +101,24 @@ class FlashArticle extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          CachedNetworkImage(
-            imageUrl: article.image,
-            fit: BoxFit.cover,
-            height: SizeConfig.blockHorizontal! * 20,
-            width: SizeConfig.blockHorizontal! * 20,
-            placeholder: (context, url) =>
-                LoadingAnimationWidget.fourRotatingDots(
-              color: KOrange,
-              size: 45,
-            ),
-            errorWidget: (context, url, error) => Image.asset(
-              "assets/images/error.png",
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: CachedNetworkImage(
+              imageUrl: article.image,
               fit: BoxFit.cover,
               height: SizeConfig.blockHorizontal! * 20,
               width: SizeConfig.blockHorizontal! * 20,
+              placeholder: (context, url) =>
+                  LoadingAnimationWidget.fourRotatingDots(
+                color: KOrange,
+                size: 45,
+              ),
+              errorWidget: (context, url, error) => Image.asset(
+                "assets/images/error.png",
+                fit: BoxFit.cover,
+                height: SizeConfig.blockHorizontal! * 20,
+                width: SizeConfig.blockHorizontal! * 20,
+              ),
             ),
           ),
           Column(
@@ -121,7 +126,7 @@ class FlashArticle extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               SizedBox(
-                width: SizeConfig.blockHorizontal! * 60,
+                width: SizeConfig.blockHorizontal! * 55,
                 child: Text(
                   article.title,
                   style: flashInfoTitleStyle.copyWith(
@@ -142,21 +147,21 @@ class FlashArticle extends StatelessWidget {
             ],
           ),
           Container(
-            width: SizeConfig.blockHorizontal! * 15,
+            width: SizeConfig.blockHorizontal! * 20,
             alignment: Alignment.center,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 QrImageView(
-                  size: SizeConfig.blockHorizontal! * 10,
+                  size: SizeConfig.blockHorizontal! * 12,
                   padding: EdgeInsets.zero,
                   backgroundColor: Colors.white,
                   data: codeQr("article=${article.id}", article.pivot.borneId!),
                 ),
-                SizedBox(height: SizeConfig.blockHorizontal! * 2),
+                SizedBox(height: SizeConfig.blockHorizontal! * 1),
                 SizedBox(
-                  width: SizeConfig.blockHorizontal! * 13,
+                  width: SizeConfig.blockHorizontal! * 15,
                   child: Text(
                     "Scanner le Qr Code pour lire plus l'article",
                     style: scannerSubTitleStyle.copyWith(

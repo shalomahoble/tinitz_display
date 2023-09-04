@@ -107,11 +107,11 @@ class ListenController extends GetxController {
     });
   }
 
-  //###### Slide  mise a jour
+  //###### ajouter un Slide  
   void addSlide() {
     getBorne().then((borne) {
       if (borne != null) {
-        borneController.addOrUpdateArticle(borne.articles!);
+        borneController.addOrUpdateSlide(borne.slides!);
       }
     });
   }
@@ -120,7 +120,7 @@ class ListenController extends GetxController {
     getBorne().then((borne) {
       print("EVENTBD delete slide ${borne.toString()}");
       if (borne != null) {
-        borneController.addOrUpdateArticle(borne.articles!);
+        borneController.addOrUpdateSlide(borne.slides!);
       }
     });
   }
