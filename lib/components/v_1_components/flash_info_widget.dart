@@ -32,12 +32,7 @@ class FlashInfoWidget extends StatelessWidget {
                 padding: EdgeInsets.symmetric(
                   horizontal: SizeConfig.blockHorizontal! * 4,
                 ),
-                decoration: const BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(15),
-                  ),
-                ),
+                color: Colors.red,
                 alignment: AlignmentDirectional.center,
                 child: Text(
                   'Flash Infos',

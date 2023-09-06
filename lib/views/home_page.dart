@@ -15,31 +15,30 @@ class HomePage extends GetView<BorneController> {
   Widget build(BuildContext context) {
     final alertVideoController = Get.put(AlertVideoController());
 
-    return Obx(() {
-      if (controller.borneLoading.value == true) {
-        return Scaffold(
-          body: Column(
-            children: [
-              //L'entête de la page
-              Header(
-                time: controller.currentDate.value,
-                imagePath: controller.site.value.direction.image,
-              ),
+    return GetBuilder<BorneController>(
+      builder: (controller) {
+        if (controller.borneLoading.value == true) {
+          return Scaffold(
+            body: Column(
+              children: [
+                //L'entête de la page
+                Header(
+                  time: controller.currentDate.value,
+                  imagePath: controller.site.value.direction.image,
+                ),
 
-              //Carousselle
-              CarousselWidget(
-                articles: controller.articles,
-              ),
+                //Carousselle
+                const CarousselWidget(),
 
-              //Flash info Widget
-              FlashInfoWidget(alertText: controller.getAlerteText()),
-            ],
-          ),
-        );
-      } else {
-        return const HomePageLoading();
+                //Flash info Widget
+                FlashInfoWidget(alertText: controller.getAlerteText()),
+              ],
+            ),
+          );
+        } else {
+          return const HomePageLoading();
 
-        /*  Scaffold(
+          /*  Scaffold(
           body: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -57,7 +56,8 @@ class HomePage extends GetView<BorneController> {
             ),
           ),
         ); */
-      }
-    });
+        }
+      },
+    );
   }
 }

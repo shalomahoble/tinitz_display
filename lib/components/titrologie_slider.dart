@@ -30,9 +30,7 @@ class TitrologieSlider extends StatelessWidget {
     SizeConfig().init(context);
 
     if (slide.bgType == 'url') {
-      return SectionHtml(
-        pageUrl: slide.cible!,
-      );
+      return SectionHtml(pageUrl: slide.cible);
     } else {
       return Stack(
         children: [
@@ -55,38 +53,6 @@ class TitrologieSlider extends StatelessWidget {
           BodyCard(
             slide: slide,
           ),
-
-          /*  SizedBox(
-            height: double.infinity,
-            child: CachedNetworkImage(
-              fit: BoxFit.cover,
-              height: double.infinity,
-              width: double.infinity,
-              imageUrl: backgroundUrlImage(),
-              placeholder: (context, url) {
-                return LoadingAnimationWidget.fourRotatingDots(
-                  color: KOrange,
-                  size: 200,
-                );
-              },
-              errorWidget: (context, url, error) {
-                return Image.asset('assets/images/error.png');
-              },
-            ),
-          ), */
-          /*  Container(
-            width: SizeConfig.screenWidth,
-            alignment: AlignmentDirectional.center,
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                BodyCard(
-                  slide: slide,
-                )
-              ],
-            ),
-          ), */
         ],
       );
     }

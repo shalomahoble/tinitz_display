@@ -62,7 +62,6 @@ class HomePageLoading extends StatelessWidget {
                         margin: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: Colors.grey.shade300,
-                          borderRadius: BorderRadius.circular(20),
                         ),
                       ),
                     ),
@@ -103,9 +102,6 @@ class HomePageLoading extends StatelessWidget {
                         margin: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: Colors.grey.shade300,
-                          borderRadius: const BorderRadius.only(
-                            topRight: Radius.circular(20),
-                          ),
                         ),
                       ),
                     ),
@@ -120,7 +116,7 @@ class HomePageLoading extends StatelessWidget {
                             vertical: SizeConfig.blockHorizontal! * 3),
                         decoration: BoxDecoration(
                           color: Colors.grey.shade300,
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(10),
                         ),
                       ),
                     ),

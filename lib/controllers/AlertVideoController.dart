@@ -93,6 +93,7 @@ class AlertVideoController extends GetxController {
             message: "VIdeo Initialiser",
             color: Colors.greenAccent,
           );
+
           chewieController = ChewieController(
             videoPlayerController: videoPlayerController,
             autoPlay: true,
@@ -102,13 +103,6 @@ class AlertVideoController extends GetxController {
             showControlsOnInitialize: false,
             showControls: false,
           );
-
-          if (videoPlayerController.value.hasError) {
-            print(
-                " BDVIDEO Erreur lors de l'initialisation de la vidéo: ${videoPlayerController.value.errorDescription}");
-          }
-
-          print("BDVIDEO lance ");
 
           //Temps d'affichage de la video
           Get.defaultDialog(
@@ -124,22 +118,22 @@ class AlertVideoController extends GetxController {
             ),
           );
           videoPlayerController.addListener(() {
-            print("BDVIDEO duree ${videoPlayerController.value.duration}");
-            print("BDVIDEO position ${videoPlayerController.value.position}");
             if (videoPlayerController.value.position ==
                 videoPlayerController.value.duration) {
               // La vidéo est terminée
               isVideoPlaying.value = false;
             }
-            if (videoPlayerController.value.isInitialized &&
-                !videoPlayerController.value.isPlaying &&
+            if (!videoPlayerController.value.isPlaying &&
                 (videoPlayerController.value.position.inMilliseconds /
                         videoPlayerController.value.duration.inMilliseconds) >=
                     0.9) {
               Get.back();
               print("BDVIDEO fermer ${videoPlayerController.value.duration}");
+              print(
+                  "BDVIDEO fermer position ${videoPlayerController.value.position}");
               /*  isPermanenteVideo(
                   borneController.getAlerteVideo()[currentVideoIndex.value]); */
+              Get.back();
               _onVideoFinished();
             }
           });

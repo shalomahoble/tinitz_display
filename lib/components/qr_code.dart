@@ -1,6 +1,7 @@
 // ignore: duplicate_ignore
 // ignore_for_file: public_member_api_docs, sort_constructors_first, must_be_immutable, unused_local_variable
 import 'package:borne_flutter/config/app_style.dart';
+import 'package:borne_flutter/controllers/BorneController.dart';
 import 'package:borne_flutter/services/ShortUrlService.dart';
 import 'package:borne_flutter/utils/utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -11,7 +12,6 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 import 'package:borne_flutter/config/size_config.dart';
-import 'package:borne_flutter/controllers/LoginController.dart';
 import 'package:borne_flutter/models/Slide.dart';
 
 class QRcode extends StatelessWidget {
@@ -23,13 +23,11 @@ class QRcode extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final LoginController loginController = Get.put(LoginController());
+    final borneController = Get.find<BorneController>();
     final ShortUrlService shortUrlService = ShortUrlService();
-    final borne = loginController.borne;
-    final codeBorne = borne.value.code;
+    final codeBorne = borneController.borne.value.code;
     final box = GetStorage();
     String url = '';
-
     String codeQrUrl() {
       final token = box.read('token');
       return "https://devmarket.egaz.shop/reading?q=$codeBorne&tk=$token";
@@ -70,25 +68,6 @@ class QRcode extends StatelessWidget {
             version: QrVersions.auto,
             data: codeQr("slide=${slide.id}", slide.pivot!.borneId!),
           );
-/*         case 'evenements':
-          return Container(
-            decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                  color: Colors.white,
-                  width: 7,
-                )),
-            child: CachedNetworkImage(
-              fit: BoxFit.cover,
-              imageUrl: slide.qrcode ??
-                  'https://images.pexels.com/photos/7289721/pexels-photo-7289721.jpeg?auto=compress&cs=tinysrgb&w=600',
-              placeholder: (context, url) =>
-                  LoadingAnimationWidget.bouncingBall(
-                color: KOrange,
-                size: 20,
-              ),
-            ),
-          ); */
         case 'autres':
           if (slide.qrcode != null) {
             return Container(

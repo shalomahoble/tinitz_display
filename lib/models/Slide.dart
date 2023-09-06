@@ -10,7 +10,7 @@ class Slide {
   String? description;
   String? bg;
   String bgType;
-  String? cible;
+  String cible;
   String? urlQrCode;
   int duree;
   int? statut;
@@ -38,7 +38,7 @@ class Slide {
     this.description,
     this.bg,
     required this.bgType,
-    this.cible,
+    required this.cible,
     this.urlQrCode,
     required this.duree,
     this.statut,
@@ -146,7 +146,7 @@ class Slide {
       other is Slide && runtimeType == other.runtimeType && id == other.id;
 
   @override
-   // TODO: implement hashCode
+  // TODO: implement hashCode
   int get hashCode => (id.hashCode);
 }
 

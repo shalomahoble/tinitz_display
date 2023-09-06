@@ -7,6 +7,7 @@ import 'package:borne_flutter/models/Direction.dart';
 import 'package:borne_flutter/models/Site.dart';
 import 'package:borne_flutter/services/BorneService.dart';
 import 'package:borne_flutter/utils/utils.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
@@ -18,13 +19,14 @@ import 'package:timezone/timezone.dart' as tz;
 
 import '../models/Slide.dart';
 
-class BorneController extends GetxController {
+class BorneController extends GetxController with GetTickerProviderStateMixin {
   final _borneService = BorneService();
 
   RxBool borneLoading = false.obs;
   Rx<Borne> borne = Borne().obs;
   RxInt dureeDuSlide = 5.obs;
   RxInt currentArticleIndex = 0.obs;
+  RxInt currentArticleduree = 10.obs;
   RxInt articleChangeAnimation = 0.obs;
   Set<int> permanentArticleIdsDisplayed =
       {}; // Initialisez en dehors de la fonction
@@ -51,6 +53,13 @@ class BorneController extends GetxController {
   RxString currentTime = ''.obs;
   String formattedDateTime = DateTime.now().toString();
 
+  late AnimationController controller;
+
+  final Tween<Offset> offsetTween = Tween<Offset>(
+    begin: const Offset(0.0, -4.0), // Position initiale (milieu)
+    end: const Offset(0.0, -6.5), // Position finale (barre d'applications)
+  );
+
 //Recuperer les information concernant une borne
   void getBorne() async {
     _borneService.getBorne().then((response) {
@@ -69,7 +78,7 @@ class BorneController extends GetxController {
         update();
         currentTimeForTimeZone(); // Get timeZone to dsiplay current date and time
         slideChange(0); //Get first slide duration to init slide
-        startTimerForNextArticle(); //Start animating articles
+        //startTimerForNextArticle(); //Start animating articles
       } else if (response.statusCode == 400) {
         showMessageError(
           message: "Token invalide...",
@@ -79,13 +88,13 @@ class BorneController extends GetxController {
         showMessageError(
           message: "Une erreur c'est produite  ... Ou token invalide",
         );
-        Get.toNamed('login');
+        Get.offAllNamed('login');
       }
     }).timeout(const Duration(minutes: 1), onTimeout: () {
       showMessageError(
         message: 'Vérifier votre connexion internet ou rééssayer plus tard',
       );
-      Get.toNamed('login');
+      Get.offAllNamed('login');
     });
   }
 
@@ -145,8 +154,8 @@ class BorneController extends GetxController {
           print("rentre goToNextArticle ");
           goToNextArticle();
           // Ajoutez cette ligne pour conserver l'effet de défilement
-          articleChangeAnimation.value++;
-          startTimerForNextArticle();
+          //articleChangeAnimation.value++;
+          // startTimerForNextArticle();
         });
       }
     }
@@ -178,6 +187,8 @@ class BorneController extends GetxController {
     if (articles.isNotEmpty) {
       currentArticleIndex.value =
           (currentArticleIndex.value + 1) % articles.length;
+      currentArticleduree.value =
+          articles[currentArticleIndex.value].pivot.duree;
     }
     /* changeArticle.value++;
     update(); */
@@ -238,13 +249,19 @@ class BorneController extends GetxController {
         update();
       });
     } else {
-      articles.value = newListeArticle;
-      articleEstVide.value = false;
+      articleEstVide.value = false; //Article n'est pas vide
+      currentArticleIndex.value = 0; //On remet l'index a 0
+      currentArticleduree.value = articles[currentArticleIndex.value]
+          .pivot
+          .duree; //Mettre a jour la durre
+      articles.value = newListeArticle; //Affectation des nouvelles articles
       print("EVENTBD nouvelle article $articles");
-      playDefaultRingtone();
-      delayedTask.cancel();
-      startTimerForNextArticle();
-      update();
+      playDefaultRingtone(); //On emet un son
+      controller.reset(); //On reinitialise l'animation
+      startNewAnimation(); //On relance l'animation
+      //delayedTask.cancel();
+      //startTimerForNextArticle();
+      update(); //On informe tout le monde
     }
   }
 
@@ -269,6 +286,49 @@ class BorneController extends GetxController {
     removeToken().then((value) => Get.offAllNamed('login'));
   }
 
+//cette fonction verifie si l'article precedent est permanent et le supprime de la liste
+  void isPermanentArticle() {
+    if (articles.isNotEmpty) {
+      Article currentArticle = articles[currentArticleIndex.value];
+      if (shouldSkipPermanentArticle(currentArticle)) {
+        articles.removeAt(currentArticleIndex.value);
+      } else if (currentArticle.pivot.permanent == 0) {
+        permanentArticleIdsDisplayed.add(currentArticle.id);
+        articles.removeAt(currentArticleIndex.value);
+      }
+      goToNextArticle();
+    } else {
+      articleEstVide.value = true;
+      update();
+    }
+  }
+
+  // function to start animation article
+  void startNewAnimation() {
+    controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 5),
+    )
+      ..repeat(reverse: true)
+      ..addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          Future.delayed(const Duration(seconds: 1), () {
+            if (articles.isEmpty) {
+              controller.stop();
+            } else {
+              isPermanentArticle();
+              controller.reverse(); // Réinitialise l'animation
+            }
+          });
+        } else if (status == AnimationStatus.dismissed) {
+          Future.delayed(Duration(seconds: currentArticleduree.value), () {
+            controller.forward();
+          });
+        }
+      });
+    controller.forward();
+  }
+
 //Iniatialisation du controlleur
   @override
   void onInit() {
@@ -278,8 +338,13 @@ class BorneController extends GetxController {
     tz.initializeTimeZones();
     print("initialisation de la bornecontroller ");
     getBorne();
+    startNewAnimation();
+  }
 
-    //Function to update all information of borne after 12h hours
-    /* updateAllInfoForBorne(); */
+  @override
+  void onClose() {
+    // TODO: implement onClose
+    super.onClose();
+    controller.dispose();
   }
 }

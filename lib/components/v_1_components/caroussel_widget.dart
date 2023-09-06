@@ -17,9 +17,7 @@ import 'package:borne_flutter/models/Artcile.dart';
 class CarousselWidget extends StatelessWidget {
   const CarousselWidget({
     Key? key,
-    required this.articles,
   }) : super(key: key);
-  final List<Article> articles;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +48,6 @@ class CarousselWidget extends StatelessWidget {
                       Duration(seconds: borneController.dureeDuSlide.value),
                   onPageChanged: (index, reason) {
                     borneController.slideChange(index);
-                    print(borneController.dureeDuSlide.value.toString());
                   },
                 ),
               ),
@@ -88,7 +85,6 @@ class FlashArticle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: SizeConfig.blockHorizontal! * 3),
       padding: EdgeInsets.symmetric(
         vertical: SizeConfig.blockHorizontal! * 1,
         horizontal: SizeConfig.blockHorizontal! * 1,

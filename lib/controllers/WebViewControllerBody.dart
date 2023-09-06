@@ -23,7 +23,8 @@ class WebViewControllerBody extends GetxController {
           },
         ),
       )
-      ..loadRequest(Uri.parse(url));
+      ..loadRequest(Uri.parse(
+          "https://medium.com/flutter-community/flutter-bloc-for-beginners-839e22adb9f5"));
   }
 
   @override

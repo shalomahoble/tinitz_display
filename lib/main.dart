@@ -1,7 +1,7 @@
+import 'package:borne_flutter/config/app_style.dart';
 import 'package:borne_flutter/controllers/AllControllerBinding.dart';
 import 'package:borne_flutter/controllers/ListenController.dart';
 import 'package:borne_flutter/firebase_options.dart';
-import 'package:borne_flutter/views/home_page_loading.dart';
 import 'package:borne_flutter/views/login.dart';
 import 'package:borne_flutter/views/view.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:timezone/data/latest.dart' as tz;
@@ -68,6 +69,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final box = GetStorage();
   final listenController = Get.put(ListenController());
+  bool loading = true;
   String token = "";
 
   @override
@@ -82,6 +84,7 @@ class _MyAppState extends State<MyApp> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       token = prefs.getString('token') ?? '';
+      loading = false;
     });
   }
 
@@ -145,10 +148,13 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       initialBinding: AllControllerBinding(),
       title: 'Borne App TINITZ',
-      // home: Login(),
+      // home: const WebViewExemple(),
       //home: const HomePageLoading(),
-      // ignore: unnecessary_null_comparison
-      home: token.isNotEmpty ? const HomePage() : Login(),
+      home: loading
+          ? const LoadView()
+          : token.isNotEmpty
+              ? const HomePage()
+              : Login(),
       getPages: [
         GetPage(
           name: '/login',
@@ -163,6 +169,24 @@ class _MyAppState extends State<MyApp> {
           page: () => const HomePage(),
         ),
       ],
+    );
+  }
+}
+
+class LoadView extends StatelessWidget {
+  const LoadView({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: LoadingAnimationWidget.threeArchedCircle(
+          color: KOrange,
+          size: 40,
+        ),
+      ),
     );
   }
 }

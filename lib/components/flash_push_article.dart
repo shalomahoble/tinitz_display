@@ -1,38 +1,58 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first, unrelated_type_equality_checks
+import 'package:borne_flutter/components/v_1_components/caroussel_widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-import 'package:borne_flutter/components/v_1_components/caroussel_widget.dart';
 import 'package:borne_flutter/config/app_style.dart';
 import 'package:borne_flutter/config/size_config.dart';
-import 'package:borne_flutter/controllers/AnimationControllerArticle.dart';
 import 'package:borne_flutter/controllers/BorneController.dart';
 import 'package:borne_flutter/models/Artcile.dart';
 
 class FlashPushArticle extends StatelessWidget {
-  FlashPushArticle({
+  const FlashPushArticle({
     Key? key,
     required this.articles,
   }) : super(key: key);
 
   final List<Article> articles;
 
-  final animationController = Get.put(AnimationControllerArticle());
   @override
   Widget build(BuildContext context) {
     final borneController = Get.find<BorneController>();
-    final animation = Tween<Offset>(
-      begin: const Offset(0, 1),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: animationController.animation,
-      curve: Curves.easeInOut,
-    ));
 
-    return Text('ANIMATION');
+    return Obx(() {
+      if (borneController.articleEstVide.value == true || articles.isEmpty) {
+        return const SizedBox.shrink();
+      } else if (articles.isNotEmpty) {
+        return AnimatedBuilder(
+          animation: borneController.controller,
+          builder: (context, child) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SlideTransition(
+                  position: borneController.offsetTween.animate(
+                    borneController.controller,
+                  ),
+                  child: FlashArticle(
+                    article:
+                        articles[borneController.currentArticleIndex.value],
+                    key: ValueKey<int>(
+                      borneController.articleChangeAnimation.value,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        return const SizedBox.shrink();
+      }
+    });
 
     /* if (borneController.articleEstVide.value == true || articles.isEmpty) {
       return const SizedBox.shrink();

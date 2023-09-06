@@ -18,15 +18,6 @@ class BodyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    /* final LoginController loginController = Get.put(LoginController());
-    final codeBorne = loginController.borne.value.code; */
-
-    /* String urlEvents = "http://devmarket.egaz.shop/titrologie/$codeBorne";
-
-    final VideoController videoController = Get.put(VideoController(
-        'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4')); */
-
-/* slide.typeslide!.libelle!.toLowerCase() */
 
     return Container(
       alignment: AlignmentDirectional.center,
