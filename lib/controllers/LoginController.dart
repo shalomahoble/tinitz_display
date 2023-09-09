@@ -68,10 +68,12 @@ class LoginController extends GetxController {
 
           Get.offAllNamed('homePage');
         } else {
+          loading(false);
           showMessageError(message: jsonDecode(value.body)['message']);
         }
         /* Au bout de 1   min si aucune reponse du serveur notifie l'utilisateur */
       }).timeout(const Duration(minutes: 1), onTimeout: () {
+        loading(false);
         showMessageError(message: "Verifier votre connexion internet");
       });
     } catch (e) {

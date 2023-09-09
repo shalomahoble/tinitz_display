@@ -18,7 +18,6 @@ class BodyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
       alignment: AlignmentDirectional.center,
       padding: EdgeInsets.all(SizeConfig.blockHorizontal! * 5),

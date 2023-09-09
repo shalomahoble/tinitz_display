@@ -9,16 +9,12 @@ Uri getUrl(String url) {
   return Uri.parse('$baseUrl$url');
 }
 
-void showMessageError({
-  String title = 'Error Message',
-  required String message,
-  Color color = Colors.red,
-}) {
-  Get.snackbar(
-    title,
-    message,
-    backgroundColor: color,
-  );
+void showMessageError(
+    {String title = 'Error Message',
+    required String message,
+    Color color = Colors.red,
+    SnackPosition position = SnackPosition.TOP}) {
+  Get.snackbar(title, message, backgroundColor: color, snackPosition: position);
 }
 
 //recuperer le token

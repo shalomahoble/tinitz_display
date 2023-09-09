@@ -22,9 +22,11 @@ class HomePage extends GetView<BorneController> {
             body: Column(
               children: [
                 //L'entête de la page
-                Header(
-                  time: controller.currentDate.value,
-                  imagePath: controller.site.value.direction.image,
+                Obx(
+                  () => Header(
+                    time: controller.currentDate.value,
+                    imagePath: controller.site.value.direction.image,
+                  ),
                 ),
 
                 //Carousselle

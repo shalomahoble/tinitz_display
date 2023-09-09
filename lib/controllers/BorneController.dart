@@ -64,6 +64,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   void getBorne() async {
     _borneService.getBorne().then((response) {
       if (response.statusCode == 200) {
+        print("Borne response 200 ");
         final body = jsonDecode(response.body);
         final token = body['access_token'];
         box.write('token', body['access_token']);
@@ -279,7 +280,15 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
 
   //Mettre a jour tout la borne apres un delais de 12H
   Future<void> updateAllInfoForBorne() async {
-    Future.delayed(const Duration(hours: 12), () => getBorne());
+    final response = await _borneService.getBorne();
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body);
+      borne.value = Borne.fromJson(body['borne']);
+      site.value = borne.value.site!;
+      slides.value = borne.value.slides!;
+      alertes.value = borne.value.alerts!;
+      articles.value = borne.value.articles!;
+    }
   }
 
   toDeconnecte() {

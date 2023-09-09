@@ -60,6 +60,8 @@ void main() async {
 }
 
 class MyApp extends StatefulWidget {
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
   const MyApp({super.key});
 
   @override
@@ -149,7 +151,7 @@ class _MyAppState extends State<MyApp> {
       initialBinding: AllControllerBinding(),
       title: 'Borne App TINITZ',
       // home: const WebViewExemple(),
-      //home: const HomePageLoading(),
+      // home: const Exemple(),
       home: loading
           ? const LoadView()
           : token.isNotEmpty

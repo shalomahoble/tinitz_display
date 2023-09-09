@@ -1,3 +1,4 @@
+
 import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
 
@@ -10,28 +11,31 @@ class VideoController extends GetxController {
   VideoController(this.urlVideo);
 
 //Retourne si la video est initialisez
-  bool isInitialized() {
-    return controller.value.isInitialized;
-  }
 
   @override
-  void onInit() {
+  void onInit() async {
     // TODO: implement onInit
     super.onInit();
-    controller = VideoPlayerController.networkUrl(Uri.parse(urlVideo))
-      ..initialize().then(
-        (value) {
-          isVideoInitialized.value = true;
-          update();
-        },
-      );
+    try {
+      print(" slide video debut initialisation");
+      controller = VideoPlayerController.networkUrl(Uri.parse(urlVideo)); 
 
-    controller.play();
+      await controller.initialize();
+      if (controller.value.isInitialized) {
+        isVideoInitialized.value = true;
+        update();
+        controller.play();
+      }
+      print("slide video fin initialisation");
+    } catch (e) {
+      rethrow;
+    }
   }
 
   @override
   void onClose() {
     // TODO: implement onClose
     super.onClose();
+    controller.dispose();
   }
 }

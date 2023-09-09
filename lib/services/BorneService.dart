@@ -20,7 +20,7 @@ class BorneService extends GetxService {
       return response;
     } catch (e) {
       showMessageError(message: e.toString());
-      Get.offAllNamed('login');
+      //Get.offAllNamed('login');
       rethrow;
     }
   }

@@ -100,14 +100,13 @@ class ListenController extends GetxController {
 //Ajout d'un nouveau slide
   void updateSlide() {
     getBorne().then((borne) {
-      print("EVENTBD update slide ${borne.toString()}");
       if (borne != null) {
         borneController.addOrUpdateSlide(borne.slides!);
       }
     });
   }
 
-  //###### ajouter un Slide  
+  //###### ajouter un Slide
   void addSlide() {
     getBorne().then((borne) {
       if (borne != null) {
@@ -135,7 +134,6 @@ class ListenController extends GetxController {
       await box.write('token', token);
       return Borne.fromJson(body['borne']);
     } else {
-      print("EVENTBD ${response.body.toString()}");
       return null;
     }
   }
@@ -148,12 +146,20 @@ class ListenController extends GetxController {
         final token = body['access_token'];
         saveToken(token);
         await box.write('token', token);
-        print("EVENTBD listen 1 $token");
         if (body['borne'] != null) {
-          borneController.updateBorneInfo(Borne.fromJson(body['borne']));
+          final token = body['access_token'];
+          box.write('token', token);
+          saveToken(token);
+          // borneController.updateBorneInfo(Borne.fromJson(body['borne']));
           /*  loginController.updateBorneInfo(Borne.fromJson(body['borne'])); */
         }
       }
+    });
+  }
+
+  updateBorneInformationPeriodique() {
+    Timer.periodic(const Duration(minutes: 4), (timer) {
+      borneController.updateAllInfoForBorne();
     });
   }
 
@@ -163,6 +169,9 @@ class ListenController extends GetxController {
     super.onInit();
 
     //Mise a jour du token chaque 1 min;
-    //changeTokenApiPeriodic();
+    changeTokenApiPeriodic();
+
+    //changer les information de la borne au bout de 5min
+    updateBorneInformationPeriodique();
   }
 }

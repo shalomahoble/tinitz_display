@@ -48,7 +48,7 @@ class LoginService {
         headers: headersToken(token),
       )
           .timeout(
-        const Duration(minutes: 2),
+        const Duration(minutes: 1),
         onTimeout: () {
           showMessageError(
               message:
@@ -57,8 +57,12 @@ class LoginService {
               "Une erreur c'est produite ${response.body.toString()}", 400);
         },
       );
-      print("EVENTBD ${response.body.toString()}");
-      return response;
+      if (response.statusCode == 200) {
+        return response;
+      } else {
+        return http.Response(
+            "Une erreur de connexion ${response.body.toString()}", 400);
+      }
     } catch (e) {
       // Gérer l'erreur ici si nécessaire
       rethrow;

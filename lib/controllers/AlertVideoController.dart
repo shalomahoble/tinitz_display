@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:borne_flutter/controllers/BorneController.dart';
+import 'package:borne_flutter/main.dart';
 import 'package:borne_flutter/models/Alerte.dart';
 import 'package:borne_flutter/utils/utils.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:observe_internet_connectivity/observe_internet_connectivity.dart';
 import 'package:video_player/video_player.dart';
 
 class AlertVideoController extends GetxController {
@@ -48,8 +48,12 @@ class AlertVideoController extends GetxController {
           videoAlerts[currentVideoIndex.value].randomVideo;
       print("BDVIDEO l'index de la video ${currentVideoIndex.value}");
       update();
+      if (Get.isDialogOpen!) {
+        Get.back();
+      }
+      _playVideo(currentVideoUrl.value);
 
-      final subscription =
+      /*     final subscription =
           InternetConnectivity() //verifiier si on a la connexion
               .observeInternetConnection
               .listen((bool hasInternetAccess) {
@@ -57,18 +61,11 @@ class AlertVideoController extends GetxController {
           Future.delayed(const Duration(seconds: 20), () {
             showMessageError(message: "Pas de connexion internet");
           });
-        } else {
-          if (!isVideoPlaying.value) {
-            _playVideo(currentVideoUrl.value);
-            isVideoPlaying.value = true;
-          }
-        }
+        } else {}
       });
       Future.delayed(const Duration(minutes: 10), () async {
         await subscription.cancel();
-      });
-
-      /*   subscription.cancel(); */
+      }); */
 
       //Si la video est deja passe on recommence un autre video
       /*  if (shouldSkipPermanentArticle(videoAlerts[currentVideoIndex.value])) {
@@ -81,19 +78,20 @@ class AlertVideoController extends GetxController {
 
   void _playVideo(String videoUrl) async {
     try {
-      Future.delayed(Duration(seconds: dureeAvantAffichage.value), () async {
+      Future.delayed(const Duration(minutes: 1), () async {
+        dureeAvantAffichage.value;
         print("BDVIDEO lance ${dureeAvantAffichage.value}");
         videoPlayerController =
             VideoPlayerController.networkUrl(Uri.parse(videoUrl));
         await videoPlayerController.initialize();
 
-        if (videoPlayerController.value.isInitialized) {
+        if (videoPlayerController.value.isInitialized &&
+            videoPlayerController.value.duration.inMilliseconds > 0) {
           showMessageError(
             title: "Initialisation de la video",
             message: "VIdeo Initialiser",
             color: Colors.greenAccent,
           );
-
           chewieController = ChewieController(
             videoPlayerController: videoPlayerController,
             autoPlay: true,
@@ -117,33 +115,27 @@ class AlertVideoController extends GetxController {
               ),
             ),
           );
+
           videoPlayerController.addListener(() {
-            if (videoPlayerController.value.position ==
-                videoPlayerController.value.duration) {
-              // La vidéo est terminée
-              isVideoPlaying.value = false;
-            }
             if (!videoPlayerController.value.isPlaying &&
-                (videoPlayerController.value.position.inMilliseconds /
-                        videoPlayerController.value.duration.inMilliseconds) >=
-                    0.9) {
-              Get.back();
-              print("BDVIDEO fermer ${videoPlayerController.value.duration}");
-              print(
-                  "BDVIDEO fermer position ${videoPlayerController.value.position}");
-              /*  isPermanenteVideo(
-                  borneController.getAlerteVideo()[currentVideoIndex.value]); */
-              Get.back();
-              _onVideoFinished();
+                videoPlayerController.value.isInitialized &&
+                (videoPlayerController.value.position ==
+                    const Duration(seconds: 0, minutes: 0, hours: 0))) {
+              showMessageError(
+                message: "Video est termine",
+                color: Colors.blueGrey,
+              );
             }
+            print("BDVIDEO LISTEN");
           });
 
-          /*  Timer(videoPlayerController.value.duration, () {
-            chewieController.pause(); // Arrêter la lecture
+          Timer(videoPlayerController.value.duration, () {
             print("BDVIDEO fermer ${videoPlayerController.value.duration}");
+            chewieController.pause(); // Arrêter la lecture
+            videoPlayerController.pause();
             Get.back();
             _onVideoFinished();
-          }); */
+          });
         }
       });
     } catch (e) {
@@ -203,7 +195,9 @@ class AlertVideoController extends GetxController {
       videoTimer.cancel();
       currentVideoIndex.value = 0;
       update();
-      loadVideo();
+      if (!isVideoPlaying.value) {
+        loadVideo();
+      }
       print("j'ecouter les changement de la borne pour video");
     });
   }
@@ -212,7 +206,6 @@ class AlertVideoController extends GetxController {
   void onClose() {
     // TODO: implement onClose
     super.onClose();
-    chewieController.dispose();
     videoPlayerController.dispose();
 
     videoTimer.cancel();

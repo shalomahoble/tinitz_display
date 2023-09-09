@@ -1,3 +1,4 @@
+import 'package:borne_flutter/components/section_video.dart';
 import 'package:flutter/material.dart';
 
 class Exemple extends StatefulWidget {
@@ -45,7 +46,15 @@ class _ExempleState extends State<Exemple> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
+      body: Center(
+        child: SectionVideo(
+          urlvideo: "https://media.w3.org/2010/05/sintel/trailer.mp4",
+        ),
+      ),
+    );
+
+    /* return Scaffold(
       body: AnimatedBuilder(
         animation: _controller,
         builder: (context, child) {
@@ -64,6 +73,6 @@ class _ExempleState extends State<Exemple> with TickerProviderStateMixin {
           );
         },
       ),
-    );
+    ); */
   }
 }

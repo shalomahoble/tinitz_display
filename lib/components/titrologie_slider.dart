@@ -5,6 +5,7 @@ import 'package:borne_flutter/config/app_style.dart';
 import 'package:borne_flutter/models/Slide.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_rx/get_rx.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import '../config/size_config.dart';
@@ -29,7 +30,11 @@ class TitrologieSlider extends StatelessWidget {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
 
+    
+
     if (slide.bgType == 'url') {
+      /* return const SectionVideo(
+          urlvideo: 'https://media.w3.org/2010/05/sintel/trailer.mp4'); */
       return SectionHtml(pageUrl: slide.cible);
     } else {
       return Stack(
