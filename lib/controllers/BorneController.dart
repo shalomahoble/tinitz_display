@@ -61,42 +61,44 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   );
 
 //Recuperer les information concernant une borne
-  void getBorne() async {
-    _borneService.getBorne().then((response) {
-      if (response.statusCode == 200) {
-        print("Borne response 200 ");
-        final body = jsonDecode(response.body);
-        final token = body['access_token'];
-        box.write('token', body['access_token']);
-        saveToken(body['access_token']);
-        print("EVENTBD borne token $token");
-        borne.value = Borne.fromJson(body['borne']);
-        articles.value = borne.value.articles!;
-        slides.value = borne.value.slides!;
-        alertes.value = borne.value.alerts!;
-        site.value = borne.value.site!;
-        borneLoading.value = true;
-        update();
-        currentTimeForTimeZone(); // Get timeZone to dsiplay current date and time
-        slideChange(0); //Get first slide duration to init slide
-        //startTimerForNextArticle(); //Start animating articles
-      } else if (response.statusCode == 400) {
-        showMessageError(
-          message: "Token invalide...",
-        );
-        Get.offAllNamed('login');
-      } else {
-        showMessageError(
-          message: "Une erreur c'est produite  ... Ou token invalide",
-        );
-        Get.offAllNamed('login');
-      }
-    }).timeout(const Duration(minutes: 1), onTimeout: () {
+  Future<void> getBorne() async {
+    final response = await _borneService.getBorne();
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body);
+      final token = body['access_token'];
+      box.write('token', token);
+      saveToken(token);
+      borne.value = Borne.fromJson(body['borne']);
+      articles.value = borne.value.articles!;
+      slides.value = borne.value.slides!;
+      alertes.value = borne.value.alerts!;
+      site.value = borne.value.site!;
+      borneLoading.value = true;
+      update();
+      currentTimeForTimeZone(); // Get timeZone to dsiplay current date and time
+      slideChange(0); //Get first slide duration to init slide
+      //startTimerForNextArticle(); //Start animating articles
+    } else if (response.statusCode == 400) {
+      showMessageError(
+        message: "Token invalide...",
+      );
+      Get.offAllNamed('login');
+    } else {
+      showMessageError(
+        message: "Vérifier votre connexion internet ou rééssayer plus tard",
+      );
+      Get.offAllNamed('login');
+    }
+
+    /* _borneService
+        .getBorne()
+        .then((response) {})
+        .timeout(const Duration(minutes: 1), onTimeout: () {
       showMessageError(
         message: 'Vérifier votre connexion internet ou rééssayer plus tard',
       );
       Get.offAllNamed('login');
-    });
+    }); */
   }
 
   // ALerts function
@@ -217,7 +219,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   Future<void> sendToken(
       {required String code, required String fbToken}) async {
     try {
-      _borneService
+      await _borneService
           .sendToken(code: code, fbToken: fbToken)
           .then((response) => {print(response.body.toString())});
     } catch (e) {

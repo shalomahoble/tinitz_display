@@ -157,10 +157,17 @@ class ListenController extends GetxController {
     });
   }
 
+//Update all information for borne
   updateBorneInformationPeriodique() {
     Timer.periodic(const Duration(minutes: 4), (timer) {
       borneController.updateAllInfoForBorne();
     });
+  }
+
+  //Listen to refresh firebase token
+  void onTokenRefreshToken(String fcmToken) async {
+    await borneController.sendToken(
+        code: borneController.borne.value.code!, fbToken: fcmToken);
   }
 
   @override

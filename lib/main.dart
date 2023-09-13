@@ -56,6 +56,12 @@ void main() async {
   //Enregistrement du tocken Firebase vers la base de donnée par l'Api
   // borneController.sendToken(token: fmcToken!);
 
+  //Pour être averti chaque fois que le jeton est mis à jour,
+  FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
+    final listencontroller = Get.put(ListenController());
+    listencontroller.onTokenRefreshToken(fcmToken);
+  }).onError((error) => print(error.toString()));
+
   runApp(const MyApp());
 }
 
