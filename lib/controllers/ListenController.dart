@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:borne_flutter/controllers/BorneController.dart';
 import 'package:borne_flutter/controllers/LoginController.dart';
@@ -26,7 +27,7 @@ class ListenController extends GetxController {
 
   void addNewAlerte() async {
     final response = await loginService.generateNewToken();
-    print(response.body);
+    log(response.body);
   }
 
 //###### Alert mise a jour ################################################
@@ -117,7 +118,7 @@ class ListenController extends GetxController {
 
   void deleteSlide() {
     getBorne().then((borne) {
-      print("EVENTBD delete slide ${borne.toString()}");
+      log("EVENTBD delete slide ${borne.toString()}");
       if (borne != null) {
         borneController.addOrUpdateSlide(borne.slides!);
       }
@@ -172,7 +173,6 @@ class ListenController extends GetxController {
 
   @override
   void onInit() {
-    // TODO: implement onInit
     super.onInit();
 
     //Mise a jour du token chaque 1 min;

@@ -168,7 +168,7 @@ class Home extends StatelessWidget {
 //Flash Infon Widget
                           Get.find<LoginController>().articleIsEmpty.value ==
                                   false
-                              ? FlashPushArticle(articles: const [])
+                              ? const FlashPushArticle(articles: [])
                               : const SizedBox.shrink(),
                           //Flash Video
                         ],

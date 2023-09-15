@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:borne_flutter/config/app_config.dart';
 import 'package:borne_flutter/utils/utils.dart';
@@ -37,7 +38,7 @@ class BorneService extends GetxService {
         body: jsonEncode({"code": code, "fb_token": fbToken}),
         headers: headersToken(tokenApi),
       );
-      print(response.body.toString());
+      log(response.body.toString());
       return response;
     } catch (e) {
       rethrow;

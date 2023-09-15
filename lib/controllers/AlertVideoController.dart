@@ -45,7 +45,7 @@ class AlertVideoController extends GetxController {
       videoTitle.value = videoAlerts[currentVideoIndex.value].libelle;
       dureeAvantAffichage.value =
           videoAlerts[currentVideoIndex.value].randomVideo;
-      print("BDVIDEO l'index de la video ${currentVideoIndex.value}");
+      log("BDVIDEO l'index de la video ${currentVideoIndex.value}");
       update();
       if (Get.isDialogOpen!) {
         Get.back();
@@ -79,7 +79,7 @@ class AlertVideoController extends GetxController {
     try {
       Future.delayed(const Duration(minutes: 1), () async {
         dureeAvantAffichage.value;
-        print("BDVIDEO lance ${dureeAvantAffichage.value}");
+        log("BDVIDEO lance ${dureeAvantAffichage.value}");
         videoPlayerController =
             VideoPlayerController.networkUrl(Uri.parse(videoUrl));
         await videoPlayerController.initialize();

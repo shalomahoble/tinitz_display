@@ -3,8 +3,6 @@ import 'package:borne_flutter/config/size_config.dart';
 import 'package:borne_flutter/controllers/VideoController.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_rx/get_rx.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:video_player/video_player.dart';
 

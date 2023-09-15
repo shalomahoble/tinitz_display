@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:get/get.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -9,17 +11,16 @@ class WebViewControllerBody extends GetxController {
 
   @override
   void onInit() {
-    // TODO: implement onInit
     super.onInit();
     controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
-          onProgress: (progress) => print('On Progress'),
+          onProgress: (progress) => log('On Progress'),
           onWebResourceError: (error) {
-            print("Erreur lie au webview ${error.description.toString()}");
-            print("Erreur lie au webview type ${error.errorType.toString()}");
-            print("Erreur lie au webview code ${error.errorCode.toString()}");
+            log("Erreur lie au webview ${error.description.toString()}");
+            log("Erreur lie au webview type ${error.errorType.toString()}");
+            log("Erreur lie au webview code ${error.errorCode.toString()}");
           },
         ),
       )
@@ -29,7 +30,6 @@ class WebViewControllerBody extends GetxController {
 
   @override
   void onClose() {
-    // TODO: implement onClose
     super.onClose();
     controller.clearLocalStorage();
   }

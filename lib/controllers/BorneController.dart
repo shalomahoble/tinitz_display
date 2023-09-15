@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:async';
+import 'dart:developer';
 import 'package:borne_flutter/models/Alerte.dart';
 import 'package:borne_flutter/models/Artcile.dart';
 import 'package:borne_flutter/models/Borne.dart';
@@ -142,19 +143,19 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
 
   //supprimer les articles non permanent
   void startTimerForNextArticle() {
-    print("rentre");
+    log("rentre");
     if (articles.isNotEmpty) {
       Article currentArticle = articles[currentArticleIndex.value];
 
       if (shouldSkipPermanentArticle(currentArticle)) {
         skipToNextArticle();
-        print("rentre skipToNextArticle ");
+        log("rentre skipToNextArticle ");
         articleChangeAnimation.value++;
         startTimerForNextArticle();
       } else {
         delayedTask = Timer(currentArticle.seconde(), () {
           handleDisplayedPermanentArticle(currentArticle);
-          print("rentre goToNextArticle ");
+          log("rentre goToNextArticle ");
           goToNextArticle();
           // Ajoutez cette ligne pour conserver l'effet de défilement
           //articleChangeAnimation.value++;
@@ -221,7 +222,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
     try {
       await _borneService
           .sendToken(code: code, fbToken: fbToken)
-          .then((response) => {print(response.body.toString())});
+          .then((response) => {log(response.body.toString())});
     } catch (e) {
       rethrow;
     }
@@ -258,7 +259,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
           .pivot
           .duree; //Mettre a jour la durre
       articles.value = newListeArticle; //Affectation des nouvelles articles
-      print("EVENTBD nouvelle article $articles");
+      log("EVENTBD nouvelle article $articles");
       playDefaultRingtone(); //On emet un son
       controller.reset(); //On reinitialise l'animation
       startNewAnimation(); //On relance l'animation
@@ -343,18 +344,16 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
 //Iniatialisation du controlleur
   @override
   void onInit() {
-    // TODO: implement onInit
     super.onInit();
     initializeDateFormatting('en_US');
     tz.initializeTimeZones();
-    print("initialisation de la bornecontroller ");
+    log("initialisation de la bornecontroller ");
     getBorne();
     startNewAnimation();
   }
 
   @override
   void onClose() {
-    // TODO: implement onClose
     super.onClose();
     controller.dispose();
   }

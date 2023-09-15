@@ -7,7 +7,6 @@ import 'package:get/get.dart';
 class AllControllerBinding extends Bindings {
   @override
   void dependencies() {
-    // TODO: implement dependencies
     Get.lazyPut<LoginService>(() => LoginService());
     Get.lazyPut<BorneController>(() => BorneController());
     Get.lazyPut<LoginController>(() => LoginController());

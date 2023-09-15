@@ -9,9 +9,9 @@ class ArticleController extends GetxController {
   final elementChangeCount = 0.obs; // Compteur pour les changements d'élément
   List<Article> articlepermanent = List.empty();
 
+  // ignore: unnecessary_overrides
   @override
   void onInit() {
-    // TODO: implement onInit
     super.onInit();
   }
 

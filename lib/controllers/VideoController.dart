@@ -1,4 +1,6 @@
 
+import 'dart:developer';
+
 import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
 
@@ -14,10 +16,9 @@ class VideoController extends GetxController {
 
   @override
   void onInit() async {
-    // TODO: implement onInit
     super.onInit();
     try {
-      print(" slide video debut initialisation");
+      log(" slide video debut initialisation");
       controller = VideoPlayerController.networkUrl(Uri.parse(urlVideo)); 
 
       await controller.initialize();
@@ -26,16 +27,11 @@ class VideoController extends GetxController {
         update();
         controller.play();
       }
-      print("slide video fin initialisation");
+      log("slide video fin initialisation");
     } catch (e) {
       rethrow;
     }
   }
 
-  @override
-  void onClose() {
-    // TODO: implement onClose
-    super.onClose();
-    controller.dispose();
-  }
+
 }

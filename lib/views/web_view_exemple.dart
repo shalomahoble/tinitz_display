@@ -1,4 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -25,11 +27,11 @@ class _WebViewExempleState extends State<WebViewExemple> {
     _controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(NavigationDelegate(
-        onProgress: (progress) => print("ON Progresse"),
+        onProgress: (progress) => log("ON Progresse"),
         onWebResourceError: (error) {
-          print("description :${error.description}");
-          print("description :${error.isForMainFrame}");
-          print("description :${error.errorCode}");
+          log("description :${error.description}");
+          log("description :${error.isForMainFrame}");
+          log("description :${error.errorCode}");
         },
       ))
       ..addJavaScriptChannel('Toaster',

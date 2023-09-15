@@ -22,7 +22,6 @@ class TimerController extends GetxController {
 
   @override
   void onInit() {
-    // TODO: implement onInit
     super.onInit();
     initializeDateFormatting('en_US');
     tz.initializeTimeZones();

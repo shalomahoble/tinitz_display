@@ -90,7 +90,6 @@ class Article {
           title == other.title;
 
   @override
-  // TODO: implement hashCode
   int get hashCode => (id.hashCode ^ title.hashCode);
 }
 

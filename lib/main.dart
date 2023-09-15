@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:borne_flutter/config/app_style.dart';
 import 'package:borne_flutter/controllers/AllControllerBinding.dart';
 import 'package:borne_flutter/controllers/ListenController.dart';
@@ -17,7 +19,7 @@ import 'package:timezone/data/latest.dart' as tz;
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print("event   $message");
+  log("event   $message");
   Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -60,7 +62,7 @@ void main() async {
   FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
     final listencontroller = Get.put(ListenController());
     listencontroller.onTokenRefreshToken(fcmToken);
-  }).onError((error) => print(error.toString()));
+  }).onError((error) => log(error.toString()));
 
   runApp(const MyApp());
 }
@@ -82,7 +84,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _receiveMessageFirebase();
     _checkToken();
@@ -100,7 +101,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> _receiveMessageFirebase() async {
     FirebaseMessaging.onMessage.listen((event) {
       if (event.notification == null) return;
-      print('EVENTBD : ${event.data['event']}');
+      log('EVENTBD : ${event.data['event']}');
 
       switch (event.data['event']) {
         //Alerte Mise a jour

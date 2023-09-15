@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:borne_flutter/controllers/BorneController.dart';
 import 'package:borne_flutter/models/Alerte.dart';
@@ -52,7 +53,7 @@ class LoginController extends GetxController {
         final response = jsonDecode(value.body);
         if (value.statusCode == 200) {
           token = response['access_token'];
-          print("EVENTBD logincontroller $token");
+          log("EVENTBD logincontroller $token");
           saveToken(token);
           box.write('token', token);
 
@@ -96,7 +97,7 @@ class LoginController extends GetxController {
     await _shortUrlService.shortenUrl(longUrl, accessToken).then((value) {
       shortUrl.value = value;
       update();
-      print("Shortened ${shortUrl.value}");
+      log("Shortened ${shortUrl.value}");
     });
   }
 
@@ -183,13 +184,13 @@ class LoginController extends GetxController {
   updateSlide(dynamic slides) {
     if (slides.isEmpty) {
       borne.value.slides = List.empty();
-      print("update vide de slide mise a jour");
+      log("update vide de slide mise a jour");
       update();
     } else {
       borne.value.slides = List.empty();
       borne.value.slides = slides;
       update();
-      print("update element de slide mise a jour");
+      log("update element de slide mise a jour");
     }
   }
 
@@ -197,12 +198,12 @@ class LoginController extends GetxController {
   void deleteSlide(dynamic slides) {
     if (slides.isEmpty) {
       borne.value.slides = List.empty();
-      print("suppression de slide mise a jour");
+      log("suppression de slide mise a jour");
       update();
     } else {
       borne.value.slides = List.empty();
       borne.value.slides = slides;
-      print("ajout de slide mise a jour");
+      log("ajout de slide mise a jour");
       update();
     }
   }
@@ -295,19 +296,19 @@ class LoginController extends GetxController {
 
   //supprimer les articles non permanent
   void startTimerForNextArticle() {
-    print("rentre");
+    log("rentre");
     if (borne.value.articles!.isNotEmpty) {
       Article currentArticle = borne.value.articles![currentIndex.value];
 
       if (shouldSkipPermanentArticle(currentArticle)) {
         skipToNextArticle();
-        print("rentre skipToNextArticle ");
+        log("rentre skipToNextArticle ");
         changeArticle.value++;
         startTimerForNextArticle();
       } else {
         delayedTask = Timer(currentArticle.seconde(), () {
           handleDisplayedPermanentArticle(currentArticle);
-          print("rentre goToNextArticle ");
+          log("rentre goToNextArticle ");
           goToNextArticle();
           // Ajoutez cette ligne pour conserver l'effet de défilement
           changeArticle.value++;
@@ -407,11 +408,7 @@ class LoginController extends GetxController {
     }
   }
 
-  @override
-  void onInit() {
-    // TODO: implement onInit
-    super.onInit();
-  }
+
 }
 
 //Get.toNamed('home');
