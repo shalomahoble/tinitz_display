@@ -1,9 +1,8 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:borne_flutter/controllers/BorneController.dart';
-import 'package:borne_flutter/main.dart';
 import 'package:borne_flutter/models/Alerte.dart';
-import 'package:borne_flutter/utils/utils.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -87,11 +86,11 @@ class AlertVideoController extends GetxController {
 
         if (videoPlayerController.value.isInitialized &&
             videoPlayerController.value.duration.inMilliseconds > 0) {
-          showMessageError(
+          /*  showMessageError(
             title: "Initialisation de la video",
             message: "VIdeo Initialiser",
             color: Colors.greenAccent,
-          );
+          ); */
           chewieController = ChewieController(
             videoPlayerController: videoPlayerController,
             autoPlay: true,
@@ -120,17 +119,11 @@ class AlertVideoController extends GetxController {
             if (!videoPlayerController.value.isPlaying &&
                 videoPlayerController.value.isInitialized &&
                 (videoPlayerController.value.position ==
-                    const Duration(seconds: 0, minutes: 0, hours: 0))) {
-              showMessageError(
-                message: "Video est termine",
-                color: Colors.blueGrey,
-              );
-            }
-            print("BDVIDEO LISTEN");
+                    const Duration(seconds: 0, minutes: 0, hours: 0))) {}
           });
 
           Timer(videoPlayerController.value.duration, () {
-            print("BDVIDEO fermer ${videoPlayerController.value.duration}");
+            log("BDVIDEO fermer ${videoPlayerController.value.duration}");
             chewieController.pause(); // Arrêter la lecture
             videoPlayerController.pause();
             Get.back();
@@ -139,7 +132,7 @@ class AlertVideoController extends GetxController {
         }
       });
     } catch (e) {
-      print('Erreur lors de la lecture de la vidéo : $e');
+      log('Erreur lors de la lecture de la vidéo : $e');
       skipToNextArticle(); // Passez a la video suivante
       loadVideo();
     }
@@ -172,7 +165,7 @@ class AlertVideoController extends GetxController {
       currentVideoIndex.value =
           (currentVideoIndex.value + 1) % videoAlert.length;
       update();
-      print("BDVIDEO nouvelle ${currentVideoIndex.value}");
+      log("BDVIDEO nouvelle ${currentVideoIndex.value}");
       loadVideo();
     }
   }
@@ -188,7 +181,6 @@ class AlertVideoController extends GetxController {
 
   @override
   void onInit() {
-    //TODO: implement onInit
     super.onInit();
 
     ever(borneController.alertes, (callback) {
@@ -198,13 +190,12 @@ class AlertVideoController extends GetxController {
       if (!isVideoPlaying.value) {
         loadVideo();
       }
-      print("j'ecouter les changement de la borne pour video");
+      log("j'ecouter les changement de la borne pour video");
     });
   }
 
   @override
   void onClose() {
-    // TODO: implement onClose
     super.onClose();
     videoPlayerController.dispose();
 
