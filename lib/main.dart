@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:borne_flutter/config/app_style.dart';
 import 'package:borne_flutter/controllers/AllControllerBinding.dart';
 import 'package:borne_flutter/controllers/ListenController.dart';
@@ -17,7 +19,7 @@ import 'package:timezone/data/latest.dart' as tz;
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print("event   $message");
+  log("event   $message");
   Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
