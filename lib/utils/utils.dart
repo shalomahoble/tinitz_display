@@ -9,6 +9,10 @@ Uri getUrl(String url) {
   return Uri.parse('$baseUrl$url');
 }
 
+Uri getQueingUrl(String url) {
+  return Uri.parse('$queingUrl$url');
+}
+
 void showMessageError(
     {String title = 'Error Message',
     required String message,

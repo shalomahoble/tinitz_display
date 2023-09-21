@@ -158,6 +158,22 @@ class ListenController extends GetxController {
     });
   }
 
+  // ####################### Tickets #######################################
+//Nouveau ticket
+  Future<void> newTicket() async {
+    await borneController.newTicket();
+  }
+
+  //suppression ticket
+  Future<void> deleteTicket(int id, int nextId) async {
+    borneController.deleteTicket(id, nextId);
+  }
+
+  //Appeller le suivant ou rappeller
+  Future<void> callTicket(int id) async {
+    borneController.callNextTicket(id);
+  }
+
 //Update all information for borne
   updateBorneInformationPeriodique() {
     Timer.periodic(const Duration(minutes: 4), (timer) {

@@ -1,5 +1,7 @@
 const baseUrl = "https://devmarket.egaz.shop/api/";
 
+const queingUrl = "http://devpankart.egaz.shop/api/";
+
 final headers = {
   'Content-Type': 'application/json',
   'Accept': 'application/json'

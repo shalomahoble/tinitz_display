@@ -3,7 +3,7 @@
 import 'package:borne_flutter/models/Direction.dart';
 
 class Site {
-  int? id;
+  int id;
   String? libelle;
   String? adresse;
   String? ville;
@@ -19,7 +19,7 @@ class Site {
   Direction direction;
 
   Site({
-    this.id,
+    required this.id,
     this.libelle,
     this.adresse,
     this.ville,

@@ -17,3 +17,6 @@ export 'section_event.dart';
 export 'video_player_widget.dart';
 export 'push_article_info.dart';
 export 'v_1_components/slide_animation.dart';
+export 'v_1_components/ticketing_display.dart';
+export 'v_1_components/caroussel_widget.dart';
+export 'v_1_components/ticketing_card.dart';

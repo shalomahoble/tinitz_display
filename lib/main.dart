@@ -4,6 +4,7 @@ import 'package:borne_flutter/config/app_style.dart';
 import 'package:borne_flutter/controllers/AllControllerBinding.dart';
 import 'package:borne_flutter/controllers/ListenController.dart';
 import 'package:borne_flutter/firebase_options.dart';
+import 'package:borne_flutter/utils/utils.dart';
 import 'package:borne_flutter/views/login.dart';
 import 'package:borne_flutter/views/view.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -50,7 +51,6 @@ void main() async {
   );
 
   /*  FirebaseAnalytics analytics = FirebaseAnalytics.instance; */
-
   await FirebaseMessaging.instance.getToken().then((value) async {
     await box.write('fcmToken', value);
   });
@@ -102,6 +102,7 @@ class _MyAppState extends State<MyApp> {
     FirebaseMessaging.onMessage.listen((event) {
       if (event.notification == null) return;
       log('EVENTBD : ${event.data['event']}');
+      final data = event.data;
 
       switch (event.data['event']) {
         //Alerte Mise a jour
@@ -143,6 +144,22 @@ class _MyAppState extends State<MyApp> {
         case 'CHANGE_STATUT_SLIDE':
           listenController.updateSlide();
           break;
+
+        //Slide mise a jour
+
+        case "NOUVEAU TICKET":
+          listenController.newTicket();
+          break;
+        case "NEXT TICKET":
+          final id = int.parse(data['current_id']);
+          final nextId = int.parse(data['next_id']);
+          listenController.deleteTicket(id, nextId);
+          break;
+        case "RAPPEL TICKET":
+          final id = int.parse(data['current_id']);
+          listenController.callTicket(id);
+          break;
+
         default:
       }
     });

@@ -1,14 +1,17 @@
 import 'dart:convert';
 import 'dart:async';
 import 'dart:developer';
+import 'package:borne_flutter/components/v_1_components/ticketing_display.dart';
 import 'package:borne_flutter/models/Alerte.dart';
 import 'package:borne_flutter/models/Artcile.dart';
 import 'package:borne_flutter/models/Borne.dart';
 import 'package:borne_flutter/models/Direction.dart';
 import 'package:borne_flutter/models/Site.dart';
+import 'package:borne_flutter/models/ticket.dart';
 import 'package:borne_flutter/services/BorneService.dart';
 import 'package:borne_flutter/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
@@ -34,6 +37,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   RxBool articleEstVide = false.obs;
   Timer delayedTask = Timer(Duration.zero, () {});
   Rx<Site> site = Site(
+    id: 0,
     image: "",
     direction: Direction(
       libelle: 'libelle',
@@ -45,6 +49,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   RxList<Article> articles = <Article>[].obs;
   RxList<Slide> slides = <Slide>[].obs;
   RxList<Alert> alertes = <Alert>[].obs;
+  RxList<Ticket> tickets = <Ticket>[].obs;
   final box = GetStorage();
 
   //Time variable
@@ -55,11 +60,12 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   String formattedDateTime = DateTime.now().toString();
 
   late AnimationController controller;
-
+  final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
   final Tween<Offset> offsetTween = Tween<Offset>(
     begin: const Offset(0.0, -4.0), // Position initiale (milieu)
     end: const Offset(0.0, -6.5), // Position finale (barre d'applications)
   );
+  FlutterTts flutterTts = FlutterTts();
 
 //Recuperer les information concernant une borne
   Future<void> getBorne() async {
@@ -79,6 +85,8 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
       currentTimeForTimeZone(); // Get timeZone to dsiplay current date and time
       slideChange(0); //Get first slide duration to init slide
       //startTimerForNextArticle(); //Start animating articles
+      getAllTicketForBorne();
+      
     } else if (response.statusCode == 400) {
       showMessageError(
         message: "Token invalide...",
@@ -339,6 +347,86 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
         }
       });
     controller.forward();
+  }
+
+  //#################################### Listen to add, update, delete borne info ####################################
+
+  Future<void> getAllTicketForBorne() async {
+    final response = await _borneService.getAllTicket(borne.value.site!.id);
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body);
+      tickets.value =
+          body["clients"].map<Ticket>((tick) => Ticket.fromJson(tick)).toList();
+      update();
+    } else {
+      log("Erreur c'est produite pour les tickets");
+    }
+  }
+
+  //New ticket
+  Future<void> newTicket() async {
+    final response = await _borneService.getAllTicket(borne.value.site!.id);
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body);
+      final newTicket =
+          body["clients"].map<Ticket>((tick) => Ticket.fromJson(tick)).toList();
+      final lastTicket = newTicket[newTicket.length - 1];
+      tickets.add(lastTicket);
+      listKey.currentState!.insertItem(newTicket.length - 1,
+          duration: const Duration(seconds: 3));
+      update();
+      final phrase =
+          "le Ticket ${lastTicket.numClient} est attendu a la ${lastTicket.caisse.libelle}";
+      speak(phrase);
+    } else {
+      log(response.body.toString());
+    }
+  }
+
+  //delete ticket
+  void deleteTicket(int id, int nextId) {
+    if (tickets.isNotEmpty && isPresent(id)) {
+      //Recuperer l'index du ticket
+      final index = tickets.indexWhere((el) => el.id == id);
+      //Suppression dans la liste a un index
+      final removeItem = tickets.removeAt(index);
+      listKey.currentState!.removeItem(
+          index,
+          (context, animation) => TicketingDisplay(
+                ticket: removeItem,
+                animation: animation,
+              ),
+          duration: const Duration(microseconds: 300));
+      update();
+      //Client suivant a appelle ticket
+      callNextTicket(nextId);
+    }
+  }
+
+  //Appeller le suivant ou rappeller
+  void callNextTicket(int nextId) {
+    if (tickets.isNotEmpty && isPresent(nextId)) {
+      final nextTicket = tickets.where((el) => el.id == nextId).toList().first;
+      final text =
+          "le Ticket ${nextTicket.numClient} est attendu a la ${nextTicket.caisse.libelle}";
+      speak(text);
+    }
+  }
+
+  //Verifie si l'id est present dans ma liste d'article
+  bool isPresent(int id) {
+    return tickets.any((el) => el.id == id);
+  }
+
+  //Function to speak ...
+  Future<void> speak(String text) async {
+    await flutterTts.setLanguage("fr-FR"); // Choisissez la langue
+    // Réglage de la hauteur de la voix (1.0 est la hauteur par défaut)
+    await flutterTts.setPitch(1.0);
+    // Réglage de la vitesse de la voix (1.0 est la vitesse par défaut)
+    await flutterTts.setSpeechRate(.5);
+
+    await flutterTts.speak(text); // Lecture du texte
   }
 
 //Iniatialisation du controlleur

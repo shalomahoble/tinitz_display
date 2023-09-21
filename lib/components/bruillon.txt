@@ -157,3 +157,22 @@
   }
 
   eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vZGV2bWFya2V0LmVnYXouc2hvcC9hcGkvYXV0aC9yZWZyZXNoIiwiaWF0IjoxNjkzMjM4OTg2LCJleHAiOjE2OTMyNDI2MDIsIm5iZiI6MTY5MzIzOTAwMiwianRpIjoiVjRncGdDNmxuTjcwRzUwSiIsInN1YiI6IjciLCJwcnYiOiI2YjVhYjcyNDg0MzY3ZWJlYzYyNjMxMmE0NTI1NTM0Yjk1MTQyZTBkIn0.BQOQMWguIppxmB4-q3kwMqJWwQooyXmkK2aFKkZ0c70
+
+
+
+  Text("00001 - Pierre", style: flashInfoTextStyle),
+              Expanded(
+                  child: Container(
+                width: 10,
+                height: 2,
+                margin: const EdgeInsets.symmetric(horizontal: 10),
+                decoration: const BoxDecoration(
+                  color: Colors.black,
+                ),
+              )),
+              Text(
+                "Caisse 02",
+                style: flashInfoTextStyle.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+              ),

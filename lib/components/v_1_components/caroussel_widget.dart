@@ -1,5 +1,4 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:borne_flutter/utils/utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -7,12 +6,12 @@ import 'package:get/get.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-import 'package:borne_flutter/components/flash_push_article.dart';
-import 'package:borne_flutter/components/titrologie_slider.dart';
+import 'package:borne_flutter/components/components.dart';
 import 'package:borne_flutter/config/app_style.dart';
 import 'package:borne_flutter/config/size_config.dart';
 import 'package:borne_flutter/controllers/BorneController.dart';
 import 'package:borne_flutter/models/Artcile.dart';
+import 'package:borne_flutter/utils/utils.dart';
 
 class CarousselWidget extends StatelessWidget {
   const CarousselWidget({
@@ -54,66 +53,7 @@ class CarousselWidget extends StatelessWidget {
 
               /*  const FlashArticle(), */
               FlashPushArticle(articles: borneController.articles),
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 60,
-                child: Container(
-                  height: 250,
-                  margin:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                  padding: const EdgeInsets.all(30),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Caisse 02",
-                            style: flashInfoTextStyle.copyWith(
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                          const Divider(color: Colors.black, thickness: 2),
-                          Text("00001 - Pierre", style: flashInfoTextStyle)
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text("00001 - Pierre", style: flashInfoTextStyle),
-                              Expanded(
-                                  child: Container(
-                                width: 10,
-                                height: 2,
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 10),
-                                decoration: const BoxDecoration(
-                                  color: Colors.black,
-                                ),
-                              )),
-                              Text(
-                                "Caisse 02",
-                                style: flashInfoTextStyle.copyWith(
-                                  fontWeight: FontWeight.w800,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const Divider(color: Colors.black, thickness: 2),
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-              ),
+              const TicketingCard(),
             ],
           ),
         );

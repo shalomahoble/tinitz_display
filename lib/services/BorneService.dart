@@ -44,4 +44,15 @@ class BorneService extends GetxService {
       rethrow;
     }
   }
+
+  Future<http.Response> getAllTicket(int siteId) async {
+    try {
+      http.Response response =
+          await http.get(getQueingUrl("site/$siteId/tickets"));
+      return response;
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
+  }
 }

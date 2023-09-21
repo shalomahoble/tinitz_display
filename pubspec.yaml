@@ -60,6 +60,7 @@ dependencies:
   shimmer_animation: ^2.1.0
   chewie: ^1.5.0
   video_player: ^2.7.1
+  flutter_tts: ^3.8.3
 
 flutter_launcher_icons:
   android: "launcher_icon"
