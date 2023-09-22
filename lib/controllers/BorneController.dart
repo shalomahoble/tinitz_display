@@ -86,7 +86,6 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
       slideChange(0); //Get first slide duration to init slide
       //startTimerForNextArticle(); //Start animating articles
       getAllTicketForBorne();
-      
     } else if (response.statusCode == 400) {
       showMessageError(
         message: "Token invalide...",
@@ -371,9 +370,11 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
       final newTicket =
           body["clients"].map<Ticket>((tick) => Ticket.fromJson(tick)).toList();
       final lastTicket = newTicket[newTicket.length - 1];
-      tickets.add(lastTicket);
-      listKey.currentState!.insertItem(newTicket.length - 1,
-          duration: const Duration(seconds: 3));
+      if (!isPresent(lastTicket.id)) {
+        tickets.add(lastTicket);
+        listKey.currentState!.insertItem(newTicket.length - 1,
+            duration: const Duration(seconds: 3));
+      }
       update();
       final phrase =
           "le Ticket ${lastTicket.numClient} est attendu a la ${lastTicket.caisse.libelle}";
