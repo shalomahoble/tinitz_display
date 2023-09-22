@@ -1,7 +1,6 @@
 import 'package:borne_flutter/components/components.dart';
 import 'package:borne_flutter/config/app_style.dart';
 import 'package:borne_flutter/config/size_config.dart';
-import 'package:borne_flutter/models/ticket.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

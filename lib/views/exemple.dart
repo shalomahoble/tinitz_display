@@ -33,10 +33,6 @@ class _ExempleState extends State<Exemple> with TickerProviderStateMixin {
     _controller.forward();
   }
 
-  final Tween<Offset> _offsetTween = Tween<Offset>(
-    begin: const Offset(0.0, -2.0), // Position initiale (milieu)
-    end: const Offset(0.0, -5.0), // Position finale (barre d'applications)
-  );
 
   @override
   void dispose() {
