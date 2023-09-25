@@ -376,9 +376,9 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
             duration: const Duration(seconds: 3));
       }
       update();
-      final phrase =
+      /* final phrase =
           "le Ticket ${lastTicket.numClient} est attendu a la ${lastTicket.caisse.libelle}";
-      speak(phrase);
+      speak(phrase); */
     } else {
       log(response.body.toString());
     }

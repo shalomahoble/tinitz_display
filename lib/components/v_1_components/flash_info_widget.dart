@@ -40,7 +40,7 @@ class FlashInfoWidget extends StatelessWidget {
                 ),
               ),
               Expanded(
-                child: Container(
+                child: SizedBox(
                   child: Marquee(
                     text: '$alertText | ',
                     style: flashInfoTextStyle.copyWith(

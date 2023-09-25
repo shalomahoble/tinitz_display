@@ -34,7 +34,6 @@ class _HeaderState extends State<Header> {
   @override
   void initState() {
     initializeDateFormatting('en_US');
-    // TODO: implement initState
     super.initState();
 
     tz.initializeTimeZones();

@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable
+
 import 'package:borne_flutter/components/components.dart';
 import 'package:borne_flutter/config/app_style.dart';
 import 'package:borne_flutter/config/size_config.dart';
