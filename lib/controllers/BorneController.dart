@@ -373,7 +373,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
       if (!isPresent(lastTicket.id)) {
         tickets.add(lastTicket);
         listKey.currentState!.insertItem(newTicket.length - 1,
-            duration: const Duration(seconds: 3));
+            duration: const Duration(milliseconds: 300));
       }
       update();
       /* final phrase =

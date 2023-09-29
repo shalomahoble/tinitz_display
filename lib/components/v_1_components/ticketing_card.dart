@@ -16,6 +16,23 @@ class TicketingCard extends StatelessWidget {
     SizeConfig().init(context);
     final borneController = Get.find<BorneController>();
 
+    double heightCard() {
+      if (borneController.tickets.length == 1) {
+        return (SizeConfig.blockHorizontal! * 20) *
+            borneController.tickets.length;
+      } else if (borneController.tickets.length == 2 ||
+          borneController.tickets.length == 3) {
+        return (SizeConfig.blockHorizontal! * 14) *
+            borneController.tickets.length;
+      }
+      return SizeConfig.blockHorizontal! * 42;
+    }
+
+    /*  borneController.tickets.length <= 3
+                ? (SizeConfig.blockHorizontal! * 20) *
+                    borneController.tickets.length
+                : SizeConfig.blockHorizontal! * 40, */
+
     return Obx(() {
       if (borneController.tickets.isEmpty) {
         return const SizedBox.shrink();
@@ -23,9 +40,9 @@ class TicketingCard extends StatelessWidget {
         return Positioned(
           left: 0,
           right: 0,
-          bottom: 60,
+          bottom: 15,
           child: Container(
-            height: SizeConfig.blockHorizontal! * 70,
+            height: heightCard(),
             margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             decoration: BoxDecoration(

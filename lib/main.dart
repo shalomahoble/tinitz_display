@@ -19,7 +19,6 @@ import 'package:timezone/data/latest.dart' as tz;
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  log("event   $message");
   Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
