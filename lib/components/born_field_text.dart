@@ -25,6 +25,8 @@ class BornFieldText extends StatelessWidget {
               }
               return null;
             },
+            onTapOutside: (event) =>
+                FocusManager.instance.primaryFocus?.unfocus(),
             controller: controller,
             cursorColor: Colors.red,
             decoration: InputDecoration(

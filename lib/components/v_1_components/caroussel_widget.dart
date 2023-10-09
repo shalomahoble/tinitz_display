@@ -90,8 +90,8 @@ class FlashArticle extends StatelessWidget {
         horizontal: SizeConfig.blockHorizontal! * 1,
       ),
       height: SizeConfig.blockHorizontal! * 20,
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: Colors.red.shade400,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -126,7 +126,7 @@ class FlashArticle extends StatelessWidget {
                 child: Text(
                   article.title,
                   style: flashInfoTitleStyle.copyWith(
-                    color: Colors.grey.shade800,
+                    color: Colors.white,
                     fontSize: 15,
                   ),
                   textAlign: TextAlign.justify,
@@ -161,7 +161,7 @@ class FlashArticle extends StatelessWidget {
                   child: Text(
                     "Scanner le Qr Code pour lire plus l'article",
                     style: scannerSubTitleStyle.copyWith(
-                      color: Colors.black,
+                      color: Colors.white,
                       fontSize: 10,
                       fontWeight: FontWeight.w500,
                     ),
@@ -202,7 +202,7 @@ class SponsorWidget extends StatelessWidget {
         const Text(
           "Source :",
           style: TextStyle(
-            color: Colors.red,
+            color: Colors.black,
             fontSize: 10,
             fontWeight: FontWeight.w700,
             fontStyle: FontStyle.italic,
@@ -212,7 +212,7 @@ class SponsorWidget extends StatelessWidget {
         Text(
           source,
           style: const TextStyle(
-            color: Colors.black,
+            color: Colors.white,
             fontStyle: FontStyle.normal,
             fontSize: 10,
           ),
@@ -221,7 +221,7 @@ class SponsorWidget extends StatelessWidget {
         const Text(
           "Sponsor :",
           style: TextStyle(
-            color: Colors.red,
+            color: Colors.black,
             fontSize: 10,
             fontWeight: FontWeight.w700,
             fontStyle: FontStyle.italic,
@@ -239,7 +239,7 @@ class SponsorWidget extends StatelessWidget {
         SizedBox(width: SizeConfig.blockHorizontal! * 1),
         Text(nomSponsor ?? '...',
             style: const TextStyle(
-              color: Colors.black,
+              color: Colors.white,
               fontStyle: FontStyle.normal,
               fontSize: 10,
             )),

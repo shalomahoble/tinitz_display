@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:borne_flutter/components/components.dart';
 import 'package:borne_flutter/config/app_style.dart';
 import 'package:borne_flutter/config/size_config.dart';
@@ -27,6 +29,7 @@ class TicketingCard extends StatelessWidget {
       }
       return SizeConfig.blockHorizontal! * 42;
     }
+
 
     /*  borneController.tickets.length <= 3
                 ? (SizeConfig.blockHorizontal! * 20) *

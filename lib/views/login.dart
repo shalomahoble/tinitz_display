@@ -17,7 +17,9 @@ class Login extends StatelessWidget {
   connectBorne() {
     if (_formKey.currentState!.validate()) {
       Get.find<LoginController>().loginBorne(
-          code: codeController.text, password: passwordController.text);
+        code: codeController.text,
+        password: passwordController.text,
+      );
     }
   }
 
@@ -36,15 +38,20 @@ class Login extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: 100,
-                  height: 140,
+                Image.asset(
+                  'assets/images/tinitz-logo.png',
+                  width: SizeConfig.screenWidth,
+                  height: SizeConfig.blockHorizontal! * 50,
+                ),
+                /*     Container(
+                  width: SizeConfig.screenWidth,
+                  height: SizeConfig.blockHorizontal! * 50,
                   decoration: const BoxDecoration(
                     image: DecorationImage(
                       image: AssetImage('assets/images/tinitz-logo.png'),
                     ),
                   ),
-                ),
+                ), */
                 Text(
                   'Connectez-vous',
                   style: titleWelcome,

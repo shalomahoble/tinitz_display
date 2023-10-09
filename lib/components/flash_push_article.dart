@@ -1,4 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first, unrelated_type_equality_checks
+import 'dart:developer';
+
 import 'package:borne_flutter/components/v_1_components/caroussel_widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -27,28 +29,42 @@ class FlashPushArticle extends StatelessWidget {
       if (borneController.articleEstVide.value == true || articles.isEmpty) {
         return const SizedBox.shrink();
       } else if (articles.isNotEmpty) {
-        return AnimatedBuilder(
-          animation: borneController.controller,
-          builder: (context, child) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SlideTransition(
-                  position: borneController.offsetTween.animate(
-                    borneController.controller,
-                  ),
-                  child: FlashArticle(
-                    article:
-                        articles[borneController.currentArticleIndex.value],
-                    key: ValueKey<int>(
-                      borneController.articleChangeAnimation.value,
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
+        return Align(
+          alignment: const AlignmentDirectional(0, -0.9),
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 500),
+            opacity: borneController.isCardVisible.value ? 1.0 : 0.0,
+            child: FlashArticle(
+              article: articles[borneController.currentArticleIndex.value],
+              key: ValueKey<int>(
+                borneController.articleChangeAnimation.value,
+              ),
+            ),
+          ),
         );
+
+        // return AnimatedBuilder(
+        //   animation: borneController.controller,
+        //   builder: (context, child) {
+        //     return Column(
+        //       mainAxisAlignment: MainAxisAlignment.center,
+        //       children: [
+        //         SlideTransition(
+        //           position: borneController.offsetTween.animate(
+        //             borneController.controller,
+        //           ),
+        //           child: FlashArticle(
+        //             article:
+        //                 articles[borneController.currentArticleIndex.value],
+        //             key: ValueKey<int>(
+        //               borneController.articleChangeAnimation.value,
+        //             ),
+        //           ),
+        //         ),
+        //       ],
+        //     );
+        //   },
+        // );
       } else {
         return const SizedBox.shrink();
       }

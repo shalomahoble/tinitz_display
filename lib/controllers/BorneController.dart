@@ -32,10 +32,11 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   RxInt currentArticleIndex = 0.obs;
   RxInt currentArticleduree = 10.obs;
   RxInt articleChangeAnimation = 0.obs;
-  Set<int> permanentArticleIdsDisplayed =
-      {}; // Initialisez en dehors de la fonction
+  // Initialisez en dehors de la fonction
+  Set<int> permanentArticleIdsDisplayed = {};
   RxBool articleEstVide = false.obs;
   Timer delayedTask = Timer(Duration.zero, () {});
+  RxBool isCardVisible = true.obs;
   Rx<Site> site = Site(
     id: 0,
     image: "",
@@ -71,6 +72,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   Future<void> getBorne() async {
     final response = await _borneService.getBorne();
     if (response.statusCode == 200) {
+      log('je suis entre');
       final body = jsonDecode(response.body);
       final token = body['access_token'];
       box.write('token', token);
@@ -86,6 +88,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
       slideChange(0); //Get first slide duration to init slide
       //startTimerForNextArticle(); //Start animating articles
       getAllTicketForBorne();
+      startVisibleAnimation();
     } else if (response.statusCode == 400) {
       showMessageError(
         message: "Token invalide...",
@@ -165,7 +168,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
           log("rentre goToNextArticle ");
           goToNextArticle();
           // Ajoutez cette ligne pour conserver l'effet de défilement
-          //articleChangeAnimation.value++;
+          articleChangeAnimation.value++;
           // startTimerForNextArticle();
         });
       }
@@ -200,6 +203,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
           (currentArticleIndex.value + 1) % articles.length;
       currentArticleduree.value =
           articles[currentArticleIndex.value].pivot.duree;
+      update();
     }
     /* changeArticle.value++;
     update(); */
@@ -268,8 +272,9 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
       articles.value = newListeArticle; //Affectation des nouvelles articles
       log("EVENTBD nouvelle article $articles");
       playDefaultRingtone(); //On emet un son
-      controller.reset(); //On reinitialise l'animation
-      startNewAnimation(); //On relance l'animation
+      //controller.reset(); //On reinitialise l'animation
+      // startNewAnimation();
+      startVisibleAnimation(); //On relance l'animation
       //delayedTask.cancel();
       //startTimerForNextArticle();
       update(); //On informe tout le monde
@@ -346,6 +351,27 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
         }
       });
     controller.forward();
+  }
+
+  // function to start animation article isVisible
+
+  void startVisibleAnimation() {
+    Timer.periodic(Duration(seconds: currentArticleduree.value), (timer) {
+      if (articles.isNotEmpty) {
+        Article currentArticle = articles[currentArticleIndex.value];
+        if (shouldSkipPermanentArticle(currentArticle)) {
+          skipToNextArticle();
+          startVisibleAnimation();
+        } else {
+          handleDisplayedPermanentArticle(currentArticle);
+          isCardVisible(!isCardVisible.value);
+          if (isCardVisible.isTrue) {
+            goToNextArticle();
+            playDefaultRingtone();
+          }
+        }
+      }
+    });
   }
 
   //#################################### Listen to add, update, delete borne info ####################################
@@ -438,7 +464,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
     tz.initializeTimeZones();
     log("initialisation de la bornecontroller ");
     getBorne();
-    startNewAnimation();
+    // startNewAnimation();
   }
 
   @override

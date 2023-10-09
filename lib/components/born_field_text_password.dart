@@ -32,6 +32,8 @@ class _BornFieldTextPasswordState extends State<BornFieldTextPassword> {
               }
               return null;
             },
+            onTapOutside: (event) =>
+                FocusManager.instance.primaryFocus?.unfocus(),
             controller: widget.controller,
             cursorColor: KOrange,
             obscureText: _obscureText,
