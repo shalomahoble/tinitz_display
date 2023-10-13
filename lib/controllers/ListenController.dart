@@ -160,8 +160,13 @@ class ListenController extends GetxController {
 
   // ####################### Tickets #######################################
 //Nouveau ticket
-  Future<void> newTicket() async {
-    await borneController.newTicket();
+  Future<void> newTicket({required int id, required int nextId}) async {
+    await borneController.newTicket(id: id, nextId: nextId);
+  }
+
+//Nouveau debut
+  Future<void> firstTicket({required int id}) async {
+    await borneController.firstTicket(id: id);
   }
 
   //suppression ticket

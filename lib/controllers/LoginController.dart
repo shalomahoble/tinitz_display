@@ -53,12 +53,12 @@ class LoginController extends GetxController {
         final response = jsonDecode(value.body);
         if (value.statusCode == 200) {
           token = response['access_token'];
-          log("EVENTBD logincontroller $token");
+          //log("EVENTBD logincontroller $token");
           saveToken(token);
           box.write('token', token);
 
           final fbToken = await box.read('fcmToken');
-          update();
+         // update();
           borneController.sendToken(code: code, fbToken: fbToken);
 
           // borne.value = Borne.fromJson(response['borne']);

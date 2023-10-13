@@ -99,7 +99,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> _receiveMessageFirebase() async {
     FirebaseMessaging.onMessage.listen((event) {
       if (event.notification == null) return;
-      log('EVENTBD : ${event.data['event']}');
+      log('EVENTBD : ${event.data}');
       final data = event.data;
 
       switch (event.data['event']) {
@@ -145,14 +145,14 @@ class _MyAppState extends State<MyApp> {
 
         //Slide mise a jour
 
-        case "NOUVEAU TICKET":
-          listenController.newTicket();
-          break;
         case "NEXT TICKET":
           final id = int.parse(data['current_id']);
           final nextId = int.parse(data['next_id']);
-
-          listenController.deleteTicket(id, nextId);
+          listenController.newTicket(id: id, nextId: nextId);
+          break;
+        case "DEBUT TICKET":
+          final id = int.parse(data['id']);
+          listenController.firstTicket(id: id);
           break;
         case "RAPPEL TICKET":
           final id = int.parse(data['current_id']);

@@ -87,7 +87,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
       currentTimeForTimeZone(); // Get timeZone to dsiplay current date and time
       slideChange(0); //Get first slide duration to init slide
       //startTimerForNextArticle(); //Start animating articles
-      getAllTicketForBorne();
+      // getAllTicketForBorne();
       startVisibleAnimation();
     } else if (response.statusCode == 400) {
       showMessageError(
@@ -389,25 +389,50 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   }
 
   //New ticket
-  Future<void> newTicket() async {
+  Future<void> newTicket({required int id, required int nextId}) async {
     final response = await _borneService.getAllTicket(borne.value.site!.id);
+
+    if (tickets.isNotEmpty && isPresent(id)) {
+      //Recuperer l'index du ticket
+      final index = tickets.indexWhere((el) => el.id == id);
+      //Suppression dans la liste a un index
+      final removeItem = tickets.removeAt(index);
+      listKey.currentState?.removeItem(
+          index,
+          (context, animation) => TicketingDisplay(
+                ticket: removeItem,
+                animation: animation,
+              ),
+          duration: const Duration(microseconds: 300));
+      update();
+    }
+
     if (response.statusCode == 200) {
       final body = jsonDecode(response.body);
-      final newTicket =
-          body["clients"].map<Ticket>((tick) => Ticket.fromJson(tick)).toList();
-      final lastTicket = newTicket[newTicket.length - 1];
-      if (!isPresent(lastTicket.id)) {
-        tickets.add(lastTicket);
-        listKey.currentState!.insertItem(newTicket.length - 1,
-            duration: const Duration(milliseconds: 300));
+      final newTicket = body["clients"]
+          .map<Ticket>((tick) => Ticket.fromJson(tick))
+          .toList() as List<Ticket>;
+      if (newTicket.isNotEmpty && nextId != 0) {
+        final tickect = newTicket.where((el) => el.id == nextId).toList().first;
+        if (!isPresent(tickect.id)) {
+          tickets.add(tickect);
+          listKey.currentState?.insertItem(
+            0,
+            duration: const Duration(milliseconds: 300),
+          );
+          callTicket(tickect);
+        }
+        update();
       }
-      update();
-      /* final phrase =
-          "le Ticket ${lastTicket.numClient} est attendu a la ${lastTicket.caisse.libelle}";
-      speak(phrase); */
     } else {
       log(response.body.toString());
     }
+  }
+
+  void callTicket(Ticket ticket) {
+    final text =
+        "le Ticket ${ticket.numClient} est attendu a la ${ticket.caisse.libelle}";
+    speak(text);
   }
 
   //delete ticket
@@ -423,10 +448,33 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
                 ticket: removeItem,
                 animation: animation,
               ),
-          duration: const Duration(microseconds: 300));
+          duration: const Duration(seconds: 300));
       update();
       //Client suivant a appelle ticket
       callNextTicket(nextId);
+    }
+  }
+
+  //Debut du ticket
+  Future<void> firstTicket({required int id}) async {
+    final response = await _borneService.getAllTicket(borne.value.site!.id);
+
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body);
+      final newTicket = body["clients"]
+          .map<Ticket>((tick) => Ticket.fromJson(tick))
+          .toList() as List<Ticket>;
+
+      final tickect = newTicket.where((el) => el.id == id).toList().first;
+      if (!isPresent(tickect.id)) {
+        tickets.add(tickect);
+        listKey.currentState?.insertItem(
+          0,
+          duration: const Duration(seconds: 3),
+        );
+        callTicket(tickect);
+        update();
+      }
     }
   }
 

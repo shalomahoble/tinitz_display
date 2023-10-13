@@ -20,16 +20,14 @@ class TicketingCard extends StatelessWidget {
 
     double heightCard() {
       if (borneController.tickets.length == 1) {
-        return (SizeConfig.blockHorizontal! * 20) *
+        return (SizeConfig.blockHorizontal! * 30) *
             borneController.tickets.length;
-      } else if (borneController.tickets.length == 2 ||
-          borneController.tickets.length == 3) {
-        return (SizeConfig.blockHorizontal! * 14) *
+      } else if (borneController.tickets.length == 2) {
+        return (SizeConfig.blockHorizontal! * 25) *
             borneController.tickets.length;
       }
-      return SizeConfig.blockHorizontal! * 42;
+      return SizeConfig.blockHorizontal! * 50;
     }
-
 
     /*  borneController.tickets.length <= 3
                 ? (SizeConfig.blockHorizontal! * 20) *
@@ -43,7 +41,7 @@ class TicketingCard extends StatelessWidget {
         return Positioned(
           left: 0,
           right: 0,
-          bottom: 15,
+          bottom: 35,
           child: Container(
             height: heightCard(),
             margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
@@ -55,7 +53,7 @@ class TicketingCard extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  "Liste de Tickets en cours",
+                  "Liste de Tickets en Appelés",
                   style: titleWelcome.copyWith(fontSize: 17),
                 ),
                 const SizedBox(height: 5),

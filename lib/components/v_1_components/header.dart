@@ -22,7 +22,7 @@ class Header extends StatelessWidget {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Expanded(
-      flex: 0,
+      flex: 1,
       child: Container(
         height: SizeConfig.blockHorizontal! * 15,
         color: Colors.white,
@@ -34,9 +34,10 @@ class Header extends StatelessWidget {
             CachedNetworkImage(
               imageUrl: imagePath!,
               fit: BoxFit.cover,
-              height: SizeConfig.blockHorizontal! * 10,
+              height: SizeConfig.blockHorizontal! * 20,
+              width: SizeConfig.blockHorizontal! * 20,
               errorWidget: (context, url, error) => const Text(
-                "Logo insdisponible...",
+                "Image du site insdisponible...",
               ),
               placeholder: (context, url) =>
                   LoadingAnimationWidget.fourRotatingDots(
@@ -46,7 +47,11 @@ class Header extends StatelessWidget {
             ),
             Text(
               time,
-              style: timeStyle.copyWith(color: Colors.black),
+              style: timeStyle.copyWith(
+                color: Colors.black,
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ],
         ),
