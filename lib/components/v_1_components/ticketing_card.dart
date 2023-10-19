@@ -41,7 +41,7 @@ class TicketingCard extends StatelessWidget {
         return Positioned(
           left: 0,
           right: 0,
-          bottom: 35,
+          bottom: 30,
           child: Container(
             height: heightCard(),
             margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),

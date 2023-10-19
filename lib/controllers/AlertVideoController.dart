@@ -6,6 +6,7 @@ import 'package:borne_flutter/models/Alerte.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:video_player/video_player.dart';
 
 class AlertVideoController extends GetxController {
@@ -47,10 +48,20 @@ class AlertVideoController extends GetxController {
           videoAlerts[currentVideoIndex.value].randomVideo;
       log("BDVIDEO l'index de la video ${currentVideoIndex.value}");
       update();
-      if (Get.isDialogOpen!) {
-        Get.back();
+
+      //Fermer le showmodal si c'est ouvert
+      // if (Get.isDialogOpen!) {
+      //   Get.back();
+      // }
+      //Verifier si la video est fini avant de lancer
+      if (isVideoPlaying.isFalse) {
+        log("BDVIDEO loguer la video ");
+        if (Get.isDialogOpen!) {
+          Get.back();
+        }
+        isVideoPlaying(true);
+        _playVideo(currentVideoUrl.value);
       }
-      _playVideo(currentVideoUrl.value);
 
       /*     final subscription =
           InternetConnectivity() //verifiier si on a la connexion
@@ -117,18 +128,23 @@ class AlertVideoController extends GetxController {
 
           videoPlayerController.addListener(() {
             if (!videoPlayerController.value.isPlaying &&
-                videoPlayerController.value.isInitialized &&
                 (videoPlayerController.value.position ==
-                    const Duration(seconds: 0, minutes: 0, hours: 0))) {}
+                    videoPlayerController.value.duration)) {
+              log("BDVIDEO ecoute ${videoPlayerController.value.position}");
+              log("BDVIDEO vrai fermer ${videoPlayerController.value.duration}");
+              Get.back();
+              isVideoPlaying(false);
+              _onVideoFinished();
+            }
           });
 
-          Timer(videoPlayerController.value.duration, () {
-            log("BDVIDEO fermer ${videoPlayerController.value.duration}");
-            chewieController.pause(); // Arrêter la lecture
-            videoPlayerController.pause();
-            Get.back();
-            _onVideoFinished();
-          });
+          // Timer(videoPlayerController.value.duration, () {
+          //   log("BDVIDEO fermer ${videoPlayerController.value.duration}");
+          //   chewieController.pause(); // Arrêter la lecture
+          //   videoPlayerController.pause();
+          //   Get.back();
+          //   _onVideoFinished();
+          // });
         }
       });
     } catch (e) {
@@ -184,7 +200,9 @@ class AlertVideoController extends GetxController {
     super.onInit();
 
     ever(borneController.alertes, (callback) {
-      videoTimer.cancel();
+      if (!videoTimer.isActive) {
+        videoTimer.cancel();
+      }
       currentVideoIndex.value = 0;
       update();
       if (!isVideoPlaying.value) {

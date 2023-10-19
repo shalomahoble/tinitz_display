@@ -1,8 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:borne_flutter/config/app_style.dart';
 import 'package:borne_flutter/config/size_config.dart';
 import 'package:flutter/material.dart';
 
-import 'package:borne_flutter/config/app_style.dart';
 import 'package:borne_flutter/models/ticket.dart';
 
 class TicketingDisplay extends StatelessWidget {
@@ -21,45 +21,42 @@ class TicketingDisplay extends StatelessWidget {
       sizeFactor: animation,
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 5),
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(5),
         decoration: BoxDecoration(
           color: Colors.grey.shade200,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text(ticket.caisse.libelle),
-
-                // Expanded(
-                //   child: ListTile(
-                //     leading: const Icon(Icons.contact_page, size: 35),
-                //     title: Text(ticket.numClient,
-                //         style: laStyle.copyWith(fontSize: 15)),
-                //     trailing: Text(
-                //       ticket.caisse.libelle,
-                //       style: laStyle.copyWith(fontSize: 15),
-                //     ),
-                //     subtitle: Text(ticket.createdAtDate()),
-                //   ),
-                // ),
-              ],
+            Align(
+              alignment: Alignment.topRight,
+              child: Text(
+                ticket.caisse.libelle,
+                style: flashInfoTextStyle.copyWith(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ),
             Row(
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(50),
                   child: Image.network(
-                    "https://images.pexels.com/photos/1435750/pexels-photo-1435750.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-                    width: SizeConfig.blockHorizontal! * 10,
-                    height: SizeConfig.blockHorizontal! * 10,
+                    ticket.caisse.image,
+                    width: SizeConfig.blockHorizontal! * 5,
+                    height: SizeConfig.blockHorizontal! * 5,
                     fit: BoxFit.cover,
                   ),
                 ),
                 SizedBox(width: SizeConfig.blockHorizontal! * 10),
-                Text(ticket.numClient)
+                Text(
+                  ticket.numClient,
+                  style: flashInfoTextStyle.copyWith(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                  ),
+                )
               ],
             ),
           ],

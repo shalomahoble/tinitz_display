@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:borne_flutter/controllers/BorneController.dart';
 import 'package:borne_flutter/models/Alerte.dart';
 import 'package:borne_flutter/models/Borne.dart';
 import 'package:borne_flutter/models/slide.dart';
@@ -29,7 +28,6 @@ class LoginController extends GetxController {
 
   final LoginService _loginService = LoginService();
   final ShortUrlService _shortUrlService = ShortUrlService();
-  final borneController = BorneController();
   Timer delayedTask = Timer(Duration.zero, () {});
 
   final box = GetStorage();
@@ -58,16 +56,16 @@ class LoginController extends GetxController {
           box.write('token', token);
 
           final fbToken = await box.read('fcmToken');
-         // update();
-          borneController.sendToken(code: code, fbToken: fbToken);
+          // update();
+
+          sendToken(code: code, fbToken: fbToken)
+              .then((value) => Get.toNamed('homePage'));
 
           // borne.value = Borne.fromJson(response['borne']);
           // isAlerte(borne.value); Savoir si une alerte est video ou pas
           //verfieAlerteIsEmpty();  Savoir si une alerte est text ou pas
 
           // startTimerForNextArticle(); // Demarrer l'animation des articles
-
-          Get.offAllNamed('homePage');
         } else {
           loading(false);
           showMessageError(message: jsonDecode(value.body)['message']);
@@ -87,6 +85,17 @@ class LoginController extends GetxController {
     final list = jsonData.map((item) => Alert.fromJson(item)).toList();
     alertes.value = list;
     // Vous pouvez maintenant utiliser `alertes` qui contient toutes les instances d'Alerte
+  }
+
+  Future<void> sendToken(
+      {required String code, required String fbToken}) async {
+    try {
+      await _loginService
+          .sendToken(code: code, fbToken: fbToken)
+          .then((response) => {log(response.body.toString())});
+    } catch (e) {
+      rethrow;
+    }
   }
 
   void getUrl() async {
@@ -407,8 +416,6 @@ class LoginController extends GetxController {
       }
     }
   }
-
-
 }
 
 //Get.toNamed('home');

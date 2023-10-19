@@ -16,8 +16,10 @@ class HomePage extends GetView<BorneController> {
     // ignore: unused_local_variable
     final alertVideoController = Get.put(AlertVideoController());
 
+    controller.getBorne();
+
     return Obx(() {
-      if (controller.borneLoading.value == true) {
+      if (controller.borneLoading.isTrue) {
         return Scaffold(
           body: Column(
             children: [

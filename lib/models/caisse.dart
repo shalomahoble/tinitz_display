@@ -3,6 +3,7 @@ import 'dart:convert';
 class Caisse {
   final int? id;
   final String libelle;
+  final String image;
   final int? siteId;
   final int? directionId;
   final int? serviceId;
@@ -14,6 +15,7 @@ class Caisse {
   Caisse({
     this.id,
     required this.libelle,
+    required this.image,
     this.siteId,
     this.directionId,
     this.serviceId,
@@ -30,6 +32,7 @@ class Caisse {
   factory Caisse.fromJson(Map<String, dynamic> json) => Caisse(
         id: json["id"],
         libelle: json["libelle"],
+        image: json["image"],
         siteId: json["site_id"],
         directionId: json["direction_id"],
         serviceId: json["service_id"],
@@ -42,6 +45,7 @@ class Caisse {
   Map<String, dynamic> toJson() => {
         "id": id,
         "libelle": libelle,
+        "image": image,
         "site_id": siteId,
         "direction_id": directionId,
         "service_id": serviceId,

@@ -22,9 +22,9 @@ class Header extends StatelessWidget {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Expanded(
-      flex: 1,
+      flex: 0,
       child: Container(
-        height: SizeConfig.blockHorizontal! * 15,
+        // height: SizeConfig.blockHorizontal! * 0.2,
         color: Colors.white,
         padding:
             EdgeInsets.symmetric(horizontal: SizeConfig.blockHorizontal! * 2),
@@ -35,7 +35,7 @@ class Header extends StatelessWidget {
               imageUrl: imagePath!,
               fit: BoxFit.cover,
               height: SizeConfig.blockHorizontal! * 20,
-              width: SizeConfig.blockHorizontal! * 20,
+              width: SizeConfig.blockHorizontal! * 25,
               errorWidget: (context, url, error) => const Text(
                 "Image du site insdisponible...",
               ),

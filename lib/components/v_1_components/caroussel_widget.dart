@@ -60,8 +60,10 @@ class CarousselWidget extends StatelessWidget {
       } else {
         return Expanded(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset('assets/images/no-element.png'),
+              Image.asset('assets/images/emppty_slide.png'),
               Text(
                 "Aucun slide disponible",
                 style: emptyTextForSlide,

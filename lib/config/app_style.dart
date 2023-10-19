@@ -20,9 +20,8 @@ final loadingText = GoogleFonts.poppins(
   fontWeight: FontWeight.w600,
 );
 
-
 final emptyTextForSlide = GoogleFonts.poppins(
-  fontSize: 20,
+  fontSize: 25,
   color: Colors.black,
   fontWeight: FontWeight.w600,
 );

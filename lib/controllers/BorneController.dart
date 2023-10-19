@@ -70,46 +70,40 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
 
 //Recuperer les information concernant une borne
   Future<void> getBorne() async {
-    final response = await _borneService.getBorne();
-    if (response.statusCode == 200) {
-      log('je suis entre');
-      final body = jsonDecode(response.body);
-      final token = body['access_token'];
-      box.write('token', token);
-      saveToken(token);
-      borne.value = Borne.fromJson(body['borne']);
-      articles.value = borne.value.articles!;
-      slides.value = borne.value.slides!;
-      alertes.value = borne.value.alerts!;
-      site.value = borne.value.site!;
-      borneLoading.value = true;
-      update();
-      currentTimeForTimeZone(); // Get timeZone to dsiplay current date and time
-      slideChange(0); //Get first slide duration to init slide
-      //startTimerForNextArticle(); //Start animating articles
-      // getAllTicketForBorne();
-      startVisibleAnimation();
-    } else if (response.statusCode == 400) {
-      showMessageError(
-        message: "Token invalide...",
-      );
-      Get.offAllNamed('login');
-    } else {
-      showMessageError(
-        message: "Vérifier votre connexion internet ou rééssayer plus tard",
-      );
-      Get.offAllNamed('login');
+    try {
+      final response = await _borneService.getBorne();
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+        final token = body['access_token'];
+        box.write('token', token);
+        saveToken(token);
+        borne.value = Borne.fromJson(body['borne']);
+        articles.value = borne.value.articles!;
+        slides.value = borne.value.slides!;
+        alertes.value = borne.value.alerts!;
+        site.value = borne.value.site!;
+        borneLoading.value = true;
+        update();
+        currentTimeForTimeZone(); // Get timeZone to dsiplay current date and time
+        slideChange(0); //Get first slide duration to init slide
+        //startTimerForNextArticle(); //Start animating articles
+        getAllTicketForBorne();
+        startVisibleAnimation();
+      } else if (response.statusCode == 400) {
+        showMessageError(
+          message: "Token invalide...",
+        );
+        Get.offAllNamed('login');
+      } else {
+        showMessageError(
+          message: "Vérifier votre connexion internet ou rééssayer plus tard",
+          color: Colors.orangeAccent,
+        );
+        Get.offAllNamed('login');
+      }
+    } catch (e) {
+      rethrow;
     }
-
-    /* _borneService
-        .getBorne()
-        .then((response) {})
-        .timeout(const Duration(minutes: 1), onTimeout: () {
-      showMessageError(
-        message: 'Vérifier votre connexion internet ou rééssayer plus tard',
-      );
-      Get.offAllNamed('login');
-    }); */
   }
 
   // ALerts function
@@ -255,6 +249,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
 
   //Add new or update or delete article
   void addOrUpdateArticle(List<Article> newListeArticle) {
+    // log(newListeArticle.toString());
     if (newListeArticle.isEmpty) {
       articleEstVide.value = true;
       playDefaultRingtone();
@@ -264,6 +259,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
         update();
       });
     } else {
+      articles.value = newListeArticle;
       articleEstVide.value = false; //Article n'est pas vide
       currentArticleIndex.value = 0; //On remet l'index a 0
       currentArticleduree.value = articles[currentArticleIndex.value]
@@ -356,12 +352,14 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   // function to start animation article isVisible
 
   void startVisibleAnimation() {
+    log('secondes des articles precedent ${currentArticleduree.value}');
     Timer.periodic(Duration(seconds: currentArticleduree.value), (timer) {
+      log('secondes des articles ${currentArticleduree.value}');
       if (articles.isNotEmpty) {
         Article currentArticle = articles[currentArticleIndex.value];
         if (shouldSkipPermanentArticle(currentArticle)) {
           skipToNextArticle();
-          startVisibleAnimation();
+          // startVisibleAnimation();
         } else {
           handleDisplayedPermanentArticle(currentArticle);
           isCardVisible(!isCardVisible.value);
@@ -370,6 +368,8 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
             playDefaultRingtone();
           }
         }
+      } else {
+        timer.cancel();
       }
     });
   }
@@ -511,7 +511,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
     initializeDateFormatting('en_US');
     tz.initializeTimeZones();
     log("initialisation de la bornecontroller ");
-    getBorne();
+    // getBorne();
     // startNewAnimation();
   }
 

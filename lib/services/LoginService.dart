@@ -68,4 +68,23 @@ class LoginService {
       rethrow;
     }
   }
+
+  //Send fire base token to the server
+  Future<http.Response> sendToken(
+      {required String code, required String fbToken}) async {
+    final box = GetStorage();
+    final tokenApi = await box.read('token');
+
+    try {
+      http.Response response = await http.post(
+        getUrl('store_token'),
+        body: jsonEncode({"code": code, "fb_token": fbToken}),
+        headers: headersToken(tokenApi),
+      );
+
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
 }
