@@ -164,3 +164,32 @@ class AlertVideoController extends GetxController {
           loadVideo();
         });
       } */
+
+
+
+ void startVisibleAnimation() {
+    log('secondes des articles precedent ${currentArticleduree.value}');
+    Timer.periodic(Duration(seconds: currentArticleduree.value), (timer) {
+      log('secondes des articles ${currentArticleduree.value}');
+      if (articles.isNotEmpty) {
+        Article currentArticle = articles[currentArticleIndex.value];
+        if (shouldSkipPermanentArticle(currentArticle)) {
+          log(" article courant ${currentArticle.pivot.permanent.toString()}");
+          log(" article courant ${currentArticle.id.toString()}");
+          log(permanentArticleIdsDisplayed.toString());
+          articles.remove(currentArticle);
+          skipToNextArticle();
+          // startVisibleAnimation();
+        } else {
+          handleDisplayedPermanentArticle(currentArticle);
+          isCardVisible(!isCardVisible.value);
+          if (isCardVisible.isTrue) {
+            goToNextArticle();
+            playDefaultRingtone();
+          }
+        }
+      } else {
+        timer.cancel();
+      }
+    });
+  }

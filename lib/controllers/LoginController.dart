@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
+
 import 'package:borne_flutter/models/Alerte.dart';
 import 'package:borne_flutter/models/Borne.dart';
 import 'package:borne_flutter/models/slide.dart';
@@ -59,7 +60,7 @@ class LoginController extends GetxController {
           // update();
 
           sendToken(code: code, fbToken: fbToken)
-              .then((value) => Get.toNamed('homePage'));
+              .then((value) => Get.offAllNamed('homePage'));
 
           // borne.value = Borne.fromJson(response['borne']);
           // isAlerte(borne.value); Savoir si une alerte est video ou pas

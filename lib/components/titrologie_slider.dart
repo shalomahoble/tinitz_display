@@ -29,11 +29,7 @@ class TitrologieSlider extends StatelessWidget {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
 
-    
-
     if (slide.bgType == 'url') {
-      /* return const SectionVideo(
-          urlvideo: 'https://media.w3.org/2010/05/sintel/trailer.mp4'); */
       return SectionHtml(pageUrl: slide.cible);
     } else {
       return Stack(

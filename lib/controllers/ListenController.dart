@@ -125,7 +125,7 @@ class ListenController extends GetxController {
     });
   }
 
-  Future<Borne?> getBorne() async {
+  Future<Borne?>getBorne() async {
     final response = await loginService.generateNewToken();
 
     if (response.statusCode == 200) {
@@ -183,6 +183,7 @@ class ListenController extends GetxController {
   updateBorneInformationPeriodique() {
     Timer.periodic(const Duration(minutes: 4), (timer) {
       borneController.updateAllInfoForBorne();
+      log('mise a jour');
     });
   }
 

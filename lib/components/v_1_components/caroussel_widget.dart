@@ -1,4 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -23,9 +26,9 @@ class CarousselWidget extends StatelessWidget {
     SizeConfig().init(context);
     final borneController = Get.find<BorneController>();
 
-    List<Widget> items = borneController.slides
-        .map<Widget>((item) => TitrologieSlider(slide: item))
-        .toList();
+    // List<Widget> items = borneController.slides
+    //     .map<Widget>((item) => TitrologieSlider(slide: item))
+    //     .toList();
 
     return Obx(() {
       if (borneController.slides.isNotEmpty) {
@@ -34,14 +37,16 @@ class CarousselWidget extends StatelessWidget {
           child: Stack(
             children: [
               CarouselSlider(
-                items: items,
+                items: borneController.slides
+                    .map<Widget>((item) => TitrologieSlider(slide: item))
+                    .toList(),
                 options: CarouselOptions(
                   height: double.infinity,
                   enlargeCenterPage: true,
                   scrollDirection: Axis.horizontal,
                   viewportFraction: 1.0,
                   // si on a 1 seul element on ne srolle pas
-                  autoPlay: (items.length == 1) ? false : true,
+                  autoPlay: (borneController.slides.length == 1) ? false : true,
                   //scrollPhysics: const NeverScrollableScrollPhysics(),
                   autoPlayInterval:
                       Duration(seconds: borneController.dureeDuSlide.value),
@@ -50,6 +55,7 @@ class CarousselWidget extends StatelessWidget {
                   },
                 ),
               ),
+              // const AlertVideoDisplay(),
 
               /*  const FlashArticle(), */
               FlashPushArticle(articles: borneController.articles),

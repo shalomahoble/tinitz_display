@@ -30,7 +30,7 @@ class FlashPushArticle extends StatelessWidget {
         return const SizedBox.shrink();
       } else if (articles.isNotEmpty) {
         return Align(
-          alignment: const AlignmentDirectional(0, -0.9),
+          alignment: const AlignmentDirectional(0, -0.99),
           child: AnimatedOpacity(
             duration: const Duration(milliseconds: 500),
             opacity: borneController.isCardVisible.value ? 1.0 : 0.0,

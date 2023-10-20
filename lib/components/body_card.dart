@@ -52,7 +52,5 @@ class BodySection extends StatelessWidget {
     } else {
       return const SizedBox.shrink();
     }
-
-    //return Text(section.toString());
   }
 }

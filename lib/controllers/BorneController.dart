@@ -95,10 +95,10 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
         );
         Get.offAllNamed('login');
       } else {
-        showMessageError(
-          message: "Vérifier votre connexion internet ou rééssayer plus tard",
-          color: Colors.orangeAccent,
-        );
+        // showMessageError(
+        //   message: "Votre token est invalide connectez-vous ...",
+        //   color: Colors.orangeAccent,
+        // );
         Get.offAllNamed('login');
       }
     } catch (e) {
@@ -135,10 +135,14 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
 
 //Get current slide and update duration for current slide
   slideChange(int index) {
-    if (slides.isNotEmpty) {
+    if (slides.isNotEmpty && index < slides.length) {
       dureeDuSlide.value = slides[index].duree;
       update();
     }
+    // else if (slides.isNotEmpty) {
+    //   dureeDuSlide.value = slides[0].duree;
+    //   update();
+    // }
   }
 
   //##################################### Article FUNCTION ###############################
@@ -185,8 +189,11 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
 
 //Cette fonction gère l'ajout de l'identifiant de l'article permanent affiché à l'ensemble.
   void handleDisplayedPermanentArticle(Article article) {
+    log(" Permanent article ${article.pivot.permanent.toString()}");
     if (article.pivot.permanent == 0) {
       permanentArticleIdsDisplayed.add(article.id);
+      log("handleDisplayedPermanent article ${permanentArticleIdsDisplayed.toString()}");
+      update();
     }
   }
 
@@ -239,6 +246,9 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   void addOrUpdateSlide(List<Slide> newListeSlide) {
     slides.value = newListeSlide;
     update();
+    //  slideChange(0);
+    print(slides.length.toString());
+    log(slides.toString());
   }
 
   //Add new or update or delete alerte (text or video)
@@ -250,6 +260,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   //Add new or update or delete article
   void addOrUpdateArticle(List<Article> newListeArticle) {
     // log(newListeArticle.toString());
+    permanentArticleIdsDisplayed = {};
     if (newListeArticle.isEmpty) {
       articleEstVide.value = true;
       playDefaultRingtone();
@@ -353,24 +364,39 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
 
   void startVisibleAnimation() {
     log('secondes des articles precedent ${currentArticleduree.value}');
-    Timer.periodic(Duration(seconds: currentArticleduree.value), (timer) {
-      log('secondes des articles ${currentArticleduree.value}');
+    Future.delayed(Duration(seconds: currentArticleduree.value), () {
       if (articles.isNotEmpty) {
+        isCardVisible(false);
         Article currentArticle = articles[currentArticleIndex.value];
         if (shouldSkipPermanentArticle(currentArticle)) {
-          skipToNextArticle();
-          // startVisibleAnimation();
-        } else {
-          handleDisplayedPermanentArticle(currentArticle);
-          isCardVisible(!isCardVisible.value);
-          if (isCardVisible.isTrue) {
-            goToNextArticle();
-            playDefaultRingtone();
-          }
+          articles.remove(currentArticle);
+          log("nouvelle article permenent ${articles.toString()}");
         }
-      } else {
-        timer.cancel();
+        Future.delayed(const Duration(seconds: 10), () {
+          handleDisplayedPermanentArticle(currentArticle);
+          goToNextArticle();
+          isCardVisible(true);
+          playDefaultRingtone();
+          startVisibleAnimation();
+        });
+
+        // if (shouldSkipPermanentArticle(currentArticle)) {
+        //   log(" article courant ${currentArticle.pivot.permanent.toString()}");
+        //   log(" article courant ${currentArticle.id.toString()}");
+        //   log(permanentArticleIdsDisplayed.toString());
+        //   articles.remove(currentArticle);
+        //   skipToNextArticle();
+        //   // startVisibleAnimation();
+        // } else {
+        //   handleDisplayedPermanentArticle(currentArticle);
+        //   goToNextArticle();
+        //   playDefaultRingtone();
+        //   startVisibleAnimation();
+        // }
       }
+      //  else {
+      //   timer.cancel();
+      // }
     });
   }
 

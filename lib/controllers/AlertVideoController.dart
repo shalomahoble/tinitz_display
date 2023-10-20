@@ -48,47 +48,20 @@ class AlertVideoController extends GetxController {
           videoAlerts[currentVideoIndex.value].randomVideo;
       log("BDVIDEO l'index de la video ${currentVideoIndex.value}");
       update();
-
-      //Fermer le showmodal si c'est ouvert
-      // if (Get.isDialogOpen!) {
-      //   Get.back();
-      // }
-      //Verifier si la video est fini avant de lancer
       if (isVideoPlaying.isFalse) {
         log("BDVIDEO loguer la video ");
         if (Get.isDialogOpen!) {
           Get.back();
         }
-        isVideoPlaying(true);
+        // isVideoPlaying(true);
         _playVideo(currentVideoUrl.value);
       }
-
-      /*     final subscription =
-          InternetConnectivity() //verifiier si on a la connexion
-              .observeInternetConnection
-              .listen((bool hasInternetAccess) {
-        if (!hasInternetAccess) {
-          Future.delayed(const Duration(seconds: 20), () {
-            showMessageError(message: "Pas de connexion internet");
-          });
-        } else {}
-      });
-      Future.delayed(const Duration(minutes: 10), () async {
-        await subscription.cancel();
-      }); */
-
-      //Si la video est deja passe on recommence un autre video
-      /*  if (shouldSkipPermanentArticle(videoAlerts[currentVideoIndex.value])) {
-        loadVideo();
-      } else {
-        _playVideo(currentVideoUrl.value);
-      } */
     }
   }
 
   void _playVideo(String videoUrl) async {
     try {
-      Future.delayed(const Duration(minutes: 1), () async {
+      Future.delayed(Duration(seconds: dureeAvantAffichage.value), () async {
         dureeAvantAffichage.value;
         log("BDVIDEO lance ${dureeAvantAffichage.value}");
         videoPlayerController =
@@ -97,11 +70,19 @@ class AlertVideoController extends GetxController {
 
         if (videoPlayerController.value.isInitialized &&
             videoPlayerController.value.duration.inMilliseconds > 0) {
-          /*  showMessageError(
-            title: "Initialisation de la video",
-            message: "VIdeo Initialiser",
-            color: Colors.greenAccent,
-          ); */
+          // isVideoPlaying(true);
+          // videoPlayerController.play();
+          // log("BDVIDEO pret la video");
+          // videoPlayerController.addListener(() {
+          //   if (videoPlayerController.value.position ==
+          //       videoPlayerController.value.duration) {
+          //     isVideoPlaying(false);
+          //     update();
+          //     _onVideoFinished();
+          //     log("BDVIDEO fin la video");
+          //   }
+          // });
+
           chewieController = ChewieController(
             videoPlayerController: videoPlayerController,
             autoPlay: true,
@@ -112,7 +93,7 @@ class AlertVideoController extends GetxController {
             showControls: false,
           );
 
-          //Temps d'affichage de la video
+          // Temps d'affichage de la video
           Get.defaultDialog(
             title: videoTitle.value,
             titlePadding:
@@ -126,25 +107,26 @@ class AlertVideoController extends GetxController {
             ),
           );
 
-          videoPlayerController.addListener(() {
-            if (!videoPlayerController.value.isPlaying &&
-                (videoPlayerController.value.position ==
-                    videoPlayerController.value.duration)) {
-              log("BDVIDEO ecoute ${videoPlayerController.value.position}");
-              log("BDVIDEO vrai fermer ${videoPlayerController.value.duration}");
-              Get.back();
-              isVideoPlaying(false);
-              _onVideoFinished();
-            }
-          });
-
-          // Timer(videoPlayerController.value.duration, () {
-          //   log("BDVIDEO fermer ${videoPlayerController.value.duration}");
-          //   chewieController.pause(); // Arrêter la lecture
-          //   videoPlayerController.pause();
-          //   Get.back();
-          //   _onVideoFinished();
+          // videoPlayerController.addListener(() {
+          //   if (!videoPlayerController.value.isPlaying &&
+          //       (videoPlayerController.value.position ==
+          //           videoPlayerController.value.duration)) {
+          //     log("BDVIDEO ecoute ${videoPlayerController.value.position}");
+          //     log("BDVIDEO vrai fermer ${videoPlayerController.value.duration}");
+          //     // Get.back();
+          //     isVideoPlaying(false);
+          //     _onVideoFinished();
+          //   }
           // });
+
+          Timer(videoPlayerController.value.duration, () {
+            log("BDVIDEO fermer ${videoPlayerController.value.duration}");
+            chewieController.pause(); // Arrêter la lecture
+            videoPlayerController.pause();
+            Get.back();
+            isVideoPlaying(false);
+            _onVideoFinished();
+          });
         }
       });
     } catch (e) {
