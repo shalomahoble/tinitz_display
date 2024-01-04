@@ -12,16 +12,15 @@ class BorneService extends GetxService {
   //Get borne
   Future<http.Response> getBorne() async {
     /*  final token = box.read('token'); */
-    final token = await getToken();
+    final token = box.read('token');
     try {
-      final http.Response response = await http.post(
-        getUrl('auth/refresh'),
-        headers: headersToken(token),
-      );
+      log("connecte $token");
+      final response =
+          await http.post(getUrl('auth/refresh'), headers: headersToken(token));
+
       return response;
     } catch (e) {
-      showMessageError(message: e.toString());
-      //Get.offAllNamed('login');
+      // showMessageError(message: e.toString());
       rethrow;
     }
   }
@@ -30,7 +29,7 @@ class BorneService extends GetxService {
   Future<http.Response> sendToken(
       {required String code, required String fbToken}) async {
     final box = GetStorage();
-    final tokenApi = await box.read('token');
+    final tokenApi = box.read('token');
 
     try {
       http.Response response = await http.post(

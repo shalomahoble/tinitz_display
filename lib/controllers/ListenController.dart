@@ -125,7 +125,7 @@ class ListenController extends GetxController {
     });
   }
 
-  Future<Borne?>getBorne() async {
+  Future<Borne?> getBorne() async {
     final response = await loginService.generateNewToken();
 
     if (response.statusCode == 200) {
@@ -151,8 +151,7 @@ class ListenController extends GetxController {
           final token = body['access_token'];
           box.write('token', token);
           saveToken(token);
-          // borneController.updateBorneInfo(Borne.fromJson(body['borne']));
-          /*  loginController.updateBorneInfo(Borne.fromJson(body['borne'])); */
+          log(token.toString());
         }
       }
     });
@@ -181,7 +180,7 @@ class ListenController extends GetxController {
 
 //Update all information for borne
   updateBorneInformationPeriodique() {
-    Timer.periodic(const Duration(minutes: 4), (timer) {
+    Timer.periodic(const Duration(minutes: 5), (timer) {
       borneController.updateAllInfoForBorne();
       log('mise a jour');
     });

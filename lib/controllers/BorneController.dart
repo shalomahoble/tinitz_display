@@ -7,6 +7,7 @@ import 'package:borne_flutter/models/Artcile.dart';
 import 'package:borne_flutter/models/Borne.dart';
 import 'package:borne_flutter/models/Direction.dart';
 import 'package:borne_flutter/models/Site.dart';
+import 'package:borne_flutter/models/setting.dart';
 import 'package:borne_flutter/models/ticket.dart';
 import 'package:borne_flutter/services/BorneService.dart';
 import 'package:borne_flutter/utils/utils.dart';
@@ -24,7 +25,7 @@ import 'package:timezone/timezone.dart' as tz;
 import '../models/Slide.dart';
 
 class BorneController extends GetxController with GetTickerProviderStateMixin {
-  final _borneService = BorneService();
+  final _borneService = Get.find<BorneService>();
 
   RxBool borneLoading = false.obs;
   Rx<Borne> borne = Borne().obs;
@@ -51,7 +52,27 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   RxList<Slide> slides = <Slide>[].obs;
   RxList<Alert> alertes = <Alert>[].obs;
   RxList<Ticket> tickets = <Ticket>[].obs;
+  Rx<Setting> setting = Setting(
+    id: 0,
+    slogan: '',
+    name: '',
+    phone: '',
+    description: '',
+    email: '',
+    logo: '',
+    logoborne: '',
+    favicon: '',
+    adresse: '',
+    facebook: '',
+    twitter: '',
+    instagram: '',
+    map: '',
+    createdAt: DateTime.now(),
+    updatedAt: DateTime.now(),
+  ).obs;
   final box = GetStorage();
+  Rx<Timer> videoTimer = Timer(Duration.zero, () {}).obs;
+  Rx<Timer> videoTimerSecond = Timer(Duration.zero, () {}).obs;
 
   //Time variable
   late final tz.Location _location;
@@ -76,29 +97,34 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
         final body = jsonDecode(response.body);
         final token = body['access_token'];
         box.write('token', token);
-        saveToken(token);
+
+        log("connecte entreeeee ");
         borne.value = Borne.fromJson(body['borne']);
+        setting.value = Setting.fromJson(body['setting']);
         articles.value = borne.value.articles!;
         slides.value = borne.value.slides!;
         alertes.value = borne.value.alerts!;
         site.value = borne.value.site!;
         borneLoading.value = true;
         update();
+
         currentTimeForTimeZone(); // Get timeZone to dsiplay current date and time
         slideChange(0); //Get first slide duration to init slide
         //startTimerForNextArticle(); //Start animating articles
-        getAllTicketForBorne();
+
         startVisibleAnimation();
+        Future.wait([
+          saveToken(token),
+          getAllTicketForBorne(),
+        ]);
       } else if (response.statusCode == 400) {
-        showMessageError(
-          message: "Token invalide...",
-        );
+        showMessageError(message: "Token invalide...");
         Get.offAllNamed('login');
       } else {
-        // showMessageError(
-        //   message: "Votre token est invalide connectez-vous ...",
-        //   color: Colors.orangeAccent,
-        // );
+        showMessageError(
+          message: response.body.toString(),
+          color: Colors.orangeAccent,
+        );
         Get.offAllNamed('login');
       }
     } catch (e) {
@@ -192,7 +218,6 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
     log(" Permanent article ${article.pivot.permanent.toString()}");
     if (article.pivot.permanent == 0) {
       permanentArticleIdsDisplayed.add(article.id);
-      log("handleDisplayedPermanent article ${permanentArticleIdsDisplayed.toString()}");
       update();
     }
   }
@@ -260,7 +285,6 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   //Add new or update or delete article
   void addOrUpdateArticle(List<Article> newListeArticle) {
     // log(newListeArticle.toString());
-    permanentArticleIdsDisplayed = {};
     if (newListeArticle.isEmpty) {
       articleEstVide.value = true;
       playDefaultRingtone();
@@ -277,10 +301,12 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
           .pivot
           .duree; //Mettre a jour la durre
       articles.value = newListeArticle; //Affectation des nouvelles articles
-      log("EVENTBD nouvelle article $articles");
-      playDefaultRingtone(); //On emet un son
+      // playDefaultRingtone(); //On emet un son
       //controller.reset(); //On reinitialise l'animation
       // startNewAnimation();
+      log("nouvelle article");
+      videoTimer.value.cancel();
+      videoTimerSecond.value.cancel();
       startVisibleAnimation(); //On relance l'animation
       //delayedTask.cancel();
       //startTimerForNextArticle();
@@ -310,6 +336,9 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
       slides.value = borne.value.slides!;
       alertes.value = borne.value.alerts!;
       articles.value = borne.value.articles!;
+      update();
+    } else {
+      log("error de login avec le token");
     }
   }
 
@@ -364,16 +393,19 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
 
   void startVisibleAnimation() {
     log('secondes des articles precedent ${currentArticleduree.value}');
-    Future.delayed(Duration(seconds: currentArticleduree.value), () {
+    videoTimer.value = Timer(Duration(seconds: currentArticleduree.value), () {
       if (articles.isNotEmpty) {
         isCardVisible(false);
         Article currentArticle = articles[currentArticleIndex.value];
-        if (shouldSkipPermanentArticle(currentArticle)) {
-          articles.remove(currentArticle);
-          log("nouvelle article permenent ${articles.toString()}");
-        }
-        Future.delayed(const Duration(seconds: 10), () {
+        // if (shouldSkipPermanentArticle(currentArticle)) {
+        //   articles.remove(currentArticle);
+        // }
+        videoTimerSecond.value = Timer(const Duration(seconds: 10), () {
           handleDisplayedPermanentArticle(currentArticle);
+          // supprimer cet article si elle est permanent
+          if (shouldSkipPermanentArticle(currentArticle)) {
+            articles.remove(currentArticle);
+          }
           goToNextArticle();
           isCardVisible(true);
           playDefaultRingtone();
@@ -393,10 +425,10 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
         //   playDefaultRingtone();
         //   startVisibleAnimation();
         // }
+      } else {
+        videoTimer.value.cancel();
+        videoTimerSecond.value.cancel();
       }
-      //  else {
-      //   timer.cancel();
-      // }
     });
   }
 
@@ -532,11 +564,18 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
 
 //Iniatialisation du controlleur
   @override
-  void onInit() {
+  void onInit()  async {
     super.onInit();
     initializeDateFormatting('en_US');
     tz.initializeTimeZones();
-    log("initialisation de la bornecontroller ");
+    // await getBorne();
+
+    ever(articles, (callback) {
+      videoTimer.value.cancel();
+      videoTimerSecond.value.cancel();
+      startVisibleAnimation();
+      log("l'article a ete modifier");
+    });
     // getBorne();
     // startNewAnimation();
   }
@@ -545,5 +584,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   void onClose() {
     super.onClose();
     controller.dispose();
+    videoTimer.value.cancel();
+    videoTimerSecond.value.cancel();
   }
 }

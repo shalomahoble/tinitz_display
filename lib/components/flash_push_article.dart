@@ -1,5 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first, unrelated_type_equality_checks
-import 'dart:developer';
+
 
 import 'package:borne_flutter/components/v_1_components/caroussel_widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';

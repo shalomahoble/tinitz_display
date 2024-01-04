@@ -15,10 +15,10 @@ class HomePage extends GetView<BorneController> {
   Widget build(BuildContext context) {
     final alertVideoController = Get.put(AlertVideoController());
 
-    controller.getBorne();
+    controller.getBorne(); // Initialisation de la borne
 
     return Obx(() {
-      if (controller.borneLoading.isTrue) {
+      if (controller.borneLoading.value == true) {
         return Scaffold(
           body: Column(
             children: [
@@ -26,7 +26,7 @@ class HomePage extends GetView<BorneController> {
               Obx(
                 () => Header(
                   time: controller.currentDate.value,
-                  imagePath: controller.site.value.direction.image,
+                  imagePath: controller.setting.value.logoborne,
                 ),
               ),
 
@@ -38,6 +38,7 @@ class HomePage extends GetView<BorneController> {
             ],
           ),
         );
+        //Shimmer Loading App
       } else {
         return const HomePageLoading();
       }

@@ -176,3 +176,109 @@
                   fontWeight: FontWeight.w800,
                 ),
               ),
+
+
+              class FlashArticle extends StatelessWidget {
+  const FlashArticle({
+    Key? key,
+    required this.article,
+  }) : super(key: key);
+
+  final Article article;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        vertical: SizeConfig.blockHorizontal! * 1,
+        horizontal: SizeConfig.blockHorizontal! * 1,
+      ),
+      height: SizeConfig.blockHorizontal! * 20,
+      decoration: const BoxDecoration(
+        color: Colors.red,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: CachedNetworkImage(
+              imageUrl: article.image,
+              fit: BoxFit.cover,
+              height: SizeConfig.blockHorizontal! * 20,
+              width: SizeConfig.blockHorizontal! * 20,
+              placeholder: (context, url) =>
+                  LoadingAnimationWidget.fourRotatingDots(
+                color: KOrange,
+                size: 45,
+              ),
+              errorWidget: (context, url, error) => Image.asset(
+                "assets/images/error.png",
+                fit: BoxFit.cover,
+                height: SizeConfig.blockHorizontal! * 20,
+                width: SizeConfig.blockHorizontal! * 20,
+              ),
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              SizedBox(
+                width: SizeConfig.blockHorizontal! * 55,
+                child: Text(
+                  article.title,
+                  style: flashInfoTitleStyle.copyWith(
+                    color: Colors.white,
+                    fontSize: 15,
+                  ),
+                  textAlign: TextAlign.justify,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 5,
+                ),
+              ),
+              SponsorWidget(
+                source: article.source,
+                sponsor: article.nomSponsor,
+                nomSponsor: article.nomSponsor,
+                logoSponsor: article.logoSponsor,
+              )
+            ],
+          ),
+          Container(
+            width: SizeConfig.blockHorizontal! * 20,
+            alignment: Alignment.center,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                QrImageView(
+                  size: SizeConfig.blockHorizontal! * 12,
+                  padding: EdgeInsets.zero,
+                  backgroundColor: Colors.white,
+                  data: codeQr("article=${article.id}", article.pivot.borneId!),
+                ),
+                SizedBox(height: SizeConfig.blockHorizontal! * 1),
+                SizedBox(
+                  width: SizeConfig.blockHorizontal! * 15,
+                  child: Text(
+                    "Scanner le Qr Code pour lire plus l'article",
+                    style: scannerSubTitleStyle.copyWith(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    maxLines: 4,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                )
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}

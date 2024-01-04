@@ -18,10 +18,10 @@ class TitrologieSlider extends StatelessWidget {
   }) : super(key: key);
 
   String backgroundUrlImage() {
-    if (slide.bgType == 'image') {
+    if (slide.bgType.toLowerCase() == 'image') {
       return slide.bg!;
     } else {
-      return 'https://images.pexels.com/photos/270348/pexels-photo-270348.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1';
+      return 'https://images.pexels.com/photos/2882552/pexels-photo-2882552.jpeg';
     }
   }
 
@@ -45,10 +45,11 @@ class TitrologieSlider extends StatelessWidget {
               size: 200,
             ),
             placeholder: (context, url) => Center(
-                child: LoadingAnimationWidget.fourRotatingDots(
-              color: KOrange,
-              size: 60,
-            )),
+              child: LoadingAnimationWidget.fourRotatingDots(
+                color: KOrange,
+                size: 60,
+              ),
+            ),
           ),
           BodyCard(
             slide: slide,

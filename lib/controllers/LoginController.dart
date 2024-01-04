@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
-
 import 'package:borne_flutter/models/Alerte.dart';
 import 'package:borne_flutter/models/Borne.dart';
 import 'package:borne_flutter/models/slide.dart';
@@ -12,6 +11,7 @@ import 'package:borne_flutter/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 import '../models/Artcile.dart';
 
@@ -52,15 +52,23 @@ class LoginController extends GetxController {
         final response = jsonDecode(value.body);
         if (value.statusCode == 200) {
           token = response['access_token'];
-          //log("EVENTBD logincontroller $token");
+          log("EVENTBD logincontroller $token");
           saveToken(token);
           box.write('token', token);
 
-          final fbToken = await box.read('fcmToken');
+          final fbToken = box.read('fcmToken');
           // update();
 
-          sendToken(code: code, fbToken: fbToken)
-              .then((value) => Get.offAllNamed('homePage'));
+          Future.wait([
+            sendToken(code: code, fbToken: fbToken),
+          ]);
+
+          // if (rep.statusCode == 200) {
+          //   Get.offAllNamed("homePage");
+          // } else {
+          //   Get.offAllNamed("homePage");
+          // }
+          Get.offAllNamed("homePage");
 
           // borne.value = Borne.fromJson(response['borne']);
           // isAlerte(borne.value); Savoir si une alerte est video ou pas
@@ -88,12 +96,10 @@ class LoginController extends GetxController {
     // Vous pouvez maintenant utiliser `alertes` qui contient toutes les instances d'Alerte
   }
 
-  Future<void> sendToken(
+  Future<http.Response> sendToken(
       {required String code, required String fbToken}) async {
     try {
-      await _loginService
-          .sendToken(code: code, fbToken: fbToken)
-          .then((response) => {log(response.body.toString())});
+      return await _loginService.sendToken(code: code, fbToken: fbToken);
     } catch (e) {
       rethrow;
     }

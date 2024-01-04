@@ -9,12 +9,11 @@ import 'package:borne_flutter/models/Slide.dart';
 // ignore: must_be_immutable
 class BodyCard extends StatelessWidget {
   final Slide slide;
-  BodyCard({
+  const BodyCard({
     Key? key,
     required this.slide,
   }) : super(key: key);
 
-  String type = 'wifi';
 
   @override
   Widget build(BuildContext context) {

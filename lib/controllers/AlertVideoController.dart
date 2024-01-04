@@ -6,7 +6,6 @@ import 'package:borne_flutter/models/Alerte.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:video_player/video_player.dart';
 
 class AlertVideoController extends GetxController {

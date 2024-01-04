@@ -24,18 +24,18 @@ class Header extends StatelessWidget {
     return Expanded(
       flex: 0,
       child: Container(
-        // height: SizeConfig.blockHorizontal! * 0.2,
         color: Colors.white,
-        padding:
-            EdgeInsets.symmetric(horizontal: SizeConfig.blockHorizontal! * 2),
+        padding: EdgeInsets.symmetric(
+          horizontal: SizeConfig.blockHorizontal! * 2,
+          vertical: SizeConfig.blockHorizontal! * 2,
+        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             CachedNetworkImage(
               imageUrl: imagePath!,
               fit: BoxFit.cover,
-              height: SizeConfig.blockHorizontal! * 20,
-              width: SizeConfig.blockHorizontal! * 25,
+              height: SizeConfig.blockHorizontal! * 15,
               errorWidget: (context, url, error) => const Text(
                 "Image du site insdisponible...",
               ),
