@@ -93,12 +93,14 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   Future<void> getBorne() async {
     try {
       final response = await _borneService.getBorne();
+
+       log(response.statusCode.toString());
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
         final token = body['access_token'];
         box.write('token', token);
 
-        log("connecte entreeeee ");
+       
         borne.value = Borne.fromJson(body['borne']);
         setting.value = Setting.fromJson(body['setting']);
         articles.value = borne.value.articles!;

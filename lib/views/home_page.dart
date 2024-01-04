@@ -13,6 +13,7 @@ class HomePage extends GetView<BorneController> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
     final alertVideoController = Get.put(AlertVideoController());
 
     controller.getBorne(); // Initialisation de la borne
