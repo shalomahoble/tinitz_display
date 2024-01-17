@@ -4,7 +4,11 @@ import 'dart:developer';
 
 import 'package:borne_flutter/controllers/BorneController.dart';
 import 'package:borne_flutter/controllers/LoginController.dart';
+import 'package:borne_flutter/models/Alerte.dart';
+import 'package:borne_flutter/models/Artcile.dart';
 import 'package:borne_flutter/models/Borne.dart';
+import 'package:borne_flutter/models/Slide.dart';
+import 'package:borne_flutter/services/BorneService.dart';
 import 'package:borne_flutter/services/LoginService.dart';
 import 'package:borne_flutter/utils/utils.dart';
 import 'package:get/get.dart';
@@ -13,6 +17,7 @@ import 'package:get_storage/get_storage.dart';
 class ListenController extends GetxController {
   final LoginController loginController = Get.put(LoginController());
   BorneController? _borneController; // Utilisez le type BorneController?
+  final borneService = Get.put(BorneService()); // Utilisez le type
 
   final LoginService loginService = Get.put(LoginService());
 
@@ -41,12 +46,13 @@ class ListenController extends GetxController {
   }
 
 //Update alerte
-  void updateAlerte() {
-    getBorne().then((borne) {
-      if (borne != null) {
-        borneController.addOrUpdateAlert(borne.alerts!);
-      }
-    });
+  Future<void> updateAlerte() async {
+    final response = await borneService.getAllAlertes();
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body)['alertes'];
+      final alerts = body.map<Alert>((el) => Alert.fromJson(el)).toList();
+      borneController.addOrUpdateAlert(alerts);
+    }
   }
 
   //Delete alerte
@@ -80,13 +86,20 @@ class ListenController extends GetxController {
     });
   }
 
-  void addNewArticle() {
-    getBorne().then((borne) {
-      if (borne != null) {
-        borneController.addOrUpdateArticle(borne.articles!);
-      }
-      /* loginController.updateBorneInfo(borne); */
-    });
+  Future<void> addNewArticle() async {
+    final response = await borneService.getAllArticles();
+
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body)['articles'];
+      final articles = body.map<Article>((el) => Article.fromJson(el)).toList();
+      borneController.addOrUpdateArticle(articles);
+    }
+
+    // getBorne().then((borne) {
+    //   if (borne != null) {
+    //     borneController.addOrUpdateArticle(borne.articles!);
+    //   }
+    // });
   }
 
   void deleteArticle() {
@@ -108,12 +121,13 @@ class ListenController extends GetxController {
   }
 
   //###### ajouter un Slide
-  void addSlide() {
-    getBorne().then((borne) {
-      if (borne != null) {
-        borneController.addOrUpdateSlide(borne.slides!);
-      }
-    });
+  Future<void> addSlide() async {
+    final response = await borneService.getAllSlides();
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body)['slides'];
+      final slides = body.map<Slide>((el) => Slide.fromJson(el)).toList();
+      borneController.addOrUpdateSlide(slides);
+    }
   }
 
   void deleteSlide() {
@@ -193,13 +207,14 @@ class ListenController extends GetxController {
   }
 
   @override
+  // ignore: unnecessary_overrides
   void onInit() {
     super.onInit();
 
     //Mise a jour du token chaque 1 min;
-    changeTokenApiPeriodic();
+    // changeTokenApiPeriodic();
 
     //changer les information de la borne au bout de 5min
-    updateBorneInformationPeriodique();
+    // updateBorneInformationPeriodique();
   }
 }

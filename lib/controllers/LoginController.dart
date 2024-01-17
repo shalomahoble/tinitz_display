@@ -10,7 +10,6 @@ import 'package:borne_flutter/services/ShortUrlService.dart';
 import 'package:borne_flutter/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/Artcile.dart';
@@ -52,7 +51,6 @@ class LoginController extends GetxController {
         final response = jsonDecode(value.body);
         if (value.statusCode == 200) {
           token = response['access_token'];
-          log("EVENTBD logincontroller $token");
           saveToken(token);
           box.write('token', token);
 
@@ -106,7 +104,7 @@ class LoginController extends GetxController {
   }
 
   void getUrl() async {
-    final token = await getToken();
+    final token = getToken();
     const accessToken = '448a1d93fc7acf36a31c268ef9ddb393150fb428';
     final longUrl =
         "https://devmarket.egaz.shop/reading?q=${borne.value.code}&tk=$token";
@@ -403,15 +401,14 @@ class LoginController extends GetxController {
 
   // Token
 
-  Future<void> saveToken(String token) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('token', token);
-  }
+  // Future<void> saveToken(String token) async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   await prefs.setString('token', token);
+  // }
 
   //get borne info
   getBorneInfo() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = prefs.getString('token') ?? '';
+    String token = getToken();
     if (token.isNotEmpty) {
       final response = await _loginService.generateNewToken();
       final body = jsonDecode(response.body);

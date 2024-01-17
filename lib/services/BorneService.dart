@@ -11,16 +11,57 @@ class BorneService extends GetxService {
   final box = GetStorage();
   //Get borne
   Future<http.Response> getBorne() async {
-    /*  final token = box.read('token'); */
     final token = box.read('token');
     try {
-      log("connecte $token");
-      final response =
-          await http.post(getUrl('auth/refresh'), headers: headersToken(token));
-
+      final response = await http.post(
+        getUrl('auth/refresh'),
+        headers: headersToken(token),
+      );
       return response;
     } catch (e) {
-      // showMessageError(message: e.toString());
+      showMessageError(message: e.toString());
+      rethrow;
+    }
+  }
+
+//Recuperer tous les slides
+  Future<http.Response> getAllSlides() async {
+    final token = box.read('token');
+    try {
+      final response = await http.get(
+        getUrl('get_all_slide_borne'),
+        headers: headersToken(token),
+      );
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  //Recuperer tous les articles
+  Future<http.Response> getAllArticles() async {
+    final token = box.read('token');
+    try {
+      final response = await http.get(
+        getUrl('get_all_article_borne'),
+        headers: headersToken(token),
+      );
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  //Recuperer tous les articles
+  Future<http.Response> getAllAlertes() async {
+    final token = box.read('token');
+    try {
+      final response = await http.get(
+        getUrl('get_all_alertes_borne'),
+        headers: headersToken(token),
+      );
+      return response;
+    } catch (e) {
       rethrow;
     }
   }

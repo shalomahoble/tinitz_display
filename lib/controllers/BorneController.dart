@@ -52,24 +52,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   RxList<Slide> slides = <Slide>[].obs;
   RxList<Alert> alertes = <Alert>[].obs;
   RxList<Ticket> tickets = <Ticket>[].obs;
-  Rx<Setting> setting = Setting(
-    id: 0,
-    slogan: '',
-    name: '',
-    phone: '',
-    description: '',
-    email: '',
-    logo: '',
-    logoborne: '',
-    favicon: '',
-    adresse: '',
-    facebook: '',
-    twitter: '',
-    instagram: '',
-    map: '',
-    createdAt: DateTime.now(),
-    updatedAt: DateTime.now(),
-  ).obs;
+  Rx<Setting> setting = Setting.nothing().obs;
   final box = GetStorage();
   Rx<Timer> videoTimer = Timer(Duration.zero, () {}).obs;
   Rx<Timer> videoTimerSecond = Timer(Duration.zero, () {}).obs;
@@ -93,14 +76,11 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   Future<void> getBorne() async {
     try {
       final response = await _borneService.getBorne();
-
-       log(response.statusCode.toString());
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
         final token = body['access_token'];
         box.write('token', token);
 
-       
         borne.value = Borne.fromJson(body['borne']);
         setting.value = Setting.fromJson(body['setting']);
         articles.value = borne.value.articles!;
@@ -119,13 +99,19 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
           saveToken(token),
           getAllTicketForBorne(),
         ]);
-      } else if (response.statusCode == 400) {
-        showMessageError(message: "Token invalide...");
+      } else if (response.statusCode == 401) {
+        showMessageError(
+          message: "Token invalide... ${response.body.toString()}",
+          duration: const Duration(seconds: 6),
+        );
+        log("401 ${response.body.toString()}");
         Get.offAllNamed('login');
-      } else {
+      } else if (response.statusCode == 400) {
+        log("400 ${response.body.toString()}");
         showMessageError(
           message: response.body.toString(),
           color: Colors.orangeAccent,
+          duration: const Duration(seconds: 10),
         );
         Get.offAllNamed('login');
       }
@@ -162,15 +148,12 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   //##################################### SLIDE FUNCTION ###############################
 
 //Get current slide and update duration for current slide
+//Update duration for current slide
   slideChange(int index) {
     if (slides.isNotEmpty && index < slides.length) {
       dureeDuSlide.value = slides[index].duree;
       update();
     }
-    // else if (slides.isNotEmpty) {
-    //   dureeDuSlide.value = slides[0].duree;
-    //   update();
-    // }
   }
 
   //##################################### Article FUNCTION ###############################
@@ -237,6 +220,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
     update(); */
   }
 
+// ################################ TIME ################################
   //Time function
   currentTimeForTimeZone() {
     // ignore: unnecessary_null_comparison
@@ -256,12 +240,13 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   }
 
   //Send fire base to server
-  Future<void> sendToken(
-      {required String code, required String fbToken}) async {
+  Future<void> sendToken({
+    required String code,
+    required String fbToken,
+  }) async {
     try {
-      await _borneService
-          .sendToken(code: code, fbToken: fbToken)
-          .then((response) => {log(response.body.toString())});
+      await _borneService.sendToken(code: code, fbToken: fbToken);
+      // .then((response) => {log(response.body.toString())});
     } catch (e) {
       rethrow;
     }
@@ -273,9 +258,6 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   void addOrUpdateSlide(List<Slide> newListeSlide) {
     slides.value = newListeSlide;
     update();
-    //  slideChange(0);
-    print(slides.length.toString());
-    log(slides.toString());
   }
 
   //Add new or update or delete alerte (text or video)
@@ -304,14 +286,9 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
           .duree; //Mettre a jour la durre
       articles.value = newListeArticle; //Affectation des nouvelles articles
       // playDefaultRingtone(); //On emet un son
-      //controller.reset(); //On reinitialise l'animation
-      // startNewAnimation();
-      log("nouvelle article");
       videoTimer.value.cancel();
       videoTimerSecond.value.cancel();
       startVisibleAnimation(); //On relance l'animation
-      //delayedTask.cancel();
-      //startTimerForNextArticle();
       update(); //On informe tout le monde
     }
   }
@@ -399,9 +376,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
       if (articles.isNotEmpty) {
         isCardVisible(false);
         Article currentArticle = articles[currentArticleIndex.value];
-        // if (shouldSkipPermanentArticle(currentArticle)) {
-        //   articles.remove(currentArticle);
-        // }
+
         videoTimerSecond.value = Timer(const Duration(seconds: 10), () {
           handleDisplayedPermanentArticle(currentArticle);
           // supprimer cet article si elle est permanent
@@ -413,20 +388,6 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
           playDefaultRingtone();
           startVisibleAnimation();
         });
-
-        // if (shouldSkipPermanentArticle(currentArticle)) {
-        //   log(" article courant ${currentArticle.pivot.permanent.toString()}");
-        //   log(" article courant ${currentArticle.id.toString()}");
-        //   log(permanentArticleIdsDisplayed.toString());
-        //   articles.remove(currentArticle);
-        //   skipToNextArticle();
-        //   // startVisibleAnimation();
-        // } else {
-        //   handleDisplayedPermanentArticle(currentArticle);
-        //   goToNextArticle();
-        //   playDefaultRingtone();
-        //   startVisibleAnimation();
-        // }
       } else {
         videoTimer.value.cancel();
         videoTimerSecond.value.cancel();
@@ -566,7 +527,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
 
 //Iniatialisation du controlleur
   @override
-  void onInit()  async {
+  void onInit() async {
     super.onInit();
     initializeDateFormatting('en_US');
     tz.initializeTimeZones();

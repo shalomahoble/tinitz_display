@@ -1,11 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
 import 'package:borne_flutter/components/components.dart';
-import 'package:borne_flutter/config/app_style.dart';
 import 'package:borne_flutter/models/Slide.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import '../config/size_config.dart';
 
@@ -34,23 +31,32 @@ class TitrologieSlider extends StatelessWidget {
     } else {
       return Stack(
         children: [
-          CachedNetworkImage(
+          Image.network(
+            backgroundUrlImage(),
             height: double.infinity,
             width: double.infinity,
             fit: BoxFit.cover,
-            imageUrl: backgroundUrlImage(),
-            errorWidget: (context, url, error) =>
-                LoadingAnimationWidget.fourRotatingDots(
-              color: KOrange,
-              size: 200,
-            ),
-            placeholder: (context, url) => Center(
-              child: LoadingAnimationWidget.fourRotatingDots(
-                color: KOrange,
-                size: 60,
-              ),
-            ),
+            errorBuilder: (context, error, stackTrace) {
+              return Image.asset('assets/images/emppty_slide.png');
+            },
           ),
+          // CachedNetworkImage(
+          //   height: double.infinity,
+          //   width: double.infinity,
+          //   fit: BoxFit.cover,
+          //   imageUrl: backgroundUrlImage(),
+          //   errorWidget: (context, url, error) =>
+          //       LoadingAnimationWidget.fourRotatingDots(
+          //     color: KOrange,
+          //     size: 200,
+          //   ),
+          //   placeholder: (context, url) => Center(
+          //     child: LoadingAnimationWidget.fourRotatingDots(
+          //       color: KOrange,
+          //       size: 60,
+          //     ),
+          //   ),
+          // ),
           BodyCard(
             slide: slide,
           ),

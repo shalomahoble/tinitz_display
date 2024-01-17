@@ -1,9 +1,11 @@
 import 'package:borne_flutter/config/app_config.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get_storage/get_storage.dart';
 
 const String urlScanneCodeQr = "https://devmarket.egaz.shop/api/redirect?";
+
+final box = GetStorage();
 //Convert url to Uri
 Uri getUrl(String url) {
   return Uri.parse('$baseUrl$url');
@@ -17,30 +19,31 @@ void showMessageError(
     {String title = 'Error Message',
     required String message,
     Color color = Colors.red,
-    SnackPosition position = SnackPosition.TOP}) {
-  Get.snackbar(title, message, backgroundColor: color, snackPosition: position);
+    SnackPosition position = SnackPosition.TOP,
+    Duration? duration}) {
+  Get.snackbar(
+    title,
+    message,
+    backgroundColor: color,
+    snackPosition: position,
+    duration: duration,
+  );
 }
 
 //recuperer le token
-Future<String> getToken() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  return prefs.getString('token') ?? '';
+String getToken() {
+  return box.read('token');
 }
 
 //Sauvegader le token
 
 Future<void> saveToken(String token) async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  // ignore: unnecessary_null_comparison
-  if (token != null && token.isNotEmpty) {
-    await prefs.setString('token', token);
-  }
+  box.write('token', token);
 }
 
 //remove token
 Future<void> removeToken() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  prefs.remove('token');
+  box.remove('token');
 }
 
 // Return url to slide or article

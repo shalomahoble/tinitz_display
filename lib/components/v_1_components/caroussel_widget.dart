@@ -1,6 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
-import 'dart:developer';
+
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -16,7 +16,7 @@ import 'package:borne_flutter/controllers/BorneController.dart';
 import 'package:borne_flutter/models/Artcile.dart';
 import 'package:borne_flutter/utils/utils.dart';
 
-import 'package:html/parser.dart';
+
 
 class CarousselWidget extends StatelessWidget {
   const CarousselWidget({
@@ -27,10 +27,6 @@ class CarousselWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     final borneController = Get.find<BorneController>();
-
-    // List<Widget> items = borneController.slides
-    //     .map<Widget>((item) => TitrologieSlider(slide: item))
-    //     .toList();
 
     return Obx(() {
       if (borneController.slides.isNotEmpty) {

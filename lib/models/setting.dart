@@ -101,6 +101,25 @@ class Setting {
         updatedAt: updatedAt ?? this.updatedAt,
       );
 
+  factory Setting.nothing() => Setting(
+        id: 0,
+        name: "TINITW",
+        slogan: "slogan",
+        phone: "phone",
+        description: "description",
+        email: "email",
+        logo: "logo",
+        logoborne: "logoborne",
+        favicon: "favicon",
+        adresse: "adresse",
+        facebook: "facebook",
+        twitter: "twitter",
+        instagram: "instagram",
+        map: "map",
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
   factory Setting.fromJson(Map<String, dynamic> json) => Setting(
         id: json["id"],
         name: json["name"],

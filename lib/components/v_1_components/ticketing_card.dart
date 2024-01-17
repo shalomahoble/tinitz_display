@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:borne_flutter/components/components.dart';
 import 'package:borne_flutter/config/app_style.dart';

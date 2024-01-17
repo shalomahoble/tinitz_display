@@ -13,7 +13,6 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:timezone/data/latest.dart' as tz;
 
@@ -84,15 +83,6 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _receiveMessageFirebase();
-    _checkToken();
-  }
-
-  Future<void> _checkToken() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      token = prefs.getString('token') ?? '';
-      loading = false;
-    });
   }
 
   //Firebase Message configure
@@ -105,42 +95,42 @@ class _MyAppState extends State<MyApp> {
       switch (event.data['event']) {
         //Alerte Mise a jour
         case 'CHANGE_STATUT_ALERT':
-          listenController.changeStatutAlerte();
+          listenController.updateAlerte();
           break;
         case 'UPDATE_ALERT':
           listenController.updateAlerte();
           break;
         case 'DELETE_ALERT':
-          listenController.deleteAlerte();
+          listenController.updateAlerte();
           break;
         case 'STORE_ALERT':
-          listenController.storeAlerte();
+          listenController.updateAlerte();
           break;
         //Articles mise a jour
         case 'STORE_ARTICLE':
           listenController.addNewArticle();
           break;
         case 'UPDATE_ARTICLE':
-          listenController.updateArticle();
+          listenController.addNewArticle();
           break;
         case 'DELETE_ARTICLE':
-          listenController.deleteArticle();
+          listenController.addNewArticle();
           break;
         case 'CHANGE_STATUT_ARTICLE':
-          listenController.updateArticle();
+          listenController.addNewArticle();
           break;
         //Slide mise a jour
         case 'STORE_SLIDE':
           listenController.addSlide();
           break;
         case 'DELETE_SLIDE':
-          listenController.deleteSlide();
+          listenController.addSlide();
           break;
         case 'UPDATE_SLIDE':
-          listenController.updateSlide();
+          listenController.addSlide();
           break;
         case 'CHANGE_STATUT_SLIDE':
-          listenController.updateSlide();
+          listenController.addSlide();
           break;
 
         //Slide mise a jour
@@ -162,37 +152,21 @@ class _MyAppState extends State<MyApp> {
         default:
       }
     });
-    //Ecouter l'app quand c'est en background
-    /* FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage); */
   }
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final box = GetStorage();
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       initialBinding: AllControllerBinding(),
       title: 'Borne App TINITZ',
-      // home: const WebViewExemple(),
-      // home: const Exemple(),
-      home: loading
-          ? const LoadView()
-          : token.isNotEmpty
-              ? const HomePage()
-              : Login(),
+      home: box.hasData('token') ? const HomePage() : Login(),
       getPages: [
-        GetPage(
-          name: '/login',
-          page: () => Login(),
-        ),
-        GetPage(
-          name: '/home',
-          page: () => const Home(),
-        ),
-        GetPage(
-          name: '/homePage',
-          page: () => const HomePage(),
-        ),
+        GetPage(name: '/login', page: () => Login()),
+        GetPage(name: '/home', page: () => const Home()),
+        GetPage(name: '/homePage', page: () => const HomePage()),
       ],
     );
   }

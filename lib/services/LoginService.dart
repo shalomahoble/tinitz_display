@@ -21,7 +21,7 @@ class LoginService {
                 "password": password,
               }))
           .timeout(
-        const Duration(seconds: 40),
+        const Duration(minutes: 2),
         onTimeout: () {
           return http.Response("", 400);
         },
