@@ -75,7 +75,10 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
 //Recuperer les information concernant une borne
   Future<void> getBorne() async {
     try {
+      log(box.read('token'));
       final response = await _borneService.getBorne();
+      log(response.statusCode.toString());
+      log(response.body.toString());
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
         final token = body['access_token'];
@@ -104,12 +107,17 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
           message: "Token invalide... ${response.body.toString()}",
           duration: const Duration(seconds: 6),
         );
-        log("401 ${response.body.toString()}");
         Get.offAllNamed('login');
       } else if (response.statusCode == 400) {
-        log("400 ${response.body.toString()}");
         showMessageError(
           message: response.body.toString(),
+          color: Colors.orangeAccent,
+          duration: const Duration(seconds: 10),
+        );
+        Get.offAllNamed('login');
+      } else {
+        showMessageError(
+          message: "Une erreur s'est produite",
           color: Colors.orangeAccent,
           duration: const Duration(seconds: 10),
         );
