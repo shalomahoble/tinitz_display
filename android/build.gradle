@@ -5,10 +5,7 @@ buildscript {
         mavenCentral()
     }
 
-   /*  kotlinOptions {
-        jvmTarget = "1.8"
-        freeCompilerArgs = ["-Xskip-metadata-version-check"]
-    } */
+  
 
     dependencies {
         classpath 'com.android.tools.build:gradle:7.2.0'
