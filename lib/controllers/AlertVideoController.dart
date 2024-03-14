@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'dart:async';
 import 'dart:developer';
 
@@ -18,9 +20,9 @@ class AlertVideoController extends GetxController {
     return _borneController!;
   }
 
-  final videoUrl = ''.obs;
+  RxString videoUrl = ''.obs;
   RxString videoTitle = ''.obs;
-  final isVideoPlaying = false.obs;
+  RxBool isVideoPlaying = false.obs;
   RxInt currentVideoIndex = 0.obs;
   RxInt alertVideochanger = 0.obs;
   RxString currentVideoUrl = ''.obs;
@@ -39,7 +41,6 @@ class AlertVideoController extends GetxController {
 
   void loadVideo() {
     final videoAlerts = borneController.getAlerteVideo();
-
     if (videoAlerts.isNotEmpty) {
       currentVideoUrl.value = videoAlerts[currentVideoIndex.value].fileUrl;
       videoTitle.value = videoAlerts[currentVideoIndex.value].libelle;
@@ -61,7 +62,7 @@ class AlertVideoController extends GetxController {
   void _playVideo(String videoUrl) async {
     try {
       Future.delayed(Duration(seconds: dureeAvantAffichage.value), () async {
-        dureeAvantAffichage.value;
+        
         log("BDVIDEO lance ${dureeAvantAffichage.value}");
         videoPlayerController =
             VideoPlayerController.networkUrl(Uri.parse(videoUrl));
@@ -69,19 +70,6 @@ class AlertVideoController extends GetxController {
 
         if (videoPlayerController.value.isInitialized &&
             videoPlayerController.value.duration.inMilliseconds > 0) {
-          // isVideoPlaying(true);
-          // videoPlayerController.play();
-          // log("BDVIDEO pret la video");
-          // videoPlayerController.addListener(() {
-          //   if (videoPlayerController.value.position ==
-          //       videoPlayerController.value.duration) {
-          //     isVideoPlaying(false);
-          //     update();
-          //     _onVideoFinished();
-          //     log("BDVIDEO fin la video");
-          //   }
-          // });
-
           chewieController = ChewieController(
             videoPlayerController: videoPlayerController,
             autoPlay: true,
@@ -105,18 +93,6 @@ class AlertVideoController extends GetxController {
               ),
             ),
           );
-
-          // videoPlayerController.addListener(() {
-          //   if (!videoPlayerController.value.isPlaying &&
-          //       (videoPlayerController.value.position ==
-          //           videoPlayerController.value.duration)) {
-          //     log("BDVIDEO ecoute ${videoPlayerController.value.position}");
-          //     log("BDVIDEO vrai fermer ${videoPlayerController.value.duration}");
-          //     // Get.back();
-          //     isVideoPlaying(false);
-          //     _onVideoFinished();
-          //   }
-          // });
 
           Timer(videoPlayerController.value.duration, () {
             log("BDVIDEO fermer ${videoPlayerController.value.duration}");
@@ -197,7 +173,6 @@ class AlertVideoController extends GetxController {
   void onClose() {
     super.onClose();
     videoPlayerController.dispose();
-
     videoTimer.cancel();
   }
 }

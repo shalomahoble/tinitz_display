@@ -88,18 +88,11 @@ class ListenController extends GetxController {
 
   Future<void> addNewArticle() async {
     final response = await borneService.getAllArticles();
-
     if (response.statusCode == 200) {
       final body = jsonDecode(response.body)['articles'];
       final articles = body.map<Article>((el) => Article.fromJson(el)).toList();
       borneController.addOrUpdateArticle(articles);
     }
-
-    // getBorne().then((borne) {
-    //   if (borne != null) {
-    //     borneController.addOrUpdateArticle(borne.articles!);
-    //   }
-    // });
   }
 
   void deleteArticle() {
@@ -120,7 +113,7 @@ class ListenController extends GetxController {
     });
   }
 
-  //###### ajouter un Slide
+  //###### ajouter un Slide ou mettre a jour le slide
   Future<void> addSlide() async {
     final response = await borneService.getAllSlides();
     if (response.statusCode == 200) {
@@ -130,13 +123,22 @@ class ListenController extends GetxController {
     }
   }
 
-  void deleteSlide() {
-    getBorne().then((borne) {
+  Future<void> deleteSlide() async {
+    final borne = await getBorne();
+    if (borne != null) {
       log("EVENTBD delete slide ${borne.toString()}");
-      if (borne != null) {
-        borneController.addOrUpdateSlide(borne.slides!);
-      }
-    });
+      borneController.addOrUpdateSlide(borne.slides!);
+    }
+  }
+
+  //Change parameters
+  Future<void> changeParameters() async {
+    final response = await loginService.generateNewToken();
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body);
+      saveToken(body['access_token']);
+      borneController.parameterChange(body['setting']);
+    }
   }
 
   Future<Borne?> getBorne() async {
@@ -144,9 +146,7 @@ class ListenController extends GetxController {
 
     if (response.statusCode == 200) {
       final body = jsonDecode(response.body);
-      final token = body['access_token'];
-      saveToken(token);
-      await box.write('token', token);
+      saveToken(body['access_token']);
       return Borne.fromJson(body['borne']);
     } else {
       return null;
@@ -160,12 +160,8 @@ class ListenController extends GetxController {
         final body = jsonDecode(response.body);
         final token = body['access_token'];
         saveToken(token);
-        await box.write('token', token);
         if (body['borne'] != null) {
-          final token = body['access_token'];
-          box.write('token', token);
-          saveToken(token);
-          log(token.toString());
+          saveToken(body['access_token']);
         }
       }
     });
@@ -196,7 +192,6 @@ class ListenController extends GetxController {
   updateBorneInformationPeriodique() {
     Timer.periodic(const Duration(minutes: 5), (timer) {
       borneController.updateAllInfoForBorne();
-      log('mise a jour');
     });
   }
 
@@ -210,11 +205,5 @@ class ListenController extends GetxController {
   // ignore: unnecessary_overrides
   void onInit() {
     super.onInit();
-
-    //Mise a jour du token chaque 1 min;
-    // changeTokenApiPeriodic();
-
-    //changer les information de la borne au bout de 5min
-    // updateBorneInformationPeriodique();
   }
 }

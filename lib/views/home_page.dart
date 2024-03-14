@@ -8,27 +8,35 @@ import 'package:get/get.dart';
 import '../components/v_1_components/flash_info_widget.dart';
 import '../components/v_1_components/header.dart';
 
-class HomePage extends GetView<BorneController> {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final BorneController controller = Get.put(BorneController());
+
+  @override
+  void initState() {
+    super.initState();
     Get.put(AlertVideoController());
-
     controller.getBorne(); // Initialisation de la borne
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Obx(() {
       if (controller.borneLoading.value == true) {
         return Scaffold(
           body: Column(
             children: [
               //L'entête de la page
-              Obx(
-                () => Header(
-                  time: controller.currentDate.value,
-                  imagePath: controller.setting.value.logoborne,
-                ),
-              ),
+              Obx(() => Header(
+                    time: controller.currentDate.value,
+                    imagePath: controller.setting.value.logoborne,
+                  )),
 
               //Carousselle
               const CarousselWidget(),
@@ -43,10 +51,5 @@ class HomePage extends GetView<BorneController> {
         return const HomePageLoading();
       }
     });
-
-    // return GetBuilder<BorneController>(
-    //   builder: (controller) {
-    //   },
-    // );
   }
 }

@@ -1,4 +1,6 @@
-// ignore: file_names
+
+// ignore_for_file: file_names
+
 import 'package:borne_flutter/controllers/BorneController.dart';
 import 'package:borne_flutter/controllers/ListenController.dart';
 import 'package:borne_flutter/controllers/LoginController.dart';

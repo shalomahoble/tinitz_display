@@ -76,8 +76,6 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   Future<void> getBorne() async {
     try {
       final response = await _borneService.getBorne();
-      log(response.statusCode.toString());
-      log(response.body.toString());
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
         final token = body['access_token'];
@@ -100,7 +98,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
           saveToken(token),
           getAllTicketForBorne(),
         ]);
-        
+
       } else if (response.statusCode == 401) {
         showMessageError(
           message: "Token invalide... ${response.body.toString()}",
