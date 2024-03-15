@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:borne_flutter/config/app_style.dart';
 import 'package:borne_flutter/controllers/AllControllerBinding.dart';
+import 'package:borne_flutter/controllers/EventController.dart';
 import 'package:borne_flutter/controllers/ListenController.dart';
 import 'package:borne_flutter/firebase_options.dart';
 import 'package:borne_flutter/views/login.dart';
@@ -75,83 +76,12 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final box = GetStorage();
-  final listenController = Get.put(ListenController());
-  bool loading = true;
-  String token = "";
+  final eventController = Get.put(EventController());
 
   @override
   void initState() {
     super.initState();
-    _receiveMessageFirebase();
-  }
-
-  //Firebase Message configure
-  Future<void> _receiveMessageFirebase() async {
-    FirebaseMessaging.onMessage.listen((event) {
-      if (event.notification == null) return;
-      log('EVENTBD : ${event.data}');
-      final data = event.data;
-
-      switch (event.data['event']) {
-        //Alerte Mise a jour
-        case 'CHANGE_STATUT_ALERT':
-          listenController.updateAlerte();
-          break;
-        case 'UPDATE_ALERT':
-          listenController.updateAlerte();
-          break;
-        case 'DELETE_ALERT':
-          listenController.updateAlerte();
-          break;
-        case 'STORE_ALERT':
-          listenController.updateAlerte();
-          break;
-        //Articles mise a jour
-        case 'STORE_ARTICLE':
-          listenController.addNewArticle();
-          break;
-        case 'UPDATE_ARTICLE':
-          listenController.addNewArticle();
-          break;
-        case 'DELETE_ARTICLE':
-          listenController.addNewArticle();
-          break;
-        case 'CHANGE_STATUT_ARTICLE':
-          listenController.addNewArticle();
-          break;
-        //Slide mise a jour
-        case 'STORE_SLIDE':
-          listenController.addSlide();
-          break;
-        case 'DELETE_SLIDE':
-          listenController.addSlide();
-          break;
-        case 'UPDATE_SLIDE':
-          listenController.addSlide();
-          break;
-        case 'CHANGE_STATUT_SLIDE':
-          listenController.addSlide();
-          break;
-
-        //Slide mise a jour
-
-        case "NEXT TICKET":
-          final id = int.parse(data['current_id']);
-          final nextId = int.parse(data['next_id']);
-          listenController.newTicket(id: id, nextId: nextId);
-          break;
-        case "DEBUT TICKET":
-          final id = int.parse(data['id']);
-          listenController.firstTicket(id: id);
-          break;
-        case "RAPPEL TICKET":
-          final id = int.parse(data['current_id']);
-          listenController.callTicket(id);
-          break;
-
-        default:
-      }
-    });
+    eventController.receiveMessageFirebase();
   }
 
   // This widget is the root of your application.

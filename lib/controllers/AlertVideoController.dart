@@ -1,10 +1,11 @@
+// ignore_for_file: file_names
+
 import 'dart:async';
 import 'dart:developer';
 
 import 'package:borne_flutter/controllers/BorneController.dart';
 import 'package:borne_flutter/models/Alerte.dart';
 import 'package:chewie/chewie.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
 
@@ -18,9 +19,10 @@ class AlertVideoController extends GetxController {
     return _borneController!;
   }
 
-  final videoUrl = ''.obs;
+  RxString videoUrl = ''.obs;
   RxString videoTitle = ''.obs;
-  final isVideoPlaying = false.obs;
+  RxBool isVideoPlaying = false.obs;
+  RxBool videoIsInitialized = false.obs;
   RxInt currentVideoIndex = 0.obs;
   RxInt alertVideochanger = 0.obs;
   RxString currentVideoUrl = ''.obs;
@@ -39,7 +41,6 @@ class AlertVideoController extends GetxController {
 
   void loadVideo() {
     final videoAlerts = borneController.getAlerteVideo();
-
     if (videoAlerts.isNotEmpty) {
       currentVideoUrl.value = videoAlerts[currentVideoIndex.value].fileUrl;
       videoTitle.value = videoAlerts[currentVideoIndex.value].libelle;
@@ -48,11 +49,6 @@ class AlertVideoController extends GetxController {
       log("BDVIDEO l'index de la video ${currentVideoIndex.value}");
       update();
       if (isVideoPlaying.isFalse) {
-        log("BDVIDEO loguer la video ");
-        if (Get.isDialogOpen!) {
-          Get.back();
-        }
-        // isVideoPlaying(true);
         _playVideo(currentVideoUrl.value);
       }
     }
@@ -61,27 +57,13 @@ class AlertVideoController extends GetxController {
   void _playVideo(String videoUrl) async {
     try {
       Future.delayed(Duration(seconds: dureeAvantAffichage.value), () async {
-        dureeAvantAffichage.value;
-        log("BDVIDEO lance ${dureeAvantAffichage.value}");
+        log("BDVIDEO lance titre $videoUrl");
         videoPlayerController =
             VideoPlayerController.networkUrl(Uri.parse(videoUrl));
         await videoPlayerController.initialize();
 
         if (videoPlayerController.value.isInitialized &&
             videoPlayerController.value.duration.inMilliseconds > 0) {
-          // isVideoPlaying(true);
-          // videoPlayerController.play();
-          // log("BDVIDEO pret la video");
-          // videoPlayerController.addListener(() {
-          //   if (videoPlayerController.value.position ==
-          //       videoPlayerController.value.duration) {
-          //     isVideoPlaying(false);
-          //     update();
-          //     _onVideoFinished();
-          //     log("BDVIDEO fin la video");
-          //   }
-          // });
-
           chewieController = ChewieController(
             videoPlayerController: videoPlayerController,
             autoPlay: true,
@@ -91,41 +73,40 @@ class AlertVideoController extends GetxController {
             showControlsOnInitialize: false,
             showControls: false,
           );
-
+          isVideoPlaying(true);
+          videoIsInitialized(true);
           // Temps d'affichage de la video
-          Get.defaultDialog(
-            title: videoTitle.value,
-            titlePadding:
-                const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            contentPadding: EdgeInsets.zero,
-            content: AspectRatio(
-              aspectRatio: videoPlayerController.value.aspectRatio,
-              child: Chewie(
-                controller: chewieController,
-              ),
-            ),
-          );
+          // Get.defaultDialog(
+          //   title: videoTitle.value,
+          //   titlePadding:
+          //       const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          //   contentPadding: EdgeInsets.zero,
+          //   content: AspectRatio(
+          //     aspectRatio: videoPlayerController.value.aspectRatio,
+          //     child: Chewie(
+          //       controller: chewieController,
+          //     ),
+          //   ),
+          // );
 
-          // videoPlayerController.addListener(() {
-          //   if (!videoPlayerController.value.isPlaying &&
-          //       (videoPlayerController.value.position ==
-          //           videoPlayerController.value.duration)) {
-          //     log("BDVIDEO ecoute ${videoPlayerController.value.position}");
-          //     log("BDVIDEO vrai fermer ${videoPlayerController.value.duration}");
-          //     // Get.back();
-          //     isVideoPlaying(false);
-          //     _onVideoFinished();
-          //   }
-          // });
-
-          Timer(videoPlayerController.value.duration, () {
-            log("BDVIDEO fermer ${videoPlayerController.value.duration}");
-            chewieController.pause(); // Arrêter la lecture
-            videoPlayerController.pause();
-            Get.back();
-            isVideoPlaying(false);
-            _onVideoFinished();
+          videoPlayerController.addListener(() {
+            if (!videoPlayerController.value.isPlaying &&
+                videoPlayerController.value.duration ==
+                    videoPlayerController.value.position) {
+              chewieController.pause(); // Arrêter la lecture
+              videoPlayerController.pause();
+              isVideoPlaying(false);
+              _onVideoFinished();
+            }
           });
+
+          // Timer(videoPlayerController.value.duration, () {
+          //   chewieController.pause(); // Arrêter la lecture
+          //   videoPlayerController.pause();
+          //   Get.back();
+          //   isVideoPlaying(false);
+          //   _onVideoFinished();
+          // });
         }
       });
     } catch (e) {
@@ -193,10 +174,21 @@ class AlertVideoController extends GetxController {
     });
   }
 
+  void stopVideo() {
+    if (videoIsInitialized.isTrue &&
+        videoPlayerController.value.isInitialized) {
+      videoPlayerController.pause();
+      chewieController.pause();
+    }
+  }
+
   @override
   void onClose() {
     super.onClose();
-    videoPlayerController.dispose();
+    if (videoPlayerController.value.isInitialized) {
+      videoPlayerController.dispose();
+      chewieController.dispose();
+    }
 
     videoTimer.cancel();
   }

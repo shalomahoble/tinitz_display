@@ -1,9 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:borne_flutter/config/app_style.dart';
+import 'package:borne_flutter/utils/utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import 'package:borne_flutter/config/size_config.dart';
+import 'package:get/get.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class Header extends StatelessWidget {
@@ -18,42 +20,52 @@ class Header extends StatelessWidget {
   final String? imagePath;
   final VoidCallbackAction? onPress;
 
+  void deconnexion() {
+    Get.offAllNamed("login");
+    removeToken();
+  }
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Expanded(
       flex: 0,
-      child: Container(
-        color: Colors.white,
-        padding: EdgeInsets.symmetric(
-          horizontal: SizeConfig.blockHorizontal! * 2,
-          vertical: SizeConfig.blockHorizontal! * 2,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            CachedNetworkImage(
-              imageUrl: imagePath!,
-              fit: BoxFit.cover,
-              height: SizeConfig.blockHorizontal! * 15,
-              errorWidget: (context, url, error) => const Text(
-                "Image du site insdisponible...",
+      child: GestureDetector(
+        onTap: () {
+          deconnexion();
+        },
+        child: Container(
+          color: Colors.white,
+          padding: EdgeInsets.symmetric(
+            horizontal: SizeConfig.blockHorizontal! * 2,
+            vertical: SizeConfig.blockHorizontal! * 2,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              CachedNetworkImage(
+                imageUrl: imagePath!,
+                fit: BoxFit.cover,
+                height: SizeConfig.blockHorizontal! * 15,
+                errorWidget: (context, url, error) => const Text(
+                  "Image du site insdisponible...",
+                ),
+                placeholder: (context, url) =>
+                    LoadingAnimationWidget.fourRotatingDots(
+                  color: KOrange,
+                  size: 20,
+                ),
               ),
-              placeholder: (context, url) =>
-                  LoadingAnimationWidget.fourRotatingDots(
-                color: KOrange,
-                size: 20,
+              Text(
+                time,
+                style: timeStyle.copyWith(
+                  color: Colors.black,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-            ),
-            Text(
-              time,
-              style: timeStyle.copyWith(
-                color: Colors.black,
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

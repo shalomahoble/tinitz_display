@@ -76,14 +76,10 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
 //Recuperer les information concernant une borne
   Future<void> getBorne() async {
     try {
-      log(box.read('token'));
       final response = await _borneService.getBorne();
-      log(response.statusCode.toString());
-      log(response.body.toString());
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
         final token = body['access_token'];
-        box.write('token', token);
 
         borne.value = Borne.fromJson(body['borne']);
         setting.value = Setting.fromJson(body['setting']);
@@ -93,12 +89,12 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
         site.value = borne.value.site!;
         borneLoading.value = true;
         update();
-
         currentTimeForTimeZone(); // Get timeZone to dsiplay current date and time
         slideChange(0); //Get first slide duration to init slide
         //startTimerForNextArticle(); //Start animating articles
 
         startVisibleAnimation();
+
         Future.wait([
           saveToken(token),
           getAllTicketForBorne(),
@@ -259,7 +255,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
 
       Timer.periodic(const Duration(seconds: 1), (timer) {
         tz.TZDateTime date = tz.TZDateTime.now(_location);
-        currentDate.value = DateFormat('EEE, MMM d y', 'fr_Fr').format(date);
+        currentDate.value = DateFormat('EEE d MMM  y', 'fr_Fr').format(date);
         currentTime.value = DateFormat('HH:mm', 'fr_Fr').format(date);
         currentDate.value = '${currentDate.value} ${currentTime.value}';
         /* print(currentDate.toString()); */
@@ -276,7 +272,6 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   }) async {
     try {
       await _borneService.sendToken(code: code, fbToken: fbToken);
-      // .then((response) => {log(response.body.toString())});
     } catch (e) {
       rethrow;
     }
@@ -286,15 +281,23 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
 
   //Add new or update or delete slide
   void addOrUpdateSlide(List<Slide> newListeSlide) {
-    slides.value = newListeSlide;
+    slides.assignAll(newListeSlide);
     update();
   }
 
   //Add new or update or delete alerte (text or video)
   void addOrUpdateAlert(List<Alert> newListeAlerte) {
-    alertes.value = newListeAlerte;
+    alertes.assignAll(newListeAlerte);
     update();
   }
+
+  //parameters of borne change
+  Future<void> parameterChange(dynamic setting) async {
+    setting.value = Setting.fromJson(setting);
+    update();
+  }
+
+  //################################################################################################
 
   //Add new or update or delete article
   void addOrUpdateArticle(List<Article> newListeArticle) {

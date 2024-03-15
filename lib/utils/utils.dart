@@ -43,7 +43,7 @@ Future<void> saveToken(String token) async {
 
 //remove token
 Future<void> removeToken() async {
-  box.remove('token');
+  box.erase();
 }
 
 // Return url to slide or article
