@@ -19,6 +19,7 @@ import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:logger/logger.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -132,11 +133,32 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   //######## Alert Text
   String getAlerteText() {
     if (alertes.isNotEmpty) {
-      return alertes
+      Logger().t("Alert from api: $alertes");
+      List<String> splittedAlert;
+      String finalAlertMessage = "";
+      
+      // return alertes
+      //     .where((el) => el.typealert.libelle.toLowerCase() == 'text')
+      //     .map((e) => e.libelle)
+      //     .toList()
+      //     .join("|");
+
+      splittedAlert = alertes
           .where((el) => el.typealert.libelle.toLowerCase() == 'text')
           .map((e) => e.libelle)
           .toList()
-          .join("  |  ");
+          .join("|")
+          .split("|");
+      
+      final screenWidth = MediaQuery.sizeOf(Get.context!).width;
+      final spaceBetweenText = screenWidth < 600 ? 40 : 600 >= screenWidth && screenWidth < 875 ? 100 : 200;      
+      for(String alerte in splittedAlert){
+        finalAlertMessage += alerte + (" " * spaceBetweenText);
+      }
+
+      Logger().t("final alert message: $finalAlertMessage");
+
+      return finalAlertMessage;
     } else {
       return '';
     }

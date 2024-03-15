@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:marquee/marquee.dart';
 import 'package:marqueer/marqueer.dart';
 
@@ -20,6 +21,7 @@ class FlashInfoWidget extends StatelessWidget {
     if (alertText.isEmpty) {
       return const SizedBox.shrink();
     } else {
+      Logger().d('final alert message: $alertText');
       return Expanded(
         flex: 0,
         child: Container(
@@ -42,7 +44,8 @@ class FlashInfoWidget extends StatelessWidget {
               Expanded(
                 child: SizedBox(
                   child: Marquee(
-                    text: '$alertText | ',
+                    text: alertText,
+                    velocity: 60,
                     style: flashInfoTextStyle.copyWith(
                       color: Colors.black,
                       fontWeight: FontWeight.w800,
