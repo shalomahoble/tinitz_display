@@ -1,5 +1,6 @@
 // ignore: duplicate_ignore
 // ignore_for_file: public_member_api_docs, sort_constructors_first, must_be_immutable, unused_local_variable
+
 import 'package:borne_flutter/config/app_style.dart';
 import 'package:borne_flutter/controllers/BorneController.dart';
 import 'package:borne_flutter/services/ShortUrlService.dart';
@@ -34,42 +35,16 @@ class QRcode extends StatelessWidget {
     }
 
     Widget displayCodeQr() {
-      switch (slide.typeslide!.libelle!.toLowerCase()) {
-        case 'titrologie':
-          return QrImageView(
-            backgroundColor: Colors.white,
-            padding: const EdgeInsets.all(8.0),
-            version: QrVersions.auto,
-            data: codeQrUrl(),
-          );
-        case 'wifi':
-          return Container(
-            decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                  color: Colors.white,
-                  width: 7,
-                )),
-            child: CachedNetworkImage(
-              fit: BoxFit.cover,
-              imageUrl: slide.qrcode ??
-                  'https://images.pexels.com/photos/7289721/pexels-photo-7289721.jpeg?auto=compress&cs=tinysrgb&w=600',
-              placeholder: (context, url) =>
-                  LoadingAnimationWidget.bouncingBall(
-                color: KOrange,
-                size: 20,
-              ),
-            ),
-          );
-        case 'evenements':
-          return QrImageView(
-            backgroundColor: Colors.white,
-            padding: const EdgeInsets.all(8.0),
-            version: QrVersions.auto,
-            data: codeQr("slide=${slide.id}", slide.pivot!.borneId!),
-          );
-        case 'autres':
-          if (slide.qrcode != null) {
+      if (slide.typeslide != null && slide.typeslide!.libelle != null) {
+        switch (slide.typeslide!.libelle!.toLowerCase()) {
+          case 'titrologie':
+            return QrImageView(
+              backgroundColor: Colors.white,
+              padding: const EdgeInsets.all(8.0),
+              version: QrVersions.auto,
+              data: codeQrUrl(),
+            );
+          case 'wifi':
             return Container(
               decoration: BoxDecoration(
                   color: Colors.white,
@@ -78,8 +53,8 @@ class QRcode extends StatelessWidget {
                     width: 7,
                   )),
               child: CachedNetworkImage(
-                imageUrl: slide.qrcode ??
-                    'https://images.pexels.com/photos/7289721/pexels-photo-7289721.jpeg?auto=compress&cs=tinysrgb&w=600',
+                fit: BoxFit.cover,
+                imageUrl: slide.qrcode.toString(),
                 placeholder: (context, url) =>
                     LoadingAnimationWidget.bouncingBall(
                   color: KOrange,
@@ -87,12 +62,40 @@ class QRcode extends StatelessWidget {
                 ),
               ),
             );
-          } else {
+          case 'evenements':
+            return QrImageView(
+              backgroundColor: Colors.white,
+              padding: const EdgeInsets.all(8.0),
+              version: QrVersions.auto,
+              data: codeQr("slide=${slide.id}", slide.pivot!.borneId!),
+            );
+          case 'autres':
+            if (slide.qrcode != null) {
+              return Container(
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(
+                      color: Colors.white,
+                      width: 7,
+                    )),
+                child: CachedNetworkImage(
+                  imageUrl: slide.qrcode ??
+                      'https://images.pexels.com/photos/7289721/pexels-photo-7289721.jpeg?auto=compress&cs=tinysrgb&w=600',
+                  placeholder: (context, url) =>
+                      LoadingAnimationWidget.bouncingBall(
+                    color: KOrange,
+                    size: 20,
+                  ),
+                ),
+              );
+            } else {
+              return const SizedBox.shrink();
+            }
+          default:
             return const SizedBox.shrink();
-          }
-        default:
-          return const SizedBox.shrink();
+        }
       }
+      return const SizedBox.shrink();
     }
 
     return Container(

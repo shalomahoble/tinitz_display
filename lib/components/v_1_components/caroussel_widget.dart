@@ -1,7 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
 
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -15,8 +14,6 @@ import 'package:borne_flutter/config/size_config.dart';
 import 'package:borne_flutter/controllers/BorneController.dart';
 import 'package:borne_flutter/models/Artcile.dart';
 import 'package:borne_flutter/utils/utils.dart';
-
-
 
 class CarousselWidget extends StatelessWidget {
   const CarousselWidget({

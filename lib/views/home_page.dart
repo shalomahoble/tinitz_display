@@ -1,4 +1,7 @@
+// ignore_for_file: dead_code
+
 import 'package:borne_flutter/components/v_1_components/caroussel_widget.dart';
+import 'package:borne_flutter/components/v_1_components/video_widget_section.dart';
 import 'package:borne_flutter/controllers/AlertVideoController.dart';
 import 'package:borne_flutter/controllers/BorneController.dart';
 import 'package:borne_flutter/views/home_page_loading.dart';
@@ -17,12 +20,18 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final BorneController controller = Get.put(BorneController());
+  final AlertVideoController videoController = Get.put(AlertVideoController());
 
   @override
   void initState() {
     super.initState();
-    Get.put(AlertVideoController());
     controller.getBorne(); // Initialisation de la borne
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    //videoController.stopVideo();
   }
 
   @override
@@ -38,9 +47,13 @@ class _HomePageState extends State<HomePage> {
                     imagePath: controller.setting.value.logoborne,
                   )),
 
+              //Affichage de la video
+              if (videoController.isVideoPlaying.isTrue) ...[
+                VideoWidgetSection(videoController: videoController)
+              ]
               //Carousselle
-              const CarousselWidget(),
-
+              else
+                const CarousselWidget(),
               //Flash info Widget
               FlashInfoWidget(alertText: controller.getAlerteText()),
             ],
@@ -53,3 +66,4 @@ class _HomePageState extends State<HomePage> {
     });
   }
 }
+

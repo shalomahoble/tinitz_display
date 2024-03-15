@@ -79,7 +79,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
         final token = body['access_token'];
-        
+
         borne.value = Borne.fromJson(body['borne']);
         setting.value = Setting.fromJson(body['setting']);
         articles.value = borne.value.articles!;
@@ -98,7 +98,6 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
           saveToken(token),
           getAllTicketForBorne(),
         ]);
-
       } else if (response.statusCode == 401) {
         showMessageError(
           message: "Token invalide... ${response.body.toString()}",
@@ -234,7 +233,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
 
       Timer.periodic(const Duration(seconds: 1), (timer) {
         tz.TZDateTime date = tz.TZDateTime.now(_location);
-        currentDate.value = DateFormat('EEE, MMM d y', 'fr_Fr').format(date);
+        currentDate.value = DateFormat('EEE d MMM  y', 'fr_Fr').format(date);
         currentTime.value = DateFormat('HH:mm', 'fr_Fr').format(date);
         currentDate.value = '${currentDate.value} ${currentTime.value}';
         /* print(currentDate.toString()); */
