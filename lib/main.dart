@@ -29,7 +29,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 void main() async {
 /*   final borneController = Get.put(BorneController()); */
   await GetStorage.init();
-  final box = GetStorage();
   tz.initializeTimeZones();
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(
@@ -49,9 +48,6 @@ void main() async {
   );
 
   /*  FirebaseAnalytics analytics = FirebaseAnalytics.instance; */
-  await FirebaseMessaging.instance.getToken().then((value) async {
-    await box.write('fcmToken', value);
-  });
   FirebaseMessaging.onBackgroundMessage((_firebaseMessagingBackgroundHandler));
   //Enregistrement du tocken Firebase vers la base de donnée par l'Api
   // borneController.sendToken(token: fmcToken!);
@@ -92,6 +88,7 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       initialBinding: AllControllerBinding(),
       title: 'Borne App TINITZ',
+      // home: const TextMarqueeDisplay(),
       home: box.hasData('token') ? const HomePage() : Login(),
       getPages: [
         GetPage(name: '/login', page: () => Login()),

@@ -36,7 +36,7 @@ class LoginService {
   Future<http.Response> generateNewToken() async {
     http.Response response = http.Response("", 200);
     try {
-      String token = await getToken();
+      String token =  getToken();
       // ignore: unnecessary_null_comparison
       if (token == null) {
         showMessageError(message: "Le token est nul !");

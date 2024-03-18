@@ -34,6 +34,10 @@ class _HomePageState extends State<HomePage> {
     //videoController.stopVideo();
   }
 
+  void deconnexion() {
+    controller.deconnexion();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Obx(() {
@@ -45,6 +49,9 @@ class _HomePageState extends State<HomePage> {
               Obx(() => Header(
                     time: controller.currentDate.value,
                     imagePath: controller.setting.value.logoborne,
+                    onPress: () {
+                      deconnexion();
+                    },
                   )),
 
               //Affichage de la video
@@ -66,4 +73,3 @@ class _HomePageState extends State<HomePage> {
     });
   }
 }
-

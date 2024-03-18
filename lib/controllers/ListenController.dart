@@ -136,8 +136,9 @@ class ListenController extends GetxController {
     final response = await loginService.generateNewToken();
     if (response.statusCode == 200) {
       final body = jsonDecode(response.body);
+      final setting = body['setting'];
       saveToken(body['access_token']);
-      borneController.parameterChange(body['setting']);
+      borneController.parameterChange(setting);
     }
   }
 

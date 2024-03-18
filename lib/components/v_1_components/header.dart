@@ -1,11 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:borne_flutter/config/app_style.dart';
-import 'package:borne_flutter/utils/utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import 'package:borne_flutter/config/size_config.dart';
-import 'package:get/get.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class Header extends StatelessWidget {
@@ -18,12 +16,7 @@ class Header extends StatelessWidget {
 
   final String time;
   final String? imagePath;
-  final VoidCallbackAction? onPress;
-
-  void deconnexion() {
-    Get.offAllNamed("login");
-    removeToken();
-  }
+  final void Function()? onPress;
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +24,7 @@ class Header extends StatelessWidget {
     return Expanded(
       flex: 0,
       child: GestureDetector(
-        onTap: () {
-          deconnexion();
-        },
+        onTap: onPress,
         child: Container(
           color: Colors.white,
           padding: EdgeInsets.symmetric(

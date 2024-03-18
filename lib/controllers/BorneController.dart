@@ -90,9 +90,6 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
         update();
         currentTimeForTimeZone(); // Get timeZone to dsiplay current date and time
         slideChange(0); //Get first slide duration to init slide
-        //startTimerForNextArticle(); //Start animating articles
-
-        startVisibleAnimation();
 
         Future.wait([
           saveToken(token),
@@ -130,7 +127,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
     if (alertes.isNotEmpty) {
       List<String> splittedAlert;
       String finalAlertMessage = "";
-      
+
       // return alertes
       //     .where((el) => el.typealert.libelle.toLowerCase() == 'text')
       //     .map((e) => e.libelle)
@@ -143,10 +140,14 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
           .toList()
           .join("|")
           .split("|");
-      
+
       final screenWidth = MediaQuery.sizeOf(Get.context!).width;
-      final spaceBetweenText = screenWidth < 600 ? 40 : 600 >= screenWidth && screenWidth < 875 ? 100 : 200;      
-      for(String alerte in splittedAlert){
+      final spaceBetweenText = screenWidth < 600
+          ? 40
+          : 600 >= screenWidth && screenWidth < 875
+              ? 100
+              : 200;
+      for (String alerte in splittedAlert) {
         finalAlertMessage += alerte + (" " * spaceBetweenText);
       }
 
@@ -222,7 +223,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
 
 //Cette fonction gère l'ajout de l'identifiant de l'article permanent affiché à l'ensemble.
   void handleDisplayedPermanentArticle(Article article) {
-    log(" Permanent article ${article.pivot.permanent.toString()}");
+    log("Permanent article ${article.pivot.permanent.toString()}");
     if (article.pivot.permanent == 0) {
       permanentArticleIdsDisplayed.add(article.id);
       update();
@@ -236,6 +237,8 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
           (currentArticleIndex.value + 1) % articles.length;
       currentArticleduree.value =
           articles[currentArticleIndex.value].pivot.duree;
+      isCardVisible(true);
+      playDefaultRingtone();
       update();
     }
     /* changeArticle.value++;
@@ -288,8 +291,8 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   }
 
   //parameters of borne change
-  Future<void> parameterChange(dynamic setting) async {
-    setting.value = Setting.fromJson(setting);
+  Future<void> parameterChange(dynamic newSetting) async {
+    setting.value = Setting.fromJson(newSetting);
     update();
   }
 
@@ -297,9 +300,10 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
 
   //Add new or update or delete article
   void addOrUpdateArticle(List<Article> newListeArticle) {
-    // log(newListeArticle.toString());
+    log(newListeArticle.length.toString());
     if (newListeArticle.isEmpty) {
       articleEstVide.value = true;
+      isCardVisible(true);
       playDefaultRingtone();
       update();
       Future.delayed(const Duration(seconds: 3), () {
@@ -307,17 +311,12 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
         update();
       });
     } else {
-      articles.value = newListeArticle;
+      isCardVisible(true);
       articleEstVide.value = false; //Article n'est pas vide
       currentArticleIndex.value = 0; //On remet l'index a 0
-      currentArticleduree.value = articles[currentArticleIndex.value]
-          .pivot
-          .duree; //Mettre a jour la durre
-      articles.value = newListeArticle; //Affectation des nouvelles articles
-      // playDefaultRingtone(); //On emet un son
-      videoTimer.value.cancel();
-      videoTimerSecond.value.cancel();
-      startVisibleAnimation(); //On relance l'animation
+      currentArticleduree.value =
+          articles[0].pivot.duree; //Mettre a jour la durre
+      articles.assignAll(newListeArticle);
       update(); //On informe tout le monde
     }
   }
@@ -401,26 +400,53 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
 
   void startVisibleAnimation() {
     log('secondes des articles precedent ${currentArticleduree.value}');
-    videoTimer.value = Timer(Duration(seconds: currentArticleduree.value), () {
+    videoTimer.value =
+        Timer.periodic(Duration(seconds: currentArticleduree.value), (timer) {
+      isCardVisible(false);
+      log("suivant premiere fois ${currentArticleIndex.value.toString()} ${isCardVisible.value.toString()}");
+
       if (articles.isNotEmpty) {
-        isCardVisible(false);
-        Article currentArticle = articles[currentArticleIndex.value];
+        //Affichage de l'article si les articles ne sont pas vides ...
+
+        // Article currentArticle = articles[currentArticleIndex.value];
 
         videoTimerSecond.value = Timer(const Duration(seconds: 10), () {
-          handleDisplayedPermanentArticle(currentArticle);
-          // supprimer cet article si elle est permanent
-          if (shouldSkipPermanentArticle(currentArticle)) {
-            articles.remove(currentArticle);
-          }
           goToNextArticle();
-          isCardVisible(true);
-          playDefaultRingtone();
-          startVisibleAnimation();
         });
       } else {
         videoTimer.value.cancel();
         videoTimerSecond.value.cancel();
       }
+    });
+  }
+
+  //Mettre a jour un article permanent
+  Future<void> enableArticlePermanent(Article article) async {
+    if (article.pivot.permanent == 0) {
+      final response = await _borneService.enableArticle(idArticle: article.id);
+      if (response.statusCode == 200) {
+        final newArticles = jsonDecode(response.body)['articles']
+            .map<Article>((art) => Article.fromJson(art))
+            .toList();
+        articles.assignAll(newArticles);
+        currentArticleIndex.value =
+            (currentArticleIndex.value + 1) % articles.length;
+        update();
+      }
+    }
+  }
+
+  // Other function tu run article
+  void startToAnimateArticle() {
+    videoTimer.value =
+        Timer.periodic(Duration(seconds: currentArticleduree.value), (timer) {
+      isCardVisible(false);
+      // Supprimer l''article de la liste s'il est permanent
+      enableArticlePermanent(articles[currentArticleIndex.value]);
+
+      videoTimerSecond.value = Timer(const Duration(seconds: 15), () {
+        goToNextArticle();
+      });
     });
   }
 
@@ -554,6 +580,17 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
     await flutterTts.speak(text); // Lecture du texte
   }
 
+//Deconnexion de la borne
+
+  void deconnexion() {
+    borne.value = Borne();
+    videoTimer.value.cancel();
+    videoTimerSecond.value.cancel();
+    update();
+    Get.offAllNamed("login");
+    removeToken();
+  }
+
 //Iniatialisation du controlleur
   @override
   void onInit() async {
@@ -565,8 +602,11 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
     ever(articles, (callback) {
       videoTimer.value.cancel();
       videoTimerSecond.value.cancel();
-      startVisibleAnimation();
-      log("l'article a ete modifier");
+      if (articles.isNotEmpty) {
+        currentArticleduree.value = articles.first.pivot.duree;
+        startToAnimateArticle();
+        log("l'article a ete modifier");
+      }
     });
     // getBorne();
     // startNewAnimation();

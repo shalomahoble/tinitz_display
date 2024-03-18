@@ -95,4 +95,19 @@ class BorneService extends GetxService {
       rethrow;
     }
   }
+
+  //Desactiver une alerte de la borne
+  Future<http.Response> enableArticle({required int idArticle}) async {
+    try {
+      return await http.post(
+        getUrl('update-article'),
+        headers: headersToken(box.read("token")),
+        body: jsonEncode({
+          "id": idArticle,
+        }),
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

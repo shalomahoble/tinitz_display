@@ -8,6 +8,7 @@ import 'package:borne_flutter/models/slide.dart';
 import 'package:borne_flutter/services/LoginService.dart';
 import 'package:borne_flutter/services/ShortUrlService.dart';
 import 'package:borne_flutter/utils/utils.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
@@ -53,22 +54,10 @@ class LoginController extends GetxController {
           token = response['access_token'];
           saveToken(token);
 
-          Future.wait([
-            sendToken(code: code, fbToken: box.read('fcmToken')),
-          ]);
+          Future.wait([addFireBaseToken(code)]);
 
-          // if (rep.statusCode == 200) {
-          //   Get.offAllNamed("homePage");
-          // } else {
-          //   Get.offAllNamed("homePage");
-          // }
           Get.offAllNamed("homePage");
 
-          // borne.value = Borne.fromJson(response['borne']);
-          // isAlerte(borne.value); Savoir si une alerte est video ou pas
-          //verfieAlerteIsEmpty();  Savoir si une alerte est text ou pas
-
-          // startTimerForNextArticle(); // Demarrer l'animation des articles
         } else {
           loading(false);
           showMessageError(message: jsonDecode(value.body)['message']);
@@ -115,21 +104,6 @@ class LoginController extends GetxController {
     return slides;
   }
 
-/*   isAlerte(Borne borne) {
-    if (borne.alerts!.isNotEmpty) {
-      if (borne.alerts != null && borne.alerts!.isNotEmpty) {
-        final alert = borne.alerts!.firstWhere(
-          (el) => el.typealert.libelle.toLowerCase() == 'video',
-          orElse: () => Alert(
-              libelle: 'Aucune alerte', nbreRandomVideo: 0, randomVideo: 0),
-        );
-        if (alert.typealert.libelle != null) {
-          afficherAlert(true);
-          update();
-        }
-      }
-    }
-  } */
   //Affiher une une alerte
 
   onChangeSlide(int slideDuree) {
@@ -395,12 +369,12 @@ class LoginController extends GetxController {
         .join("  |  ");
   }
 
-  // Token
-
-  // Future<void> saveToken(String token) async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   await prefs.setString('token', token);
-  // }
+//Add firebase messaging when login
+  Future<void> addFireBaseToken(String code) async {
+    await FirebaseMessaging.instance.getToken().then((value) async {
+      sendToken(code: code, fbToken: value!);
+    });
+  }
 
   //get borne info
   getBorneInfo() async {
