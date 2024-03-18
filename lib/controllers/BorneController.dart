@@ -19,7 +19,6 @@ import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-import 'package:logger/logger.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -129,7 +128,6 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   //######## Alert Text
   String getAlerteText() {
     if (alertes.isNotEmpty) {
-      Logger().t("Alert from api: $alertes");
       List<String> splittedAlert;
       String finalAlertMessage = "";
       
@@ -151,8 +149,6 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
       for(String alerte in splittedAlert){
         finalAlertMessage += alerte + (" " * spaceBetweenText);
       }
-
-      Logger().t("final alert message: $finalAlertMessage");
 
       return finalAlertMessage;
     } else {

@@ -52,10 +52,9 @@ class LoginController extends GetxController {
         if (value.statusCode == 200) {
           token = response['access_token'];
           saveToken(token);
-          box.write('token', token);
 
           Future.wait([
-            sendToken(code: code, fbToken: token),
+            sendToken(code: code, fbToken: box.read('fcmToken')),
           ]);
 
           // if (rep.statusCode == 200) {
