@@ -54,10 +54,9 @@ class LoginController extends GetxController {
           token = response['access_token'];
           saveToken(token);
 
-          Future.wait([addFireBaseToken(code)]);
+         Future.wait([addFireBaseToken(code)]);
 
           Get.offAllNamed("homePage");
-
         } else {
           loading(false);
           showMessageError(message: jsonDecode(value.body)['message']);
@@ -372,7 +371,7 @@ class LoginController extends GetxController {
 //Add firebase messaging when login
   Future<void> addFireBaseToken(String code) async {
     await FirebaseMessaging.instance.getToken().then((value) async {
-      sendToken(code: code, fbToken: value!);
+      await _loginService.sendToken(code: code, fbToken: value!);
     });
   }
 

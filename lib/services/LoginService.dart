@@ -36,7 +36,7 @@ class LoginService {
   Future<http.Response> generateNewToken() async {
     http.Response response = http.Response("", 200);
     try {
-      String token =  getToken();
+      String token = getToken();
       // ignore: unnecessary_null_comparison
       if (token == null) {
         showMessageError(message: "Le token est nul !");
@@ -81,7 +81,6 @@ class LoginService {
         body: jsonEncode({"code": code, "fb_token": fbToken}),
         headers: headersToken(tokenApi),
       );
-
       return response;
     } catch (e) {
       rethrow;
