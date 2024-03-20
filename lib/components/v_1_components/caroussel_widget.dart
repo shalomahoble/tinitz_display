@@ -1,6 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -50,10 +49,7 @@ class CarousselWidget extends StatelessWidget {
                   },
                 ),
               ),
-              // const AlertVideoDisplay(),
-
-              /*  const FlashArticle(), */
-              FlashPushArticle(articles: borneController.articles),
+              const FlashPushArticle(),
               const TicketingCard(),
             ],
           ),

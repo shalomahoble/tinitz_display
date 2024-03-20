@@ -105,14 +105,14 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
         showMessageError(
           message: response.body.toString(),
           color: Colors.orangeAccent,
-          duration: const Duration(seconds: 10),
+          duration: const Duration(seconds: 5),
         );
         Get.offAllNamed('login');
       } else {
         showMessageError(
           message: "Une erreur s'est produite",
           color: Colors.orangeAccent,
-          duration: const Duration(seconds: 10),
+          duration: const Duration(seconds: 5),
         );
         Get.offAllNamed('login');
       }
@@ -180,55 +180,6 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   }
 
   //##################################### Article FUNCTION ###############################
-
-  //Article animation
-
-  //supprimer les articles non permanent
-  void startTimerForNextArticle() {
-    log("rentre");
-    if (articles.isNotEmpty) {
-      Article currentArticle = articles[currentArticleIndex.value];
-
-      if (shouldSkipPermanentArticle(currentArticle)) {
-        skipToNextArticle();
-        log("rentre skipToNextArticle ");
-        articleChangeAnimation.value++;
-        startTimerForNextArticle();
-      } else {
-        delayedTask = Timer(currentArticle.seconde(), () {
-          handleDisplayedPermanentArticle(currentArticle);
-          log("rentre goToNextArticle ");
-          goToNextArticle();
-          // Ajoutez cette ligne pour conserver l'effet de défilement
-          articleChangeAnimation.value++;
-          // startTimerForNextArticle();
-        });
-      }
-    }
-  }
-
-//Cette fonction vérifie si l'article permanent a déjà été affiché.
-  bool shouldSkipPermanentArticle(Article article) {
-    return article.pivot.permanent == 0 &&
-        permanentArticleIdsDisplayed.contains(article.id);
-  }
-
-//Cette fonction passe à l'article suivant si l'article actuel doit être sauté.
-  void skipToNextArticle() {
-    if (articles.isNotEmpty) {
-      currentArticleIndex.value =
-          (currentArticleIndex.value + 1) % articles.length;
-    }
-  }
-
-//Cette fonction gère l'ajout de l'identifiant de l'article permanent affiché à l'ensemble.
-  void handleDisplayedPermanentArticle(Article article) {
-    log("Permanent article ${article.pivot.permanent.toString()}");
-    if (article.pivot.permanent == 0) {
-      permanentArticleIdsDisplayed.add(article.id);
-      update();
-    }
-  }
 
 //Cette fonction passe à l'article suivant et met à jour l'index.
   void goToNextArticle() {
@@ -349,55 +300,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
     }
   }
 
-  toDeconnecte() {
-    removeToken().then((value) => Get.offAllNamed('login'));
-  }
-
-//cette fonction verifie si l'article precedent est permanent et le supprime de la liste
-  void isPermanentArticle() {
-    if (articles.isNotEmpty) {
-      Article currentArticle = articles[currentArticleIndex.value];
-      if (shouldSkipPermanentArticle(currentArticle)) {
-        articles.removeAt(currentArticleIndex.value);
-      } else if (currentArticle.pivot.permanent == 0) {
-        permanentArticleIdsDisplayed.add(currentArticle.id);
-        articles.removeAt(currentArticleIndex.value);
-      }
-      goToNextArticle();
-    } else {
-      articleEstVide.value = true;
-      update();
-    }
-  }
-
-  // function to start animation article
-  void startNewAnimation() {
-    controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 5),
-    )
-      ..repeat(reverse: true)
-      ..addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          Future.delayed(const Duration(seconds: 1), () {
-            if (articles.isEmpty) {
-              controller.stop();
-            } else {
-              isPermanentArticle();
-              controller.reverse(); // Réinitialise l'animation
-            }
-          });
-        } else if (status == AnimationStatus.dismissed) {
-          Future.delayed(Duration(seconds: currentArticleduree.value), () {
-            controller.forward();
-          });
-        }
-      });
-    controller.forward();
-  }
-
   // function to start animation article isVisible
-
   void startVisibleAnimation() {
     log('secondes des articles precedent ${currentArticleduree.value}');
     videoTimer.value =
@@ -440,12 +343,13 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   void startToAnimateArticle() {
     videoTimer.value =
         Timer.periodic(Duration(seconds: currentArticleduree.value), (timer) {
+      log("entre de ${currentArticleduree.value} s");
       isCardVisible(false);
       // Supprimer l''article de la liste s'il est permanent
       enableArticlePermanent(articles[currentArticleIndex.value]);
-
-      videoTimerSecond.value = Timer(const Duration(seconds: 15), () {
-        goToNextArticle();
+      Timer(const Duration(seconds: 15), () {
+        log("entre de 15 s");
+        goToNextArticle(); // go next article
       });
     });
   }

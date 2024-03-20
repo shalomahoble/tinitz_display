@@ -66,27 +66,29 @@ class _TextMarqueeDisplayState extends State<TextMarqueeDisplay> {
       appBar: AppBar(
         title: const Text('Animation Demo'),
       ),
-      body: Center(
-        child: AnimatedOpacity(
-          opacity: isVisible ? 1.0 : 0.0,
-          duration: const Duration(seconds: 1),
-          child: Card(
-            elevation: 4.0,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Image.network(
-                  infoList[currentIndex].imagePath,
-                  width: 200,
-                  height: 200,
+      body: infoList.isNotEmpty
+          ? Center(
+              child: AnimatedOpacity(
+                opacity: isVisible ? 1.0 : 0.0,
+                duration: const Duration(seconds: 1),
+                child: Card(
+                  elevation: 4.0,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.network(
+                        infoList[currentIndex].imagePath,
+                        width: 200,
+                        height: 200,
+                      ),
+                      const SizedBox(height: 8.0),
+                      Text(infoList[currentIndex].text),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 8.0),
-                Text(infoList[currentIndex].text),
-              ],
-            ),
-          ),
-        ),
-      ),
+              ),
+            )
+          : const Center(child: Text("Vide")),
     );
   }
 }

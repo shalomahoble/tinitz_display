@@ -15,27 +15,27 @@ import 'package:borne_flutter/models/Artcile.dart';
 class FlashPushArticle extends StatelessWidget {
   const FlashPushArticle({
     Key? key,
-    required this.articles,
   }) : super(key: key);
-
-  final List<Article> articles;
 
   @override
   Widget build(BuildContext context) {
     final borneController = Get.find<BorneController>();
 
     return Obx(() {
-      if (borneController.articleEstVide.value == true || articles.isEmpty) {
+      if (borneController.articleEstVide.value == true ||
+          borneController.articles.isEmpty) {
         return const SizedBox.shrink();
-      } else if (borneController.currentArticleIndex.value < articles.length &&
-          articles.isNotEmpty) {
+      } else if (borneController.currentArticleIndex.value <
+              borneController.articles.length &&
+          borneController.articles.isNotEmpty) {
         return Align(
           alignment: const AlignmentDirectional(0, -0.99),
           child: AnimatedOpacity(
             duration: const Duration(milliseconds: 500),
             opacity: borneController.isCardVisible.value ? 1.0 : 0.0,
             child: FlashArticle(
-              article: articles[borneController.currentArticleIndex.value],
+              article: borneController
+                  .articles[borneController.currentArticleIndex.value],
               key: ValueKey<int>(
                 borneController.articleChangeAnimation.value,
               ),
