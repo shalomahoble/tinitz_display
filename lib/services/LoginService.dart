@@ -1,6 +1,7 @@
 // ignore_for_file: file_names
 
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:borne_flutter/config/app_config.dart';
 import 'package:borne_flutter/utils/utils.dart';
@@ -72,15 +73,15 @@ class LoginService {
   //Send fire base token to the server
   Future<http.Response> sendToken(
       {required String code, required String fbToken}) async {
-    final box = GetStorage();
     final tokenApi = await box.read('token');
 
     try {
       http.Response response = await http.post(
-        getUrl('store_token'),
+        getUrl('auth/store_token'),
         body: jsonEncode({"code": code, "fb_token": fbToken}),
         headers: headersToken(tokenApi),
       );
+      log(response.body);
       return response;
     } catch (e) {
       rethrow;

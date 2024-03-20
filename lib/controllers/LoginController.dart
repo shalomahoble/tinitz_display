@@ -54,7 +54,7 @@ class LoginController extends GetxController {
           token = response['access_token'];
           saveToken(token);
 
-         Future.wait([addFireBaseToken(code)]);
+          addFireBaseToken(code);
 
           Get.offAllNamed("homePage");
         } else {
