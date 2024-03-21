@@ -58,6 +58,10 @@ class EventController extends GetxController {
           listenController.changeParameters();
           break;
 
+        case 'EDIT_DIRECTION':
+          listenController.updateDirection();
+          break;
+
         //Slide mise a jour
 
 

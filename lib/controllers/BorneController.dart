@@ -11,11 +11,13 @@ import 'package:borne_flutter/models/setting.dart';
 import 'package:borne_flutter/models/ticket.dart';
 import 'package:borne_flutter/services/BorneService.dart';
 import 'package:borne_flutter/utils/utils.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
@@ -58,7 +60,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   Rx<Timer> videoTimerSecond = Timer(Duration.zero, () {}).obs;
 
   //Time variable
-  late final tz.Location _location;
+  tz.Location _location = tz.getLocation('Africa/Abidjan');
   String timeZone = '';
   RxString currentDate = ''.obs;
   RxString currentTime = ''.obs;
@@ -66,11 +68,9 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
 
   late AnimationController controller;
   final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
-  final Tween<Offset> offsetTween = Tween<Offset>(
-    begin: const Offset(0.0, -4.0), // Position initiale (milieu)
-    end: const Offset(0.0, -6.5), // Position finale (barre d'applications)
-  );
   FlutterTts flutterTts = FlutterTts();
+  final _isOnline = false.obs;
+  bool get isOnline => _isOnline.value;
 
 //Recuperer les information concernant une borne
   Future<void> getBorne() async {
@@ -78,7 +78,6 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
       final response = await _borneService.getBorne();
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
-        final token = body['access_token'];
 
         borne.value = Borne.fromJson(body['borne']);
         setting.value = Setting.fromJson(body['setting']);
@@ -92,7 +91,6 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
         slideChange(0); //Get first slide duration to init slide
 
         Future.wait([
-          saveToken(token),
           getAllTicketForBorne(),
         ]);
       } else if (response.statusCode == 401) {
@@ -121,6 +119,21 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
     }
   }
 
+  listenApp() async {
+    Connectivity().onConnectivityChanged.listen(_connectivityListener);
+  }
+
+  _connectivityListener(ConnectivityResult result) async {
+    _isOnline.value = false;
+    if (result != ConnectivityResult.none) {
+      _isOnline.value = await InternetConnectionChecker().hasConnection;
+      _isOnline.refresh();
+      if (_isOnline.isTrue) {
+        getBorne();
+      }
+    }
+  }
+
   // ALerts function
   //######## Alert Text
   String getAlerteText() {
@@ -143,10 +156,10 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
 
       final screenWidth = MediaQuery.sizeOf(Get.context!).width;
       final spaceBetweenText = screenWidth < 600
-          ? 40
+          ? 20
           : 600 >= screenWidth && screenWidth < 875
-              ? 100
-              : 200;
+              ? 50
+              : 100;
       for (String alerte in splittedAlert) {
         finalAlertMessage += alerte + (" " * spaceBetweenText);
       }
@@ -198,7 +211,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
 
 // ################################ TIME ################################
   //Time function
-  currentTimeForTimeZone() {
+  void currentTimeForTimeZone() {
     // ignore: unnecessary_null_comparison
     if (borne.value != null && site != null && site.value.timezone != null) {
       _location = tz.getLocation(site.value.timezone!);
@@ -207,8 +220,8 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
         tz.TZDateTime date = tz.TZDateTime.now(_location);
         currentDate.value = DateFormat('EEE d MMM  y', 'fr_Fr').format(date);
         currentTime.value = DateFormat('HH:mm', 'fr_Fr').format(date);
-        currentDate.value = '${currentDate.value} ${currentTime.value}';
-        /* print(currentDate.toString()); */
+        currentDate.value =
+            '${currentDate.value[0].toUpperCase() + currentDate.value.substring(1)} ${currentTime.value}';
       });
     } else {
       currentDate.value = DateTime.now().toString();
@@ -230,15 +243,25 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   //#################################### Listen to add, update, delete borne info ####################################
 
   //Add new or update or delete slide
-  void addOrUpdateSlide(List<Slide> newListeSlide) {
-    slides.assignAll(newListeSlide);
-    update();
+  Future<void> addOrUpdateSlide() async {
+    final response = await _borneService.getAllSlides();
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body)['slides'];
+      final slide = body.map<Slide>((el) => Slide.fromJson(el)).toList();
+      slides.assignAll(slide);
+      update();
+    }
   }
 
   //Add new or update or delete alerte (text or video)
-  void addOrUpdateAlert(List<Alert> newListeAlerte) {
-    alertes.assignAll(newListeAlerte);
-    update();
+  Future<void> addOrUpdateAlert() async {
+    final response = await _borneService.getAllAlertes();
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body)['alertes'];
+      final alerts = body.map<Alert>((el) => Alert.fromJson(el)).toList();
+      alertes.assignAll(alerts);
+      update();
+    }
   }
 
   //parameters of borne change
@@ -250,25 +273,30 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   //################################################################################################
 
   //Add new or update or delete article
-  void addOrUpdateArticle(List<Article> newListeArticle) {
-    log(newListeArticle.length.toString());
-    if (newListeArticle.isEmpty) {
-      articleEstVide.value = true;
-      isCardVisible(true);
-      playDefaultRingtone();
-      update();
-      Future.delayed(const Duration(seconds: 3), () {
-        articles.clear();
+  Future<void> addOrUpdateArticle() async {
+    final response = await _borneService.getAllArticles();
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body)['articles'];
+      final article = body.map<Article>((el) => Article.fromJson(el)).toList();
+      if (article.isEmpty) {
+        articleEstVide.value = true;
+        isCardVisible(true);
+        playDefaultRingtone();
+        videoTimer.value.cancel();
         update();
-      });
-    } else {
-      isCardVisible(true);
-      articleEstVide.value = false; //Article n'est pas vide
-      currentArticleIndex.value = 0; //On remet l'index a 0
-      currentArticleduree.value =
-          articles[0].pivot.duree; //Mettre a jour la durre
-      articles.assignAll(newListeArticle);
-      update(); //On informe tout le monde
+        Future.delayed(const Duration(seconds: 3), () {
+          articles.clear();
+          update();
+        });
+      } else {
+        isCardVisible(true);
+        articleEstVide.value = false; //Article n'est pas vide
+        currentArticleIndex.value = 0; //On remet l'index a 0
+        articles.assignAll(article);
+        currentArticleduree.value =
+            articles[0].pivot.duree; //Mettre a jour la durre
+        update(); //On informe tout le monde
+      }
     }
   }
 
@@ -277,6 +305,16 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
     borne.value = newBorne;
     site.value = newBorne.site!;
     update();
+  }
+
+  //Get direction info update
+  Future<void> updateSiteInfo() async {
+    final response = await _borneService.getSite();
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body)['site'];
+      site.value = Site.fromJson(body);
+      update();
+    }
   }
 
 //Emmettre un son
@@ -343,12 +381,11 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   void startToAnimateArticle() {
     videoTimer.value =
         Timer.periodic(Duration(seconds: currentArticleduree.value), (timer) {
-      log("entre de ${currentArticleduree.value} s");
       isCardVisible(false);
       // Supprimer l''article de la liste s'il est permanent
       enableArticlePermanent(articles[currentArticleIndex.value]);
-      Timer(const Duration(seconds: 15), () {
-        log("entre de 15 s");
+      log(articles[currentArticleIndex.value].id.toString());
+      Timer(const Duration(seconds: 5), () {
         goToNextArticle(); // go next article
       });
     });
@@ -512,8 +549,8 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
         log("l'article a ete modifier");
       }
     });
-    // getBorne();
-    // startNewAnimation();
+    //Listent App in connexion is operational
+    listenApp();
   }
 
   @override

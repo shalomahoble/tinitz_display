@@ -44,10 +44,7 @@ class LoginService {
         return http.Response("Le token est nul", 400);
       }
       response = await http
-          .post(
-        getUrl('auth/refresh'),
-        headers: headersToken(token),
-      )
+          .post(getUrl('auth/refresh'), headers: headersToken(token))
           .timeout(
         const Duration(minutes: 1),
         onTimeout: () {

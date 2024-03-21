@@ -88,7 +88,7 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       initialBinding: AllControllerBinding(),
       title: 'Borne App TINITZ',
-     // home: const TextMarqueeDisplay(),
+      // home: const OffLineWidget(),
       home: box.hasData('token') ? const HomePage() : Login(),
       getPages: [
         GetPage(name: '/login', page: () => Login()),

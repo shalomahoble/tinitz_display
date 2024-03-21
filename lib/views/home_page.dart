@@ -5,6 +5,7 @@ import 'package:borne_flutter/components/v_1_components/video_widget_section.dar
 import 'package:borne_flutter/controllers/AlertVideoController.dart';
 import 'package:borne_flutter/controllers/BorneController.dart';
 import 'package:borne_flutter/views/home_page_loading.dart';
+import 'package:borne_flutter/views/off_line_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -41,6 +42,14 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
+      if (controller.isOnline == false) {
+        return OffLineWidget(
+          onPressed: () {
+            controller.getBorne();
+          },
+        );
+      } // verifiy if online
+
       if (controller.borneLoading.value == true) {
         return Scaffold(
           body: Column(
@@ -48,7 +57,7 @@ class _HomePageState extends State<HomePage> {
               //L'entête de la page
               Obx(() => Header(
                     time: controller.currentDate.value,
-                    imagePath: controller.setting.value.logoborne,
+                    imagePath: controller.site.value.direction.image,
                     onPress: () {
                       deconnexion();
                     },

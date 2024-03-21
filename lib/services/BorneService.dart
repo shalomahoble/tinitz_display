@@ -19,7 +19,6 @@ class BorneService extends GetxService {
       );
       return response;
     } catch (e) {
-      showMessageError(message: e.toString());
       rethrow;
     }
   }
@@ -64,6 +63,18 @@ class BorneService extends GetxService {
     } catch (e) {
       rethrow;
     }
+  }
+
+  // update direction
+  Future<http.Response> getSite() async {
+    return await http
+        .get(
+      getUrl('update-direction'),
+      headers: headersToken(box.read('token')),
+    )
+        .timeout(const Duration(minutes: 3), onTimeout: () {
+      return http.Response("Erreur de connexion", 400);
+    });
   }
 
   //Send fire base token to the server
