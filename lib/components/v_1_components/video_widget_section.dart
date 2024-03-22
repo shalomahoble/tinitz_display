@@ -30,7 +30,7 @@ class VideoWidgetSection extends StatelessWidget {
               child: AspectRatio(
                 aspectRatio:
                     videoController.videoPlayerController.value.aspectRatio,
-                child: Chewie(controller: videoController.chewieController),
+                 child: Chewie(controller: videoController.chewieController),
               ),
             ),
           ],

@@ -41,7 +41,6 @@ class AlertVideoController extends GetxController {
 
   void loadVideo() {
     final videoAlerts = borneController.getAlerteVideo();
-     log("taille de la video ${videoAlerts.length} video");
     if (videoAlerts.isNotEmpty) {
       currentVideoUrl.value = videoAlerts[currentVideoIndex.value].fileUrl;
       videoTitle.value = videoAlerts[currentVideoIndex.value].libelle ?? '';
@@ -57,14 +56,12 @@ class AlertVideoController extends GetxController {
   void _playVideo(String videoUrl) async {
     try {
       Future.delayed(Duration(seconds: dureeAvantAffichage.value), () async {
-        videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(videoUrl));
+        videoPlayerController =
+            VideoPlayerController.networkUrl(Uri.parse(videoUrl));
         await videoPlayerController.initialize();
-
-        log("initializing video");
 
         if (videoPlayerController.value.isInitialized &&
             videoPlayerController.value.duration.inMilliseconds > 0) {
-          videoPlayerController.play();
           chewieController = ChewieController(
             videoPlayerController: videoPlayerController,
             autoPlay: true,
@@ -82,7 +79,6 @@ class AlertVideoController extends GetxController {
                     videoPlayerController.value.position) {
               chewieController.pause(); // Arrêter la lecture
               videoPlayerController.pause();
-              log("fin video");
               isVideoPlaying(false);
               _onVideoFinished();
             }
@@ -157,6 +153,7 @@ class AlertVideoController extends GetxController {
     if (videoIsInitialized.isTrue &&
         videoPlayerController.value.isInitialized) {
       videoPlayerController.pause();
+      chewieController.pause();
     }
   }
 
@@ -165,7 +162,7 @@ class AlertVideoController extends GetxController {
     super.onClose();
     if (videoPlayerController.value.isInitialized) {
       videoPlayerController.dispose();
-      // chewieController.dispose();
+      chewieController.dispose();
     }
 
     videoTimer.cancel();

@@ -66,7 +66,7 @@ class Slide {
         titre: json["titre"],
         description: json["description"],
         bg: json["bg"],
-        cible: json["cible"],
+        cible: json["cible"] ?? '',
         duree: json["duree"],
         urlQrCode: json["url_qrcode"],
         bgType: json["bg_type"],

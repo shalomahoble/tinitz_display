@@ -32,7 +32,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     super.dispose();
-    //videoController.stopVideo();
+    videoController.stopVideo();
+    controller.videoTimer.value.cancel();
   }
 
   void deconnexion() {
@@ -43,11 +44,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Obx(() {
       if (controller.isOnline == false) {
-        return OffLineWidget(
-          onPressed: () {
-            controller.getBorne();
-          },
-        );
+        return OffLineWidget();
       } // verifiy if online
 
       if (controller.borneLoading.value == true) {

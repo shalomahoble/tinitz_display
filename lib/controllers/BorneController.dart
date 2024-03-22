@@ -12,6 +12,7 @@ import 'package:borne_flutter/models/ticket.dart';
 import 'package:borne_flutter/services/BorneService.dart';
 import 'package:borne_flutter/utils/utils.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:get/get.dart';
@@ -91,7 +92,8 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
         slideChange(0); //Get first slide duration to init slide
 
         Future.wait([
-          getAllTicketForBorne(),
+          saveFirebaseToken(), // save firebase token
+          getAllTicketForBorne(), // get all ticket for borne
         ]);
       } else if (response.statusCode == 401) {
         showMessageError(
@@ -149,10 +151,10 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
 
       splittedAlert = alertes
           .where((el) => el.typealert.libelle.toLowerCase() == 'text')
+          .where((el) => el.libelle != null && el.libelle != '')
           .map((e) => e.libelle)
-          .toList()
-          .join("|")
-          .split("|");
+          .whereType<String>()
+          .toList();
 
       final screenWidth = MediaQuery.sizeOf(Get.context!).width;
       final spaceBetweenText = screenWidth < 600
@@ -175,6 +177,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
     if (alertes.isNotEmpty) {
       return alertes
           .where((el) => el.typealert.libelle.toLowerCase() == 'video')
+          .where((el) => el.fileUrl != null && el.fileUrl != '')
           .toList();
     } else {
       return List.empty();
@@ -185,7 +188,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
 
 //Get current slide and update duration for current slide
 //Update duration for current slide
-  slideChange(int index) {
+  void slideChange(int index) {
     if (slides.isNotEmpty && index < slides.length) {
       dureeDuSlide.value = slides[index].duree;
       update();
@@ -202,7 +205,8 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
       currentArticleduree.value =
           articles[currentArticleIndex.value].pivot.duree;
       isCardVisible(true);
-      playDefaultRingtone();
+      startToAnimateArticle(); // start to animate next article
+      playDefaultRingtone(); // play default ringtone
       update();
     }
     /* changeArticle.value++;
@@ -212,10 +216,11 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
 // ################################ TIME ################################
   //Time function
   void currentTimeForTimeZone() {
+    log("time zone 1 ${site.value.timezone!}");
     // ignore: unnecessary_null_comparison
     if (borne.value != null && site != null && site.value.timezone != null) {
       _location = tz.getLocation(site.value.timezone!);
-
+      log("time zone 2 ${site.value.timezone!}");
       Timer.periodic(const Duration(seconds: 1), (timer) {
         tz.TZDateTime date = tz.TZDateTime.now(_location);
         currentDate.value = DateFormat('EEE d MMM  y', 'fr_Fr').format(date);
@@ -379,16 +384,23 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
 
   // Other function tu run article
   void startToAnimateArticle() {
-    videoTimer.value =
-        Timer.periodic(Duration(seconds: currentArticleduree.value), (timer) {
+    videoTimer.value = Timer(Duration(seconds: currentArticleduree.value), () {
       isCardVisible(false);
+
       // Supprimer l''article de la liste s'il est permanent
       enableArticlePermanent(articles[currentArticleIndex.value]);
-      log(articles[currentArticleIndex.value].id.toString());
       Timer(const Duration(seconds: 5), () {
         goToNextArticle(); // go next article
       });
     });
+  }
+
+  ///Save firebase token
+  Future<void> saveFirebaseToken() async {
+    final firebaseToken = await FirebaseMessaging.instance.getToken();
+    if (firebaseToken != null) {
+      _borneService.sendToken(code: "code", fbToken: firebaseToken);
+    }
   }
 
   //#################################### Listen to add, update, delete borne info ####################################
@@ -527,6 +539,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
     borne.value = Borne();
     videoTimer.value.cancel();
     videoTimerSecond.value.cancel();
+    articles.clear();
     update();
     Get.offAllNamed("login");
     removeToken();

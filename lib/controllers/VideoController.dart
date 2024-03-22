@@ -1,37 +1,37 @@
 
-import 'dart:developer';
+// import 'dart:developer';
 
-import 'package:get/get.dart';
-import 'package:video_player/video_player.dart';
+// import 'package:get/get.dart';
+// import 'package:video_player/video_player.dart';
 
-class VideoController extends GetxController {
-  final String urlVideo;
-  final RxBool isVideoInitialized = false.obs;
+// class VideoController extends GetxController {
+//   final String urlVideo;
+//   final RxBool isVideoInitialized = false.obs;
 
-  late VideoPlayerController controller;
+//   late VideoPlayerController controller;
 
-  VideoController(this.urlVideo);
+//   VideoController(this.urlVideo);
 
-//Retourne si la video est initialisez
+// //Retourne si la video est initialisez
 
-  @override
-  void onInit() async {
-    super.onInit();
-    try {
-      log(" slide video debut initialisation");
-      controller = VideoPlayerController.networkUrl(Uri.parse(urlVideo)); 
+//   @override
+//   void onInit() async {
+//     super.onInit();
+//     try {
+//       log(" slide video debut initialisation");
+//       controller = VideoPlayerController.networkUrl(Uri.parse(urlVideo)); 
 
-      await controller.initialize();
-      if (controller.value.isInitialized) {
-        isVideoInitialized.value = true;
-        update();
-        controller.play();
-      }
-      log("slide video fin initialisation");
-    } catch (e) {
-      rethrow;
-    }
-  }
+//       await controller.initialize();
+//       if (controller.value.isInitialized) {
+//         isVideoInitialized.value = true;
+//         update();
+//         controller.play();
+//       }
+//       log("slide video fin initialisation");
+//     } catch (e) {
+//       rethrow;
+//     }
+//   }
 
 
-}
+// }

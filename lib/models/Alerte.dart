@@ -2,7 +2,7 @@
 class Alert {
   int? id;
   int? typeAlertId;
-  String libelle;
+  String? libelle;
   dynamic fileUrl;
   String? description;
   int? statut;
@@ -18,7 +18,7 @@ class Alert {
   Alert({
     this.id,
     this.typeAlertId,
-    required this.libelle,
+    this.libelle,
     this.fileUrl,
     this.description,
     this.statut,
@@ -35,7 +35,7 @@ class Alert {
   factory Alert.fromJson(Map<String, dynamic> json) => Alert(
         id: json["id"],
         typeAlertId: json["type_alert_id"],
-        libelle: json["libelle"],
+        libelle: json["libelle"] ?? '',
         fileUrl: json["file_url"],
         description: json["description"],
         statut: json["statut"],

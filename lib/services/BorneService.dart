@@ -55,10 +55,8 @@ class BorneService extends GetxService {
   Future<http.Response> getAllAlertes() async {
     final token = box.read('token');
     try {
-      final response = await http.get(
-        getUrl('get_all_alertes_borne'),
-        headers: headersToken(token),
-      );
+      final response = await http.get(getUrl('get_all_alertes_borne'),
+          headers: headersToken(token));
       return response;
     } catch (e) {
       rethrow;
@@ -68,11 +66,9 @@ class BorneService extends GetxService {
   // update direction
   Future<http.Response> getSite() async {
     return await http
-        .get(
-      getUrl('update-direction'),
-      headers: headersToken(box.read('token')),
-    )
-        .timeout(const Duration(minutes: 3), onTimeout: () {
+        .get(getUrl('update-direction'),
+            headers: headersToken(box.read('token')))
+        .timeout(const Duration(seconds: 15), onTimeout: () {
       return http.Response("Erreur de connexion", 400);
     });
   }
@@ -80,17 +76,12 @@ class BorneService extends GetxService {
   //Send fire base token to the server
   Future<http.Response> sendToken(
       {required String code, required String fbToken}) async {
-    final box = GetStorage();
-    final tokenApi = box.read('token');
-
     try {
-      http.Response response = await http.post(
+      return await http.post(
         getUrl('store_token'),
         body: jsonEncode({"code": code, "fb_token": fbToken}),
-        headers: headersToken(tokenApi),
+        headers: headersToken(box.read('token')),
       );
-      log(response.body.toString());
-      return response;
     } catch (e) {
       rethrow;
     }
@@ -113,9 +104,7 @@ class BorneService extends GetxService {
       return await http.post(
         getUrl('update-article'),
         headers: headersToken(box.read("token")),
-        body: jsonEncode({
-          "id": idArticle,
-        }),
+        body: jsonEncode({"id": idArticle}),
       );
     } catch (e) {
       rethrow;

@@ -12,7 +12,6 @@ import 'package:borne_flutter/config/app_style.dart';
 import 'package:borne_flutter/config/size_config.dart';
 import 'package:borne_flutter/controllers/BorneController.dart';
 import 'package:borne_flutter/models/Artcile.dart';
-import 'package:borne_flutter/utils/utils.dart';
 
 class CarousselWidget extends StatelessWidget {
   const CarousselWidget({
@@ -25,11 +24,11 @@ class CarousselWidget extends StatelessWidget {
     final borneController = Get.find<BorneController>();
 
     return Obx(() {
-      if (borneController.slides.isNotEmpty) {
-        return Expanded(
-          flex: 8,
-          child: Stack(
-            children: [
+      return Expanded(
+        flex: 8,
+        child: Stack(
+          children: [
+            if (borneController.slides.isNotEmpty) ...[
               CarouselSlider(
                 items: borneController.slides
                     .map<Widget>((item) => TitrologieSlider(slide: item))
@@ -49,27 +48,37 @@ class CarousselWidget extends StatelessWidget {
                   },
                 ),
               ),
-              const FlashPushArticle(),
-              const TicketingCard(),
-            ],
-          ),
-        );
-      } else {
-        return Expanded(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Image.asset('assets/images/emppty_slide.png'),
-              Text(
-                "Aucun slide disponible",
-                style: emptyTextForSlide,
-              )
-            ],
-          ),
-        );
-      }
+            ] else
+              const EmptySlide(),
+            const FlashPushArticle(),
+            const TicketingCard(),
+          ],
+        ),
+      );
     });
+  }
+}
+
+class EmptySlide extends StatelessWidget {
+  const EmptySlide({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset('assets/images/emppty_slide.png'),
+          Text(
+            "Aucun slide disponible",
+            style: emptyTextForSlide,
+          )
+        ],
+      ),
+    );
   }
 }
 
@@ -194,8 +203,7 @@ class FlashArticle extends StatelessWidget {
                       size: SizeConfig.blockHorizontal! * 12,
                       padding: EdgeInsets.zero,
                       backgroundColor: Colors.white,
-                      data: codeQr(
-                          "article=${article.id}", article.pivot.borneId!),
+                      data: article.url,
                     ),
                     SizedBox(height: SizeConfig.blockHorizontal! * 1),
                     SizedBox(

@@ -14,7 +14,7 @@ class EventController extends GetxController {
       log('EVENTBD : ${event.data}');
       final data = event.data;
 
-      switch (event.data['event']) {
+      switch (event.data['event'].toUpperCase()) {
         //Alerte Mise a jour
         case 'CHANGE_STATUT_ALERT':
           listenController.updateAlerte();
