@@ -35,6 +35,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   RxInt dureeDuSlide = 5.obs;
   RxInt currentArticleIndex = 0.obs;
   RxInt currentArticleduree = 10.obs;
+  RxInt previousArticleDuree = 5.obs;
   RxInt articleChangeAnimation = 0.obs;
   // Initialisez en dehors de la fonction
   Set<int> permanentArticleIdsDisplayed = {};
@@ -59,6 +60,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   final box = GetStorage();
   Rx<Timer> videoTimer = Timer(Duration.zero, () {}).obs;
   Rx<Timer> videoTimerSecond = Timer(Duration.zero, () {}).obs;
+  Rx<bool> articleCall = false.obs;
 
   //Time variable
   tz.Location _location = tz.getLocation('Africa/Abidjan');
@@ -200,6 +202,8 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
 //Cette fonction passe à l'article suivant et met à jour l'index.
   void goToNextArticle() {
     if (articles.isNotEmpty) {
+      previousArticleDuree.value = currentArticleduree.value =
+          articles[currentArticleIndex.value].pivot.duree;
       currentArticleIndex.value =
           (currentArticleIndex.value + 1) % articles.length;
       currentArticleduree.value =
@@ -207,6 +211,11 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
       isCardVisible(true);
       startToAnimateArticle(); // start to animate next article
       playDefaultRingtone(); // play default ringtone
+      update();
+    } else {
+      articleCall(false);
+      videoTimer.value.cancel();
+      videoTimerSecond.value.cancel();
       update();
     }
     /* changeArticle.value++;
@@ -216,11 +225,9 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
 // ################################ TIME ################################
   //Time function
   void currentTimeForTimeZone() {
-    log("time zone 1 ${site.value.timezone!}");
     // ignore: unnecessary_null_comparison
     if (borne.value != null && site != null && site.value.timezone != null) {
       _location = tz.getLocation(site.value.timezone!);
-      log("time zone 2 ${site.value.timezone!}");
       Timer.periodic(const Duration(seconds: 1), (timer) {
         tz.TZDateTime date = tz.TZDateTime.now(_location);
         currentDate.value = DateFormat('EEE d MMM  y', 'fr_Fr').format(date);
@@ -384,12 +391,15 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
 
   // Other function tu run article
   void startToAnimateArticle() {
-    videoTimer.value = Timer(Duration(seconds: currentArticleduree.value), () {
+    videoTimer.value = Timer(
+        Duration(
+          seconds: (previousArticleDuree.value + currentArticleduree.value),
+        ), () {
       isCardVisible(false);
 
       // Supprimer l''article de la liste s'il est permanent
       enableArticlePermanent(articles[currentArticleIndex.value]);
-      Timer(const Duration(seconds: 5), () {
+      videoTimerSecond.value = Timer(const Duration(seconds: 5), () {
         goToNextArticle(); // go next article
       });
     });
@@ -540,6 +550,8 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
     videoTimer.value.cancel();
     videoTimerSecond.value.cancel();
     articles.clear();
+    slides.clear();
+    alertes.clear();
     update();
     Get.offAllNamed("login");
     removeToken();
@@ -558,8 +570,10 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
       videoTimerSecond.value.cancel();
       if (articles.isNotEmpty) {
         currentArticleduree.value = articles.first.pivot.duree;
+        articleCall(true);
         startToAnimateArticle();
         log("l'article a ete modifier");
+        update();
       }
     });
     //Listent App in connexion is operational
@@ -569,7 +583,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   @override
   void onClose() {
     super.onClose();
-    controller.dispose();
+    //controller.dispose();
     videoTimer.value.cancel();
     videoTimerSecond.value.cancel();
   }

@@ -1,0 +1,16 @@
+
+
+Le Timer est fonction qui permet de mettre une duree, avant d'executer une autre fonction
+
+
+void startToAnimateArticle() {
+    videoTimer.value = Timer(Duration(seconds: currentArticleduree.value), () {
+      isCardVisible(false);
+
+      // Supprimer l''article de la liste s'il est permanent
+      enableArticlePermanent(articles[currentArticleIndex.value]);
+      videoTimerSecond.value = Timer(const Duration(seconds: 5), () {
+        goToNextArticle(); // go next article
+      });
+    });
+  }
