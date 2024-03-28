@@ -291,8 +291,9 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
       final body = jsonDecode(response.body)['articles'];
       final article = body.map<Article>((el) => Article.fromJson(el)).toList();
       if (article.isEmpty) {
-        articleEstVide.value = true;
+        articleEstVide(true);
         isCardVisible(true);
+        isAnimating(false);
         playDefaultRingtone();
         videoTimer.value.cancel();
         update();
@@ -569,9 +570,9 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
     // await getBorne();
 
     ever(articles, (callback) {
-      if (!isAnimating.value) {
-        if (articles.isNotEmpty) {
-          currentArticleduree.value = articles.first.pivot.duree;
+      if (articles.isNotEmpty) {
+        currentArticleduree.value = articles.first.pivot.duree;
+        if (!isAnimating.value) {
           isAnimating(true);
           startToAnimateArticle();
           log("l'article a ete modifier");
