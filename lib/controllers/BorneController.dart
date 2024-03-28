@@ -60,7 +60,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
   final box = GetStorage();
   Rx<Timer> videoTimer = Timer(Duration.zero, () {}).obs;
   Rx<Timer> videoTimerSecond = Timer(Duration.zero, () {}).obs;
-  Rx<bool> articleCall = false.obs;
+  Rx<bool> isAnimating = false.obs;
 
   //Time variable
   tz.Location _location = tz.getLocation('Africa/Abidjan');
@@ -213,7 +213,7 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
       playDefaultRingtone(); // play default ringtone
       update();
     } else {
-      articleCall(false);
+      isAnimating(false);
       videoTimer.value.cancel();
       videoTimerSecond.value.cancel();
       update();
@@ -391,18 +391,21 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
 
   // Other function tu run article
   void startToAnimateArticle() {
-    videoTimer.value = Timer(
-        Duration(
-          seconds: (previousArticleDuree.value + currentArticleduree.value),
-        ), () {
-      isCardVisible(false);
+    if (articles.isNotEmpty) {
+      videoTimer.value.cancel();
+      videoTimerSecond.value.cancel();
+      // previousArticleDuree.value +
+      videoTimer.value =
+          Timer(Duration(seconds: (currentArticleduree.value)), () {
+        isCardVisible(false);
 
-      // Supprimer l''article de la liste s'il est permanent
-      enableArticlePermanent(articles[currentArticleIndex.value]);
-      videoTimerSecond.value = Timer(const Duration(seconds: 5), () {
-        goToNextArticle(); // go next article
+        // Supprimer l''article de la liste s'il est permanent
+        enableArticlePermanent(articles[currentArticleIndex.value]);
+        videoTimerSecond.value = Timer(const Duration(seconds: 5), () {
+          goToNextArticle(); // go next article
+        });
       });
-    });
+    }
   }
 
   ///Save firebase token
@@ -566,14 +569,14 @@ class BorneController extends GetxController with GetTickerProviderStateMixin {
     // await getBorne();
 
     ever(articles, (callback) {
-      videoTimer.value.cancel();
-      videoTimerSecond.value.cancel();
-      if (articles.isNotEmpty) {
-        currentArticleduree.value = articles.first.pivot.duree;
-        articleCall(true);
-        startToAnimateArticle();
-        log("l'article a ete modifier");
-        update();
+      if (!isAnimating.value) {
+        if (articles.isNotEmpty) {
+          currentArticleduree.value = articles.first.pivot.duree;
+          isAnimating(true);
+          startToAnimateArticle();
+          log("l'article a ete modifier");
+          update();
+        }
       }
     });
     //Listent App in connexion is operational

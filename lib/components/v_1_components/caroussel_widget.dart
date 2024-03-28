@@ -137,7 +137,7 @@ class FlashArticle extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "ALerte Info",
+                          "Alerte Info",
                           style: flashInfoTitleStyle.copyWith(
                             color: Colors.white,
                             fontSize: 25,
